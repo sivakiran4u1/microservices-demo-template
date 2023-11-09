@@ -80,6 +80,7 @@ pipeline {
       steps {
         script {
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
+
           def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
           boutique.SpinUpBoutiqeEnvironment(
             IDENTIFIER : IDENTIFIER,
