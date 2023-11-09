@@ -211,7 +211,11 @@ pipeline {
     }
     failure {
       script {
-
+        sts.set_assume_role([
+          env       : "dev",
+          account_id: "159616352881",
+          role_name : "CD-TF-Role"
+        ])
         boutique.failure_btq(
           IDENTIFIER : "${params.BRANCH}-${env.CURRENT_VERSION}"
         )
