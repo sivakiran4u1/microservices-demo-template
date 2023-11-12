@@ -6,11 +6,11 @@ pipeline {
         base_image_uri       : "534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-base-ci:latest",
         ecr_uri              : "534369319675.dkr.ecr.us-west-2.amazonaws.com",
         shell_memory_request : "1000Mi",
-        shell_cpu_request    : "1500m",
+        shell_cpu_request    : "1.5",
         shell_memory_limit   : "2000Mi",
-        shell_cpu_limit      : "2500m",
+        shell_cpu_limit      : "2",
         template_path        : "ci/pod_templates/shell_pod.yaml",
-        node_selector        : "jenkins"
+        node_selector        : "shell_pod"
       ])
       defaultContainer 'shell'
     }
