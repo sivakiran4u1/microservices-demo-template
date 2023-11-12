@@ -5,14 +5,14 @@ pipeline {
       yaml kubernetes.base_pod([
         base_image_uri       : "534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-base-ci:latest",
         ecr_uri              : "534369319675.dkr.ecr.us-west-2.amazonaws.com",
-        shell_memory_request : "5000Mi",
-        shell_cpu_request    : "2",
-        shell_memory_limit   : "10000Mi",
-        shell_cpu_limit      : "5",
-        kaniko_memory_request: "1500Mi",
-        kaniko_cpu_request   : "2",
-        kaniko_memory_limit  : "6000Mi",
-        kaniko_cpu_limit     : "5",
+        shell_memory_request : "1000Mi",
+        shell_cpu_request    : "1.5",
+        shell_memory_limit   : "2000Mi",
+        shell_cpu_limit      : "2",
+        kaniko_memory_request: "500Mi",
+        kaniko_cpu_request   : "0.5",
+        kaniko_memory_limit  : "600Mi",
+        kaniko_cpu_limit     : "0.6",
         node_selector        : "nightly"
       ])
       defaultContainer 'shell'
