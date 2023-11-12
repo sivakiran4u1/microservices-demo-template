@@ -9,10 +9,7 @@ pipeline {
         shell_cpu_request    : "1.5",
         shell_memory_limit   : "2000Mi",
         shell_cpu_limit      : "2",
-        kaniko_memory_request: "500Mi",
-        kaniko_cpu_request   : "0.5",
-        kaniko_memory_limit  : "600Mi",
-        kaniko_cpu_limit     : "0.6",
+        template_path        : "ci/pod_templates/shell_pod.yaml",
         node_selector        : "jenkins"
       ])
       defaultContainer 'shell'
