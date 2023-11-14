@@ -1,5 +1,6 @@
 pkg/
 .DS_Store
+.idea/
 *.pyc
 *.swp
 *.tfstate
