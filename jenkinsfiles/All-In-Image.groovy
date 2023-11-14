@@ -1,9 +1,7 @@
-@Library('main-shared-library') _
-
 pipeline {
   agent {
     kubernetes {
-      yaml kubernetes.base_pod([
+      yaml base_pod([
         template_path: "ci/pod_templates/shell_pod.yaml",
         base_image_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-all-in:latest",
         ecr_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com",
@@ -354,22 +352,42 @@ pipeline {
         }
       }
     }
-
-    // stage('XUnit framework'){ removed for now, need agent update to support dotnet 7.0
-    //     steps{
-    //         script{
-    //              sh """
-    //             wget -nv -O sealights-dotnet-agent-alpine.tar.gz https://agents.sealights.co/dotnetcore/latest/sealights-dotnet-agent-alpine-self-contained.tar.gz
-    //             mkdir sl-dotnet-agent && tar -xzf ./sealights-dotnet-agent-alpine.tar.gz --directory ./sl-dotnet-agent
-    //             echo "[Sealights] .NetCore Agent version is: `cat ./sl-dotnet-agent/version.txt`"
-    //             ls
-    //             export machine_dns="${params.MACHINE_DNS}"
-    //             env
-    //             dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll testListener --workingDir .  --target dotnet   --testStage "XUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./src/cartservice/tests/"
-    //             """
-    //         }
-    //     }
-    // }
   }
 }
+
+def base_pod(Map params) {
+  params["job_name"] = params.job_name == null || params.job_name == "" ? "${JOB_NAME}-${BUILD_NUMBER}" : params.job_name
+
+  params["kaniko_memory_request"] = params.kaniko_memory_request == null || params.kaniko_memory_request == "" ? "250Mi" : params.kaniko_memory_request
+  params["kaniko_cpu_request"] = params.kaniko_cpu_request == null || params.kaniko_cpu_request == "" ? "500m" : params.kaniko_cpu_request
+  params["kaniko_memory_limit"] = params.kaniko_memory_limit == null || params.kaniko_memory_limit == "" ? "1400Mi" : params.kaniko_memory_limit
+  params["kaniko_cpu_limit"] = params.kaniko_cpu_limit == null || params.kaniko_cpu_limit == ""  ? "1400m" : params.kaniko_cpu_limit
+
+  params["shell_memory_request"] = params.shell_memory_request == null || params.shell_memory_request == "" ? "250Mi" : params.shell_memory_request
+  params["shell_cpu_request"] = params.shell_cpu_request == null || params.shell_cpu_request == "" ? "1000m" : params.shell_cpu_request
+  params["shell_storage_request"] = params.shell_storage_request == null || params.shell_storage_request == "" ? "2000Mi" : params.shell_storage_request
+  params["shell_memory_limit"] = params.shell_memory_limit == null || params.shell_memory_limit == "" ? "2500Mi" : params.shell_memory_limit
+  params["shell_cpu_limit"] = params.shell_cpu_limit == null || params.shell_cpu_limit == ""  ? "2000m" : params.shell_cpu_limit
+  params["shell_storage_limit"] = params.shell_storage_limit == null || params.shell_storage_limit == "" ? "4000Mi" : params.shell_storage_limit
+
+  params["storage_request"] = params.storage_request == null || params.storage_request == "" ? "500Mi" : params.storage_request
+  params["storage_limit"] = params.storage_limit == null || params.storage_limit == "" ? "1500Mi" : params.storage_limit
+
+  params["kaniko_storage_request"] = params.kaniko_storage_request == null || params.kaniko_storage_request == "" ? "2000Mi" : params.kaniko_storage_request
+  params["kaniko_storage_limit"] = params.kaniko_storage_limit == null || params.kaniko_storage_limit == "" ? "3200Mi" : params.kaniko_storage_limit
+
+  params["node_selector"] = params.node_selector == null || params.node_selector == "" ? "jenkins" : params.node_selector
+
+
+  def template_path = (params.template_path == null) ? "ci/pod_templates/base_pod.yaml" : params.template_path
+  def pod_template = libraryResource "${template_path}"
+
+  def bindings = [params: params]
+  def engine = new groovy.text.GStringTemplateEngine()
+  pod_template = engine.createTemplate(pod_template).make(bindings).toString()
+
+  return pod_template
+}
+
+
 
