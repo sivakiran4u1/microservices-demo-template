@@ -142,7 +142,7 @@ pipeline {
           boutique.build_btq(
             sl_token: params.SL_TOKEN,
             dev_integraion_sl_token: env.DEV_INTEGRATION_SL_TOKEN,
-            build_name: "1-0-${BUILD_NUMBER}",
+            build_name: "1-0-${BUILD_NUMBER}-v2",
             branch: params.BRANCH,
             mapurl: MapUrl
           )
