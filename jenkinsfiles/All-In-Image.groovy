@@ -2,7 +2,7 @@ pipeline {
   agent {
     kubernetes {
       yaml base_pod([
-        template_path: "ci/pod_templates/shell_pod.yaml",
+        template_path: "microservices-demo/shell_pod.yaml",
         base_image_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-all-in:latest",
         ecr_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com",
         memory_request: "5000Mi",
