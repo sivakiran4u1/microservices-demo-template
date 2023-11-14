@@ -143,7 +143,7 @@ pipeline {
             sl_token: params.SL_TOKEN,
             dev_integraion_sl_token: env.DEV_INTEGRATION_SL_TOKEN,
             build_name: "1-0-${BUILD_NUMBER}",
-            branch: params.CHANGED_BRANCH,
+            branch: params.BRANCH,
             mapurl: MapUrl
           )
         }
