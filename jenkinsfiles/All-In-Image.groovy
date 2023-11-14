@@ -379,7 +379,7 @@ def base_pod(Map params) {
   params["node_selector"] = params.node_selector == null || params.node_selector == "" ? "jenkins" : params.node_selector
 
 
-  def template_path = (params.template_path == null) ? "ci/pod_templates/base_pod.yaml" : params.template_path
+  def template_path = (params.template_path == null) ? "microservices-demo/shell_pod.yaml" : params.template_path
   def pod_template = libraryResource "${template_path}"
 
   def bindings = [params: params]

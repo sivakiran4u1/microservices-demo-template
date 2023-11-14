@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ad.datadoghq.com/shell.logs: "[{\"source\":\"sheldon-k8s-${params.job_name}\",\"service\":\"shell\",\"namespace\":\"jenkins\"}]"
+    ad.datadoghq.com/jnlp.logs: "[{\"source\":\"sheldon-k8s-${params.job_name}\",\"service\":\"jnlp\",\"namespace\":\"jenkins\"}]"
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+spec:
+  serviceAccount: jenkins-service-account
+  containers:
+    - name: jnlp
+      image: jenkins/inbound-agent:4.11.2-4
+      workingDir: /home/jenkins/agent
+      env:
+        - name: JENKINS_URL
+          value: "http://jenkins.jenkins.svc.cluster.local:8080/"
+      resources:
+        requests:
+          cpu: 200m
+          memory: 350Mi
+          ephemeral-storage: 150Mi
+        limits:
+          cpu: 512m
+          memory: 512Mi
+          ephemeral-storage: 200Mi
+      securityContext:
+        privileged: true
+    - name: shell
+      image: ${params.base_image_uri}
+      command:
+        - sleep
+      args:
+        - infinity
+      resources:
+        requests:
+          memory: "${params.memory_request}"
+          cpu: "${params.cpu_request}"
+          ephemeral-storage: "${params.storage_request}"
+        limits:
+          memory: "${params.memory_limit}"
+          cpu: "${params.cpu_limit}"
+          ephemeral-storage: "${params.storage_limit}"
+  nodeSelector:
+    type: "${params.node_selector}"
