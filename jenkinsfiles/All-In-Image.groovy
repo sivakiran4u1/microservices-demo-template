@@ -2,7 +2,7 @@ pipeline {
   agent {
     kubernetes {
       yaml base_pod([
-        template_path: "microservices-demo/shell_pod.yaml",
+        template_path: "./shell_pod.yaml",
         base_image_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-all-in:latest",
         ecr_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com",
         memory_request: "5000Mi",
@@ -379,7 +379,7 @@ def base_pod(Map params) {
   params["node_selector"] = params.node_selector == null || params.node_selector == "" ? "jenkins" : params.node_selector
 
 
-  def template_path = (params.template_path == null) ? "microservices-demo/shell_pod.yaml" : params.template_path
+  def template_path = (params.template_path == null) ? "./shell_pod.yaml" : params.template_path
   def pod_template = libraryResource "${template_path}"
 
   def bindings = [params: params]
