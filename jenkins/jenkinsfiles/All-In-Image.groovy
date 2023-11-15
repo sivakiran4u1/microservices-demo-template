@@ -1,7 +1,7 @@
 pipeline {
   agent {
     kubernetes {
-      yaml readTrusted('jenkins/pod-templates/shell_pod_all_in.yaml')
+      yaml readTrusted('jenkins/pod-templates/All_In_Image_shell_pod.yaml')
       defaultContainer "shell"
     }
   }
@@ -369,7 +369,7 @@ def base_pod(Map params) {
   params["node_selector"] = params.node_selector == null || params.node_selector == "" ? "jenkins" : params.node_selector
 
 
-  def template_path = (params.template_path == null) ? "microservices-demo/jenkins/pod-templates/shell_pod_all_in.yaml" : params.template_path
+  def template_path = (params.template_path == null) ? "microservices-demo/jenkins/pod-templates/All_In_Image_shell_pod.yaml" : params.template_path
   def pod_template = readFile(file:'${template_path}')
 
   def bindings = [params: params]

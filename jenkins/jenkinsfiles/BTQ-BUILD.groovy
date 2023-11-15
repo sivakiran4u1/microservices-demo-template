@@ -2,21 +2,8 @@
 pipeline{
   agent {
     kubernetes {
-      yaml kubernetes.base_pod([
-        base_image_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-base-ci:latest",
-        ecr_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com",
-        shell_memory_request: "2000Mi",
-        shell_cpu_request: "2",
-        shell_memory_limit: "4000Mi",
-        shell_cpu_limit: "3",
-        kaniko_memory_request: "4000Mi",
-        kaniko_cpu_request: "2",
-        kaniko_memory_limit: "4500Mi",
-        kaniko_cpu_limit: "3",
-        kaniko_storage_limit:"6500Mi",
-        node_selector: "nightly"
-      ])
-      defaultContainer 'shell'
+      yaml readTrusted('jenkins/pod-templates/BTQ-BUILD_shell_pod.yaml')
+      defaultContainer "shell"
     }
   }
   options {
@@ -25,7 +12,8 @@ pipeline{
   }
   parameters {
     string(name: 'TAG', defaultValue: '1.2.2', description: 'latest tag')
-    string(name: 'BRANCH', defaultValue: 'main', description: 'defult branch')
+    string(name: 'BRANCH', defaultValue: 'main', description: 'default branch')
+    string(name: 'SL_REPORT_BRANCH', defaultValue: 'main', description: 'default branch')
     //string(name: 'ecr_uri1', defaultValue: '534369319675.dkr.ecr.us-west-2.amazonaws.com/btq', description: 'ecr btq')
     string(name: 'SERVICE', defaultValue: '', description: 'SErvice name to build')
     string(name: 'machine_dns', defaultValue: 'http://DEV-${env.IDENTIFIER}.dev.sealights.co', description: 'machine DNS')
@@ -61,7 +49,7 @@ pipeline{
                 def CONTEXT = params.SERVICE == "cartservice" ? "./src/${params.SERVICE}/src" : "./src/${params.SERVICE}"
                 def DP = "${CONTEXT}/Dockerfile"
                 def D = "${env.ECR_URI}:${params.TAG}"
-                def BRANCH = params.BRANCH
+                def BRANCH = params.SL_REPORT_BRANCH
                 def BUILD_NAME = params.BUILD_NAME
                 def SL_TOKEN = params.SL_TOKEN
                 def AGENT_URL = params.AGENT_URL
