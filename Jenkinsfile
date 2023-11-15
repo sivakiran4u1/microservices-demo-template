@@ -1,4 +1,4 @@
-@Library('main-shared-library') _
+@Library('main-shared-library@ahmad-branch') _
 pipeline {
   agent {
     kubernetes {
@@ -223,40 +223,5 @@ pipeline {
     }
   }
 }
-
-def base_pod(Map params) {
-  params["job_name"] = params.job_name == null || params.job_name == "" ? "${JOB_NAME}-${BUILD_NUMBER}" : params.job_name
-
-  params["kaniko_memory_request"] = params.kaniko_memory_request == null || params.kaniko_memory_request == "" ? "250Mi" : params.kaniko_memory_request
-  params["kaniko_cpu_request"] = params.kaniko_cpu_request == null || params.kaniko_cpu_request == "" ? "500m" : params.kaniko_cpu_request
-  params["kaniko_memory_limit"] = params.kaniko_memory_limit == null || params.kaniko_memory_limit == "" ? "1400Mi" : params.kaniko_memory_limit
-  params["kaniko_cpu_limit"] = params.kaniko_cpu_limit == null || params.kaniko_cpu_limit == ""  ? "1400m" : params.kaniko_cpu_limit
-
-  params["shell_memory_request"] = params.shell_memory_request == null || params.shell_memory_request == "" ? "250Mi" : params.shell_memory_request
-  params["shell_cpu_request"] = params.shell_cpu_request == null || params.shell_cpu_request == "" ? "1000m" : params.shell_cpu_request
-  params["shell_storage_request"] = params.shell_storage_request == null || params.shell_storage_request == "" ? "2000Mi" : params.shell_storage_request
-  params["shell_memory_limit"] = params.shell_memory_limit == null || params.shell_memory_limit == "" ? "2500Mi" : params.shell_memory_limit
-  params["shell_cpu_limit"] = params.shell_cpu_limit == null || params.shell_cpu_limit == ""  ? "2000m" : params.shell_cpu_limit
-  params["shell_storage_limit"] = params.shell_storage_limit == null || params.shell_storage_limit == "" ? "4000Mi" : params.shell_storage_limit
-
-  params["storage_request"] = params.storage_request == null || params.storage_request == "" ? "500Mi" : params.storage_request
-  params["storage_limit"] = params.storage_limit == null || params.storage_limit == "" ? "1500Mi" : params.storage_limit
-
-  params["kaniko_storage_request"] = params.kaniko_storage_request == null || params.kaniko_storage_request == "" ? "2000Mi" : params.kaniko_storage_request
-  params["kaniko_storage_limit"] = params.kaniko_storage_limit == null || params.kaniko_storage_limit == "" ? "3200Mi" : params.kaniko_storage_limit
-
-  params["node_selector"] = params.node_selector == null || params.node_selector == "" ? "jenkins" : params.node_selector
-
-
-  def template_path = (params.template_path == null) ? "../pod-templates/shell_pod.yaml" : params.template_path
-  def pod_template = new File("${template_path}").collect{it}
-
-  def bindings = [params: params]
-  def engine = new groovy.text.GStringTemplateEngine()
-  pod_template = engine.createTemplate(pod_template).make(bindings).toString()
-
-  return pod_template
-}
-
 
 
