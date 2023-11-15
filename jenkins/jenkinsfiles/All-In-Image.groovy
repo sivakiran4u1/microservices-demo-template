@@ -1,58 +1,8 @@
 pipeline {
   agent {
     kubernetes {
-      yaml podTemplate(yaml: '''
-        apiVersion: v1
-        kind: Pod
-        metadata:
-          annotations:
-        ad.datadoghq.com/shell.logs: "[{\"source\":\"sheldon-k8s-${JOB_NAME}-${BUILD_NUMBER}\",\"service\":\"shell\",\"namespace\":\"jenkins\"}]"
-        ad.datadoghq.com/jnlp.logs: "[{\"source\":\"sheldon-k8s-${JOB_NAME}-${BUILD_NUMBER}\",\"service\":\"jnlp\",\"namespace\":\"jenkins\"}]"
-        "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
-        spec:
-          serviceAccount: jenkins-service-account
-        containers:
-          - name: jnlp
-        image: jenkins/inbound-agent:4.11.2-4
-          workingDir: /home/jenkins/agent
-        env:
-          - name: JENKINS_URL
-        value: "http://jenkins.jenkins.svc.cluster.local:8080/"
-        resources:
-          requests:
-        cpu: 200m
-        memory: 350Mi
-        ephemeral-storage: 150Mi
-        limits:
-          cpu: 512m
-          memory: 512Mi
-        ephemeral-storage: 200Mi
-        securityContext:
-          privileged: true
-          - name: shell
-        image: 534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-all-in:latest
-        command:
-          - sleep
-        args:
-          - infinity
-        resources:
-          requests:
-        memory: 5000Mi
-        cpu: 2
-        ephemeral-storage: 2000Mi
-        limits:
-          memory: 10000Mi
-        cpu: 6
-        ephemeral-storage: 10000Mi
-        nodeSelector:
-          type: jenkins
-      '''){
-        node(POD_LABEL) {
-          container('maven') {
-            sh "hostname"
-          }
-        }
-      }
+      yaml readTrusted('../pod-templates/shell_pod.yaml')
+      defaultContainer "shell"
     }
   }
   options {

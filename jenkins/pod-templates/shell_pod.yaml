@@ -2,8 +2,6 @@ apiVersion: v1
 kind: Pod
 metadata:
   annotations:
-    ad.datadoghq.com/shell.logs: "[{\"source\":\"sheldon-k8s-${params.job_name}\",\"service\":\"shell\",\"namespace\":\"jenkins\"}]"
-    ad.datadoghq.com/jnlp.logs: "[{\"source\":\"sheldon-k8s-${params.job_name}\",\"service\":\"jnlp\",\"namespace\":\"jenkins\"}]"
     "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
 spec:
   serviceAccount: jenkins-service-account
@@ -26,19 +24,19 @@ spec:
       securityContext:
         privileged: true
     - name: shell
-      image: ${params.base_image_uri}
+      image: 534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-all-in:latest
       command:
         - sleep
       args:
         - infinity
       resources:
         requests:
-          memory: "${params.memory_request}"
-          cpu: "${params.cpu_request}"
-          ephemeral-storage: "${params.storage_request}"
+          memory: 5000Mi
+          cpu: 2
+          ephemeral-storage: 2000Mi
         limits:
-          memory: "${params.memory_limit}"
-          cpu: "${params.cpu_limit}"
-          ephemeral-storage: "${params.storage_limit}"
+          memory: 10000Mi
+          cpu: 6
+          ephemeral-storage: 10000Mi
   nodeSelector:
-    type: "${params.node_selector}"
+    type: jenkins
