@@ -2,7 +2,7 @@ pipeline {
   agent {
     kubernetes {
       yaml base_pod([
-        template_path: "./shell_pod.yaml",
+        template_path: "jenkins/pod-templates/shell_pod.yaml",
         base_image_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-all-in:latest",
         ecr_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com",
         memory_request: "5000Mi",
@@ -298,38 +298,38 @@ pipeline {
       steps{
         script{
           sh """
-                    echo 'Soap-UI framework starting ..... '
-                    wget https://dl.eviware.com/soapuios/5.7.1/SoapUI-5.7.1-mac-bin.zip
-                    unzip SoapUI-5.7.1-mac-bin.zip
-                    cp integration-tests/soapUI/test-soapui-project.xml SoapUI-5.7.1/bin
-                    cd SoapUI-5.7.1/bin
-                    echo 'Downloading Sealights Agents...'
-                    wget -nv https://agents.sealights.co/sealights-java/sealights-java-latest.zip
-                    unzip -o sealights-java-latest.zip
-                    echo "Sealights agent version used is:" `cat sealights-java-version.txt`
-                    export SL_TOKEN="${params.SL_TOKEN}"
-                    echo ${params.SL_TOKEN}>sltoken.txt
-                    echo  '{
-                      "executionType": "testsonly",
-                      "tokenFile": "./sltoken.txt",
-                      "createBuildSessionId": false,
-                      "testStage": "Soap-UI framework",
-                      "runFunctionalTests": true,
-                      "labId": "${params.SL_LABID}",
-                      "proxy": null,
-                      "logEnabled": false,
-                      "logDestination": "console",
-                      "logLevel": "warn",
-                      "sealightsJvmParams": {}
-                      }' > slmaventests.json
-                    echo "Adding Sealights to Tests Project POM file..."
-                    pwd
-                    sed -i "s#machine_dns#${params.MACHINE_DNS}#" test-soapui-project.xml
-                    sed "s#machine_dns#${params.MACHINE_DNS}#" test-soapui-project.xml
-                    export SL_JAVA_OPTS="-javaagent:sl-test-listener.jar -Dsl.token=${params.SL_TOKEN} -Dsl.labId=${params.SL_LABID} -Dsl.testStage=Soapui-Tests -Dsl.log.enabled=true -Dsl.log.level=debug -Dsl.log.toConsole=true"
-                    sed -i -r "s/(^\\S*java)(.*com.eviware.soapui.tools.SoapUITestCaseRunner)/\\1 \\\$SL_JAVA_OPTS \\2/g" testrunner.sh
-                    sh -x ./testrunner.sh -s "TestSuite 1" "test-soapui-project.xml"
-                    """
+            echo 'Soap-UI framework starting ..... '
+            wget https://dl.eviware.com/soapuios/5.7.1/SoapUI-5.7.1-mac-bin.zip
+            unzip SoapUI-5.7.1-mac-bin.zip
+            cp integration-tests/soapUI/test-soapui-project.xml SoapUI-5.7.1/bin
+            cd SoapUI-5.7.1/bin
+            echo 'Downloading Sealights Agents...'
+            wget -nv https://agents.sealights.co/sealights-java/sealights-java-latest.zip
+            unzip -o sealights-java-latest.zip
+            echo "Sealights agent version used is:" `cat sealights-java-version.txt`
+            export SL_TOKEN="${params.SL_TOKEN}"
+            echo ${params.SL_TOKEN}>sltoken.txt
+            echo  '{
+              "executionType": "testsonly",
+              "tokenFile": "./sltoken.txt",
+              "createBuildSessionId": false,
+              "testStage": "Soap-UI framework",
+              "runFunctionalTests": true,
+              "labId": "${params.SL_LABID}",
+              "proxy": null,
+              "logEnabled": false,
+              "logDestination": "console",
+              "logLevel": "warn",
+              "sealightsJvmParams": {}
+              }' > slmaventests.json
+            echo "Adding Sealights to Tests Project POM file..."
+            pwd
+            sed -i "s#machine_dns#${params.MACHINE_DNS}#" test-soapui-project.xml
+            sed "s#machine_dns#${params.MACHINE_DNS}#" test-soapui-project.xml
+            export SL_JAVA_OPTS="-javaagent:sl-test-listener.jar -Dsl.token=${params.SL_TOKEN} -Dsl.labId=${params.SL_LABID} -Dsl.testStage=Soapui-Tests -Dsl.log.enabled=true -Dsl.log.level=debug -Dsl.log.toConsole=true"
+            sed -i -r "s/(^\\S*java)(.*com.eviware.soapui.tools.SoapUITestCaseRunner)/\\1 \\\$SL_JAVA_OPTS \\2/g" testrunner.sh
+            sh -x ./testrunner.sh -s "TestSuite 1" "test-soapui-project.xml"
+            """
         }
       }
     }
@@ -379,7 +379,7 @@ def base_pod(Map params) {
   params["node_selector"] = params.node_selector == null || params.node_selector == "" ? "jenkins" : params.node_selector
 
 
-  def template_path = (params.template_path == null) ? "./shell_pod.yaml" : params.template_path
+  def template_path = (params.template_path == null) ? "jenkins/pod-templates/shell_pod.yaml" : params.template_path
   def pod_template = libraryResource "${template_path}"
 
   def bindings = [params: params]
@@ -388,6 +388,4 @@ def base_pod(Map params) {
 
   return pod_template
 }
-
-
 
