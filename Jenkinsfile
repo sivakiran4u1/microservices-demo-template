@@ -55,6 +55,7 @@ pipeline {
           MapUrl.put('PYTHON_AGENT_URL', "${params.PYTHON_AGENT_URL}")
 
           boutique.build_btq(
+            sl_report_branch: params.BRANCH,
             sl_token: params.SL_TOKEN,
             dev_integraion_sl_token: env.DEV_INTEGRATION_SL_TOKEN,
             build_name: "1-0-${BUILD_NUMBER}",
@@ -111,8 +112,6 @@ pipeline {
     stage('Changed - Clone Repository') {
       steps {
         script {
-
-
           boutique.clone_repo(
             branch: params.CHANGED_BRANCH
           )
@@ -133,6 +132,7 @@ pipeline {
 
           boutique.build_btq(
             sl_token: params.SL_TOKEN,
+            sl_report_branch: params.CHANGED_BRANCH,
             dev_integraion_sl_token: env.DEV_INTEGRATION_SL_TOKEN,
             build_name: "1-0-${BUILD_NUMBER}-v2",
             branch: params.BRANCH,
