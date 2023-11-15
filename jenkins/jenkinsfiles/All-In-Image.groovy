@@ -47,6 +47,7 @@ pipeline {
         nodeSelector:
           type: jenkins
       ''')
+      defaultContainer 'shell'
     }
   }
   options {
