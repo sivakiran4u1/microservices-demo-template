@@ -1,7 +1,7 @@
 pipeline {
   agent {
     kubernetes {
-      podTemplate(yaml: '''
+      yaml podTemplate(yaml: '''
         apiVersion: v1
         kind: Pod
         metadata:
