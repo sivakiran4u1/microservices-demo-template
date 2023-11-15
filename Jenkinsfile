@@ -2,19 +2,11 @@
 pipeline {
   agent {
     kubernetes {
-      yaml kubernetes.base_pod([
-        template_path  : "ci/pod_templates/shell_pod.yaml",
-        base_image_uri : "534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-base-ci:latest",
-        ecr_uri        : "534369319675.dkr.ecr.us-west-2.amazonaws.com",
-        memory_request : "1000Mi",
-        cpu_request    : "1.5",
-        memory_limit   : "2000Mi",
-        cpu_limit      : "2",
-        node_selector  : "jenkins"
-      ])
-      defaultContainer 'shell'
+      yaml readTrusted('jenkins/pod-templates/CI_shell_pod.yaml')
+      defaultContainer "shell"
     }
   }
+
 
   parameters {
     string(name: 'APP_NAME', defaultValue: 'ahmad-BTQ', description: 'name of the app (integration build)')
