@@ -46,8 +46,13 @@ pipeline {
         ephemeral-storage: 10000Mi
         nodeSelector:
           type: jenkins
-      ''')
-      defaultContainer 'shell'
+      '''){
+        node(POD_LABEL) {
+          container('maven') {
+            sh "hostname"
+          }
+        }
+      }
     }
   }
   options {
