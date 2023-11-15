@@ -380,7 +380,7 @@ def base_pod(Map params) {
 
 
   def template_path = (params.template_path == null) ? "microservices-demo/jenkins/pod-templates/shell_pod.yaml" : params.template_path
-  def pod_template = new File("${template_path}").collect{it}
+  def pod_template = readFile(file:"${template_path}")
 
   def bindings = [params: params]
   def engine = new groovy.text.GStringTemplateEngine()
