@@ -3,24 +3,14 @@
 pipeline {
   agent {
     kubernetes {
-      yaml base_pod([
-        template_path: "microservices-demo/jenkins/pod-templates/shell_pod_all_in.yaml",
-        base_image_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-base-ci:latest",
-        ecr_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com",
-        memory_request: "1500Mi",
-        memory_limit: "3000Mi",
-        cpu_request: "2",
-        cpu_limit: "3.5",
-        node_selector: "nightly"
-      ])
-      defaultContainer 'shell'
+      yaml readTrusted('jenkins/pod-templates/shell_pod_all_in.yaml')
+      defaultContainer "shell"
     }
   }
 
   parameters {
     string(name: 'BRANCH', defaultValue: 'ahmad-branch', description: 'Branch to clone')
     string(name: 'APP_NAME', defaultValue: 'ahmad-BTQ', description: 'app name')
-
 
   }
 
