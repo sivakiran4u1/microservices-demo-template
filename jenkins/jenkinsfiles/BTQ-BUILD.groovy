@@ -6,6 +6,7 @@ pipeline{
       defaultContainer "shell"
     }
   }
+
   options {
     buildDiscarder logRotator(numToKeepStr: '100')
     timestamps()
