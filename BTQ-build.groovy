@@ -14,7 +14,7 @@ pipeline{
         kaniko_memory_limit: "4500Mi",
         kaniko_cpu_limit: "2.5",
         kaniko_storage_limit:"6500Mi",
-        node_selector: "jenkins"
+        node_selector: "nightly"
       ])
       defaultContainer 'shell'
     }
