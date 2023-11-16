@@ -1,4 +1,3 @@
-@Library('main-shared-library@ahmad-branch') _
 pipeline {
   agent {
     kubernetes {
@@ -27,7 +26,7 @@ pipeline {
 
 
   environment {
-    DEV_INTEGRATION_SL_TOKEN = secrets.get_secret("mgmt/btq_token", "us-west-2")
+    DEV_INTEGRATION_SL_TOKEN = get_secret("mgmt/btq_token", "us-west-2")
   }
 
   stages {
@@ -112,7 +111,7 @@ pipeline {
     stage('Changed - Clone Repository') {
       steps {
         script {
-          boutique.clone_repo(
+          clone_repo(
             branch: params.CHANGED_BRANCH
           )
         }
@@ -130,7 +129,7 @@ pipeline {
           MapUrl.put('GO_SLCI_AGENT_URL', "${params.GO_SLCI_AGENT_URL}")
           MapUrl.put('PYTHON_AGENT_URL', "${params.PYTHON_AGENT_URL}")
 
-          boutique.build_btq(
+          build_btq(
             sl_token: params.SL_TOKEN,
             sl_report_branch: params.CHANGED_BRANCH,
             dev_integraion_sl_token: env.DEV_INTEGRATION_SL_TOKEN,
@@ -149,7 +148,7 @@ pipeline {
         script {
           def IDENTIFIER= "${params.CHANGED_BRANCH}-${env.CURRENT_VERSION}"
 
-          boutique.SpinUpBoutiqeEnvironment(
+          SpinUpBoutiqeEnvironment(
             IDENTIFIER : IDENTIFIER,
             branch: params.CHANGED_BRANCH,
             git_branch : params.CHANGED_BRANCH,
@@ -166,7 +165,7 @@ pipeline {
     stage('Changed Run Tests') {
       steps {
         script {
-          boutique.run_tests(
+          run_tests(
             branch: params.BRANCH,
             test_type: params.TEST_TYPE
           )
@@ -178,7 +177,7 @@ pipeline {
     stage('Run API-Tests After Changes') {
       steps {
         script {
-          boutique.run_api_tests_after_changes(
+          run_api_tests_after_changes(
             branch: params.BRANCH,
             app_name: params.APP_NAME
           )
@@ -190,30 +189,224 @@ pipeline {
   post {
     success {
       script {
-        boutique.success_btq(
+        success_btq(
           IDENTIFIER : "${params.BRANCH}-${env.CURRENT_VERSION}"
         )
-        boutique.success_btq(
+        success_btq(
           IDENTIFIER : "${params.CHANGED_BRANCH}-${env.CURRENT_VERSION}"
         )
       }
     }
     failure {
       script {
-        sts.set_assume_role([
+        set_assume_role([
           env       : "dev",
           account_id: "159616352881",
           role_name : "CD-TF-Role"
         ])
-        boutique.failure_btq(
+        failure_btq(
           IDENTIFIER : "${params.BRANCH}-${env.CURRENT_VERSION}"
         )
-        boutique.failure_btq(
+        failure_btq(
           IDENTIFIER : "${params.CHANGED_BRANCH}-${env.CURRENT_VERSION}"
         )
       }
     }
   }
 }
+
+def get_secret (SecretID, Region, Profile="") {
+  if (Profile != "") {
+    Profile = "--profile ${Profile}"
+  }
+  String secret_key = "${SecretID.split('/')[-1]}" as String
+  def secret_value = (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id ${SecretID} --region ${Region} ${Profile}| jq -r '.SecretString' | jq -r '.${secret_key}'")).trim()
+  return secret_value
+}
+
+
+def build_btq(Map params){
+  env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
+
+  def parallelLabs = [:]
+  //List of all the images name
+  env.TOKEN= "${params.sl_token}" == "" ? "${params.dev_integraion_sl_token}"  : "${params.sl_token}"
+
+  def services_list = ["adservice","cartservice","checkoutservice", "currencyservice","emailservice","frontend","paymentservice","productcatalogservice","recommendationservice","shippingservice"]
+  //def special_services = ["cartservice"].
+  env.BUILD_NAME= "${params.build_name}" == "" ? "${params.branch}-${env.CURRENT_VERSION}" : "${params.build_name}"
+
+  services_list.each { service ->
+    parallelLabs["${service}"] = {
+      def AGENT_URL = getParamForService(service , params.mapurl)
+      build(job: 'BTQ-BUILD', parameters: [string(name: 'SERVICE', value: "${service}"),
+                                           string(name:'TAG' , value:"${env.CURRENT_VERSION}"),
+                                           string(name:'SL_REPORT_BRANCH' , value:"${params.sl_report_branch}"),
+                                           string(name:'BRANCH' , value:"${params.branch}"),
+                                           string(name:'BUILD_NAME' , value:"${env.BUILD_NAME}"),
+                                           string(name:'SL_TOKEN' , value:"${env.TOKEN}"),
+                                           string(name:'AGENT_URL' , value:AGENT_URL[0]),
+                                           string(name:'AGENT_URL_SLCI' , value:AGENT_URL[1])])
+    }
+  }
+  parallel parallelLabs
+}
+
+def getParamForService(service, mapurl) {
+
+  switch (service) {
+    case "adservice":
+      return [mapurl['JAVA_AGENT_URL'].toString(),""]
+    case "cartservice":
+      return [mapurl['DOTNET_AGENT_URL'].toString(),""]
+    case ["checkoutservice","frontend","productcatalogservice","shippingservice"]:
+      return [mapurl['GO_AGENT_URL'].toString(),mapurl['GO_SLCI_AGENT_URL'].toString()]
+    case ["emailservice","recommendationservice"]:
+      return [mapurl['PYTHON_AGENT_URL'].toString(),""]
+    case ["currencyservice","paymentservice"]:
+      return [mapurl['NODE_AGENT_URL'].toString(),""]
+  }
+}
+
+def SpinUpBoutiqeEnvironment(Map params){
+  env.MACHINE_DNS = "http://dev-${params.IDENTIFIER}.dev.sealights.co:8081"
+  env.LAB_ID = sealights.create_lab_id(
+    token: "${env.TOKEN}",
+    machine: "https://dev-integration.dev.sealights.co",
+    app: "${params.app_name}",
+    branch: "${params.build_branch}",
+    test_env: "${params.IDENTIFIER}",
+    lab_alias: "${params.IDENTIFIER}",
+    cdOnly: true,
+  )
+
+  build(job: 'SpinUpBoutiqeEnvironment', parameters: [string(name: 'ENV_TYPE', value: "DEV"),
+                                                      string(name:'IDENTIFIER' , value:"${params.IDENTIFIER}")
+                                                      ,string(name:'CUSTOM_EC2_INSTANCE_TYPE' , value:"t3a.large"),
+                                                      string(name:'GIT_BRANCH' , value:"${params.git_branch}"),
+                                                      string(name:'BTQ_LAB_ID' , value:"${env.LAB_ID}"),
+                                                      string(name:'BTQ_TOKEN' , value:"${env.TOKEN}"),
+                                                      string(name:'BTQ_VERSION' , value:"${env.CURRENT_VERSION}"),
+                                                      string(name:'BUILD_NAME' , value:"${env.BUILD_NAME}"),
+                                                      string(name:'JAVA_AGENT_URL' , value: "${params.java_agent_url}"),
+                                                      string(name:'DOTNET_AGENT_URL' , value: "${params.dotnet_agent_url}"),
+                                                      string(name:'SL_BRANCH' , value:"${params.sl_branch}")])
+}
+
+def run_tests(Map params){
+  if (params.test_type == 'Tests parallel') {
+    sleep time: 150, unit: 'SECONDS'
+    def parallelLabs = [:]
+    //List of all the jobs
+    def jobs_list = ["BTQ-java-tests(Junit without testNG)", "BTQ-java-tests(Junit without testNG)-gradle",
+                     "BTQ-python-tests(Pytest framework)", "BTQ-nodejs-tests(Mocha framework)", "BTQ-dotnet-tests(MS-test framework)",
+                     "BTQ-nodejs-tests(Jest framework)", "BTQ-python-tests(Robot framework)", "BTQ-dotnet-tests(NUnit-test framework)",
+                     "BTQ-java-tests(Junit support-testNG)", "BTQ-postman-tests", "BTQ-java-tests(Cucumber-framework-java)", "BTQ-java-tests-SoapUi-framework",
+                     "BTQ-nodejs-tests-Cypress-framework"]
+
+    jobs_list.each { job ->
+      parallelLabs["${job}"] = {
+        build(job: "${job}", parameters: [string(name: 'BRANCH', value: "${params.branch}"), string(name: 'SL_LABID', value: "${env.LAB_ID}"), string(name: 'SL_TOKEN', value: "${env.TOKEN}"), string(name: 'MACHINE_DNS1', value: "${env.MACHINE_DNS}")])
+      }
+    }
+    parallel parallelLabs
+  } else {
+    if (params.test_type == 'Tests sequential') {
+      sleep time: 150, unit: 'SECONDS'
+      def jobs_list = [
+        "BTQ-java-tests(Junit without testNG)",
+        "BTQ-python-tests(Pytest framework)",
+        "BTQ-nodejs-tests(Mocha framework)",
+        "BTQ-dotnet-tests(MS-test framework)",
+        "BTQ-nodejs-tests(Jest framework)",
+        "BTQ-python-tests(Robot framework)",
+        "BTQ-dotnet-tests(NUnit-test framework)",
+        "BTQ-java-tests(Junit support-testNG)",
+        "BTQ-nodejs-tests-Cypress-framework",
+        "BTQ-java-tests-SoapUi-framework",
+        "BTQ-java-tests(Cucumber-framework-java)",
+        "BTQ-java-tests(Junit without testNG)-gradle",
+        "BTQ-postman-tests"
+      ]
+
+      jobs_list.each { job ->
+        build(job: "${job}", parameters: [
+          string(name: 'BRANCH', value: "${params.branch}"),
+          string(name: 'SL_LABID', value: "${env.LAB_ID}"),
+          string(name: 'SL_TOKEN', value: "${env.TOKEN}"),
+          string(name: 'MACHINE_DNS1', value: "${env.MACHINE_DNS}")
+        ])
+        sleep time: 60, unit: 'SECONDS'
+      }
+    } else {
+      sleep time: 150, unit: 'SECONDS'
+      build(job: "All-In-Image", parameters: [
+        string(name: 'BRANCH', value: "${params.branch}"),
+        string(name: 'SL_LABID', value: "${env.LAB_ID}"),
+        string(name: 'SL_TOKEN', value: "${env.TOKEN}"),
+        string(name: 'MACHINE_DNS', value: "${env.MACHINE_DNS}")
+      ])
+    }
+  }
+
+
+}
+
+def success_btq(Map params){
+  build(job: 'TearDownBoutiqeEnvironment', parameters: [string(name: 'ENV_TYPE', value: "DEV"), string(name: 'IDENTIFIER', value: "${params.IDENTIFIER}")])
+  slackSend channel: "#btq-ci", tokenCredentialId: "slack_sldevops", color: "good", message: "BTQ-CI build ${env.CURRENT_VERSION} for branch ${BRANCH_NAME} finished with status ${currentBuild.currentResult} (<${env.BUILD_URL}|Open> and TearDownBoutiqeEnvironment)"
+}
+
+def failure_btq(Map params){
+  def env_instance_id = sh(returnStdout: true, script: "aws ec2 --region eu-west-1 describe-instances --filters 'Name=tag:Name,Values=EUW-ALLINONE-DEV-${params.IDENTIFIER}' 'Name=instance-state-name,Values=running' | jq -r '.Reservations[].Instances[].InstanceId'")
+  sh "aws ec2 --region eu-west-1 stop-instances --instance-ids ${env_instance_id}"
+  slackSend channel: "#btq-ci", tokenCredentialId: "slack_sldevops", color: "danger", message: "BTQ-CI build ${env.CURRENT_VERSION} for branch ${BRANCH_NAME} finished with status ${currentBuild.currentResult} (<${env.BUILD_URL}|Open>) and TearDownBoutiqeEnvironment"
+}
+
+
+
+def run_api_tests_before_changes(Map params){
+  catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+    build(job: "StableApiTests", parameters: [
+      string(name: 'BRANCH', value: "${params.branch}"),
+      string(name: 'APP_NAME', value: "${params.app_name}")
+    ])
+  }
+}
+
+def run_api_tests_after_changes(Map params){
+  catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+    build(job: "ApiTests", parameters: [
+      string(name: 'BRANCH', value: "${params.branch}"),
+      string(name: 'APP_NAME', value: "${params.app_name}")
+    ])
+  }
+}
+
+
+
+def clone_repo(Map params){
+  // Clone the repository with the specified branch
+  git branch: params.branch, url: 'https://github.com/Sealights/microservices-demo.git'
+}
+
+def set_assume_role(Map params) {
+  params.set_globaly = params.set_globaly == null ? true : params.set_globaly
+  def credential_map = sh (returnStdout: true, script: """
+                                aws sts assume-role --role-arn arn:aws:iam::${params.account_id}:role/${params.role_name}  \\
+                                --role-session-name ${params.env}-access --query \"Credentials\"
+                            """).replace('"', '').replaceAll('[\\s]', '').trim()
+  def map = tools.convert_to_map(credential_map)
+  if (params.set_globaly) {
+    env.AWS_ACCESS_KEY_ID = "${map.AccessKeyId}"
+    env.AWS_SECRET_ACCESS_KEY = "${map.SecretAccessKey}"
+    env.AWS_SESSION_TOKEN = "${map.SessionToken}"
+  } else {
+    return map
+  }
+}
+
+
+
 
 
