@@ -33,7 +33,7 @@ pipeline {
     stage('Clone Repository') {
       steps {
         script {
-          boutique.clone_repo(
+          clone_repo(
             branch: params.BRANCH
           )
         }
