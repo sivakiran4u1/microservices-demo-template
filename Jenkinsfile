@@ -397,7 +397,7 @@ def set_assume_role(Map params) {
                                 aws sts assume-role --role-arn arn:aws:iam::${params.account_id}:role/${params.role_name}  \\
                                 --role-session-name ${params.env}-access --query \"Credentials\"
                             """).replace('"', '').replaceAll('[\\s]', '').trim()
-  def map = tools.convert_to_map(credential_map)
+  def map = convert_to_map(credential_map)
   if (params.set_globaly) {
     env.AWS_ACCESS_KEY_ID = "${map.AccessKeyId}"
     env.AWS_SECRET_ACCESS_KEY = "${map.SecretAccessKey}"
@@ -430,6 +430,23 @@ def create_lab_id(Map params) {
     echo env.LAB_ID
     error "Failed to create lab id"
   }
+}
+
+def convert_to_map(mapAsString) {
+  def map =
+    // Take the String value between
+    // the [ and ] brackets.
+    mapAsString[1..-2]
+    // Split on , to get a List.
+      .split(',')
+    // Each list item is transformed
+    // to a Map entry with key/value.
+      .collectEntries { entry ->
+        def pair = entry.split(':')
+        [(pair.first()): "${pair.last()}"]
+      }
+
+  return map
 }
 
 
