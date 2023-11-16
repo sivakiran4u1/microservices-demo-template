@@ -53,7 +53,7 @@ pipeline {
           MapUrl.put('GO_SLCI_AGENT_URL', "${params.GO_SLCI_AGENT_URL}")
           MapUrl.put('PYTHON_AGENT_URL', "${params.PYTHON_AGENT_URL}")
 
-          boutique.build_btq(
+          build_btq(
             sl_report_branch: params.BRANCH,
             sl_token: params.SL_TOKEN,
             dev_integraion_sl_token: env.DEV_INTEGRATION_SL_TOKEN,
@@ -71,7 +71,7 @@ pipeline {
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
 
           def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
-          boutique.SpinUpBoutiqeEnvironment(
+          SpinUpBoutiqeEnvironment(
             IDENTIFIER : IDENTIFIER,
             branch: params.BRANCH,
             app_name: params.APP_NAME,
@@ -88,7 +88,7 @@ pipeline {
     stage('Run Tests') {
       steps {
         script {
-          boutique.run_tests(
+          run_tests(
             branch: params.BRANCH,
             test_type: params.TEST_TYPE
           )
@@ -99,7 +99,7 @@ pipeline {
     stage('Run Api-Tests Before Changes') {
       steps {
         script {
-          boutique.run_api_tests_before_changes(
+          run_api_tests_before_changes(
             branch: params.BRANCH,
             app_name: params.APP_NAME
           )
