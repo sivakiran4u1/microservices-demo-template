@@ -34,5 +34,3 @@ spec:
           memory: 2000Mi
           cpu: 2
           ephemeral-storage: 10000Mi
-  nodeSelector:
-    type: jenkins
