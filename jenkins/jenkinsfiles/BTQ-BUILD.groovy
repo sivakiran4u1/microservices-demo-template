@@ -15,7 +15,6 @@ pipeline{
     string(name: 'TAG', defaultValue: '1.2.2', description: 'latest tag')
     string(name: 'BRANCH', defaultValue: 'main', description: 'default branch')
     string(name: 'SL_REPORT_BRANCH', defaultValue: 'main', description: 'default branch')
-    //string(name: 'ecr_uri1', defaultValue: '534369319675.dkr.ecr.us-west-2.amazonaws.com/btq', description: 'ecr btq')
     string(name: 'SERVICE', defaultValue: '', description: 'SErvice name to build')
     string(name: 'machine_dns', defaultValue: 'http://DEV-${env.IDENTIFIER}.dev.sealights.co', description: 'machine DNS')
     string(name: 'BUILD_NAME', defaultValue: 'none', description: 'build name')
@@ -25,21 +24,21 @@ pipeline{
   }
   environment{
     ECR_FULL_NAME = "btq-${params.SERVICE}"
-    ECR_URI = "534369319675.dkr.ecr.us-west-2.amazonaws.com/${env.ECR_FULL_NAME}"
+    ECR_URI = "public.ecr.aws/a2q7i5i2/${env.ECR_FULL_NAME}"
   }
   stages{
     stage('Init') {
       steps {
         script {
           // Clone the repository with the specified branch.
-          git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo.git'
+          git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo-template.git'
           stage("Create ECR repository") {
             def repo_policy = libraryResource 'ci/ecr/repo_policy.json'
             ecr.create_repo([
               artifact_name: "${env.ECR_FULL_NAME}",
               key_type: "KMS"
             ])
-            ecr.set_repo_policy([
+            set_repo_policy([
               artifact_name: "${env.ECR_FULL_NAME}",
               repo_policy: repo_policy
             ])
@@ -74,4 +73,11 @@ pipeline{
       }
     }
   }
+}
+def set_repo_policy(Map params) {
+  sh """
+        aws ecr set-repository-policy \
+        --repository-name ${params.artifact_name} \
+        --policy-text '${params.repo_policy}'
+    """
 }
