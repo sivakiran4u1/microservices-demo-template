@@ -378,7 +378,7 @@ def run_api_tests_after_changes(Map params){
 
 def clone_repo(Map params){
   // Clone the repository with the specified branch
-  git branch: params.branch, url: 'https://github.com/Sealights/microservices-demo.git'
+  git branch: params.branch, url: 'https://github.com/Sealights/microservices-demo-template.git'
 }
 
 def set_assume_role(Map params) {
