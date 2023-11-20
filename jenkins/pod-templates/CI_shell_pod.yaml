@@ -11,7 +11,7 @@ spec:
       resources:
         requests:
           cpu: 200m
-          memory: 350Mi 
+          memory: 350Mi
           ephemeral-storage: 150Mi
         limits:
           cpu: 512m
@@ -20,7 +20,7 @@ spec:
       securityContext:
         privileged: true
     - name: shell
-      image: 534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-base-ci:latest
+      image: public.ecr.aws/a2q7i5i2/sl-jenkins-base-ci:latest
       command:
         - sleep
       args:
