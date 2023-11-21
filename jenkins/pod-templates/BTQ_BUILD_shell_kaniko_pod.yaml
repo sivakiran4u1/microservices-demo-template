@@ -36,7 +36,7 @@ spec:
         allowPrivilegeEscalation: true
         runAsUser: 1000
     - name: kaniko
-      image: gcr.io/kaniko-project/executor:latest
+      image: gcr.io/kaniko-project/executor
       command:
         - sleep
       args:
