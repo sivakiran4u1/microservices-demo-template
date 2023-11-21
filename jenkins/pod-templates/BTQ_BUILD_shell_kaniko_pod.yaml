@@ -54,17 +54,4 @@ spec:
           cpu: 1.5
           ephemeral-storage: 1000Mi
       tty: true
-      volumeMounts:
-        - name: docker-config
-          mountPath: /kaniko/.docker
-  volumes:
-    - name: docker-config
-      projected:
-        sources:
-          - secret:
-              name: docker-cfg
-              items:
-                - key: .dockerconfigjson
-                  path: config.json
-    - name: postgresql-data
       emptyDir: {}
