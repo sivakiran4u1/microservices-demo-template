@@ -12,6 +12,7 @@ pipeline{
   }
   parameters {
     string(name: 'TAG', defaultValue: '1.2.2', description: 'latest tag')
+    string(name: 'REGION', defaultValue: 'eu-west-1', description: 'latest tag')
     string(name: 'BRANCH', defaultValue: 'main', description: 'default branch')
     string(name: 'SL_REPORT_BRANCH', defaultValue: 'main', description: 'default branch')
     string(name: 'SERVICE', defaultValue: '', description: 'SErvice name to build')
@@ -92,7 +93,7 @@ def create_repo(Map params) {
 
         if [ \$? -ne 0 ]; then
         if echo \${output} | grep -q RepositoryNotFoundException; then
-            aws ecr create-repository --repository-name ${params.artifact_name} --encryption-configuration encryptionType="${params.key_type}"
+            aws ecr create-repository --region ${params.REGION} --repository-name ${params.artifact_name} --encryption-configuration encryptionType="${params.key_type}"
         else
             >&2 echo \${output}
         fi

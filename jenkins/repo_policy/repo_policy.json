@@ -2,31 +2,6 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "new statement",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::474620256508:user/shalev"
-      },
-      "Action": [
-        "ecr-public:BatchCheckLayerAvailability",
-        "ecr-public:BatchDeleteImage",
-        "ecr-public:CompleteLayerUpload",
-        "ecr-public:DeleteRepository",
-        "ecr-public:DeleteRepositoryPolicy",
-        "ecr-public:DescribeImageTags",
-        "ecr-public:DescribeImages",
-        "ecr-public:DescribeRepositories",
-        "ecr-public:GetRepositoryCatalogData",
-        "ecr-public:GetRepositoryPolicy",
-        "ecr-public:InitiateLayerUpload",
-        "ecr-public:ListImages",
-        "ecr-public:PutImage",
-        "ecr-public:PutRepositoryCatalogData",
-        "ecr-public:SetRepositoryPolicy",
-        "ecr-public:UploadLayerPart"
-      ]
-    },
-    {
       "Sid": "Push from different accounts",
       "Effect": "Allow",
       "Principal": {
