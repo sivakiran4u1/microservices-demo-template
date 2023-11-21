@@ -26,11 +26,11 @@ spec:
         requests:
           memory: 300Mi
           cpu: 0.5
-          ephemeral-storage: 1000Mi
+          ephemeral-storage: 500Mi
         limits:
           memory: 500Mi
           cpu: 1.0
-          ephemeral-storage: 2000Mi
+          ephemeral-storage: 1000Mi
       securityContext:
         privileged: true
         allowPrivilegeEscalation: true
@@ -47,8 +47,8 @@ spec:
           cpu: 0.5
           ephemeral-storage: 1000Mi
         limits:
-          memory: 700Mi
+          memory: 900Mi
           cpu: 1.5
-          ephemeral-storage: 1200Mi
+          ephemeral-storage: 1400Mi
       tty: true
       emptyDir: {}
