@@ -40,13 +40,14 @@ pipeline{
             sh "ls"
             def repo_policy = readTrusted('jenkins/repo_policy/repo_policy.json')
             create_repo([
+              region : params.REGION,
               artifact_name: "${env.ECR_FULL_NAME}",
               key_type: "KMS"
-            ])
+            ] as Map)
             set_repo_policy([
               artifact_name: "${env.ECR_FULL_NAME}",
               repo_policy: repo_policy
-            ])
+            ] as Map)
           }
           stage("Build Docker ${params.SERVICE} Image") {
             container(name: 'kaniko'){
@@ -89,11 +90,11 @@ def set_repo_policy(Map params) {
 
 def create_repo(Map params) {
   sh """#!/bin/bash
-        output=\$(aws ecr describe-repositories --repository-names ${params.artifact_name} 2>&1)
+        output=\$(aws ecr describe-repositories --region ${params.region} --repository-names ${params.artifact_name} 2>&1)
 
         if [ \$? -ne 0 ]; then
         if echo \${output} | grep -q RepositoryNotFoundException; then
-            aws ecr create-repository --region ${params.REGION} --repository-name ${params.artifact_name} --encryption-configuration encryptionType="${params.key_type}"
+            aws ecr create-repository --region ${params.region} --repository-name ${params.artifact_name} --encryption-configuration encryptionType="${params.key_type}"
         else
             >&2 echo \${output}
         fi
