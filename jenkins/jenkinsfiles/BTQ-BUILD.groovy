@@ -25,6 +25,7 @@ pipeline{
     ECR_FULL_NAME = "btq-${params.SERVICE}"
     ECR_URI = "public.ecr.aws/a2q7i5i2/${env.ECR_FULL_NAME}"
   }
+
   stages{
     stage('Init') {
       steps {
@@ -32,7 +33,7 @@ pipeline{
           // Clone the repository with the specified branch.
           git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo-template.git'
           stage("Create ECR repository") {
-            def repo_policy = libraryResource '../jenkins/repo_policy/repo_policy.json'
+            def repo_policy = libraryResource 'microservices-demo-template/jenkins/repo_policy/repo_policy.json'
             create_repo([
               artifact_name: "${env.ECR_FULL_NAME}",
               key_type: "KMS"
