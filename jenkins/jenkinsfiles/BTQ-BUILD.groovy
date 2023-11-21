@@ -34,6 +34,7 @@ pipeline{
           git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo-template.git'
 
           stage("Create ECR repository") {
+            pwd
             def repo_policy = libraryResource './microservices-demo-template/jenkins/repo_policy/repo_policy.json'
             create_repo([
               artifact_name: "${env.ECR_FULL_NAME}",
