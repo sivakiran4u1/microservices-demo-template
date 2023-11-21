@@ -1,9 +1,11 @@
-const { defineConfig } = require("cypress");
-
+const { defineConfig } = require('cypress');
+const { registerSealightsTasks } = require('sealights-cypress-plugin');
 module.exports = defineConfig({
-    e2e: {
-        experimentalInteractiveRunEvents: true, // If you want to run with 'npm cypress open' and still report coverage
-        setupNodeEvents(on, config) {
-        },
+  e2e: {
+    experimentalInteractiveRunEvents: true,
+    testIsolation: false,
+    setupNodeEvents(on, config) {
+      registerSealightsTasks(on, config);
     },
+  },
 });
