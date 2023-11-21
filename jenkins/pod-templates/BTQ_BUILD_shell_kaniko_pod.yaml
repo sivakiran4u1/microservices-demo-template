@@ -47,8 +47,8 @@ spec:
           cpu: 0.5
           ephemeral-storage: 1000Mi
         limits:
-          memory: 1200Mi
+          memory: 1300Mi
           cpu: 1.5
-          ephemeral-storage: 2200Mi
+          ephemeral-storage: 2500Mi
       tty: true
       emptyDir: {}
