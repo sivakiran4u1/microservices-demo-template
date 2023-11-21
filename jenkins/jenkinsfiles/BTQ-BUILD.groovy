@@ -45,6 +45,7 @@ pipeline{
               key_type: "KMS"
             ] as Map)
             set_repo_policy([
+              region : params.REGION,
               artifact_name: "${env.ECR_FULL_NAME}",
               repo_policy: repo_policy
             ] as Map)
@@ -83,6 +84,7 @@ pipeline{
 def set_repo_policy(Map params) {
   sh """
         aws ecr set-repository-policy \
+        --region ${params.region} \
         --repository-name ${params.artifact_name} \
         --policy-text '${params.repo_policy}'
     """
