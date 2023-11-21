@@ -1,0 +1,25 @@
+{
+    "Version": "2008-10-17",
+    "Statement": [
+        {
+            "Sid": "allow accounts pull",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    "arn:aws:iam::534369319675:root",
+                    "arn:aws:iam::159616352881:root",
+                    "arn:aws:iam::036802151476:root"
+                ]
+            },
+            "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:BatchGetImage",
+                "ecr:CompleteLayerUpload",
+                "ecr:DescribeImages",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:InitiateLayerUpload",
+                "ecr:ListImages"
+            ]
+        }
+    ]
+}

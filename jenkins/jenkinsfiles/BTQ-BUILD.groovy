@@ -32,8 +32,8 @@ pipeline{
           // Clone the repository with the specified branch.
           git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo-template.git'
           stage("Create ECR repository") {
-            def repo_policy = libraryResource 'ci/ecr/repo_policy.json'
-            ecr.create_repo([
+            def repo_policy = libraryResource '../repo_policy/repo_policy.json'
+            create_repo([
               artifact_name: "${env.ECR_FULL_NAME}",
               key_type: "KMS"
             ])
@@ -78,5 +78,19 @@ def set_repo_policy(Map params) {
         aws ecr set-repository-policy \
         --repository-name ${params.artifact_name} \
         --policy-text '${params.repo_policy}'
+    """
+}
+
+def create_repo(Map params) {
+  sh """#!/bin/bash
+        output=\$(aws ecr describe-repositories --repository-names ${params.artifact_name} 2>&1)
+
+        if [ \$? -ne 0 ]; then
+        if echo \${output} | grep -q RepositoryNotFoundException; then
+            aws ecr create-repository --repository-name ${params.artifact_name} --encryption-configuration encryptionType="${params.key_type}"
+        else
+            >&2 echo \${output}
+        fi
+        fi
     """
 }

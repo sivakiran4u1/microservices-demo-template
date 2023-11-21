@@ -23,7 +23,7 @@ pipeline {
     stage("Init test"){
       steps{
         script{
-          git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo.git'
+          git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo-template.git'
         }
       }
     }
@@ -33,16 +33,11 @@ pipeline {
       steps{
         script{
           sh """
-
                     pip install sealights-python-agent
                     pip install pytest
                     pip install requests
                     export machine_dns="${params.MACHINE_DNS1}"
-
                     sl-python pytest --teststage "Pytest tests"  --labid ${params.SL_LABID} --token ${params.SL_TOKEN} integration-tests/python-tests/python-tests.py
-
-
-
                     """
         }
       }
