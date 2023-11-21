@@ -35,6 +35,7 @@ pipeline{
 
           stage("Create ECR repository") {
             pwd
+            ls
             def repo_policy = libraryResource './microservices-demo-template/jenkins/repo_policy/repo_policy.json'
             create_repo([
               artifact_name: "${env.ECR_FULL_NAME}",
