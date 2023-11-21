@@ -36,7 +36,7 @@ spec:
         allowPrivilegeEscalation: true
         runAsUser: 1000
     - name: kaniko
-      image: gcr.io/kaniko-project/executor
+      image: gcr.io/kaniko-project/executor:debug
       command:
         - sleep
       args:
@@ -49,6 +49,6 @@ spec:
         limits:
           memory: 900Mi
           cpu: 1.5
-          ephemeral-storage: 1700Mi
+          ephemeral-storage: 2000Mi
       tty: true
       emptyDir: {}
