@@ -34,6 +34,7 @@ pipeline{
           git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo-template.git'
 
           stage("Create ECR repository") {
+
             sh "pwd"
             sh "ls"
             def repo_policy = readTrusted('jenkins/repo_policy/repo_policy.json')
