@@ -27,17 +27,13 @@ spec:
         - infinity
       resources:
         requests:
-          memory: 2000Mi
-          cpu: 1.5
-          ephemeral-storage: 2000Mi
+          memory: 300Mi
+          cpu: 0.5
+          ephemeral-storage: 1000Mi
         limits:
-          memory: 3000Mi
-          cpu: 2.5
-          ephemeral-storage: 4000Mi
-      volumeMounts:
-        - name: postgresql-data
-          mountPath: /tmp/postgresql/data
-          readOnly: false
+          memory: 500Mi
+          cpu: 1.0
+          ephemeral-storage: 2000Mi
       securityContext:
         privileged: true
         allowPrivilegeEscalation: true
@@ -50,45 +46,17 @@ spec:
         - infinity
       resources:
         requests:
-          memory: 3500Mi
-          cpu: 1.5
-          ephemeral-storage: 5000Mi
+          memory: 400Mi
+          cpu: 0.5
+          ephemeral-storage: 1000Mi
         limits:
-          memory: 4500Mi
-          cpu: 2.5
-          ephemeral-storage: 10000Mi
+          memory: 700Mi
+          cpu: 1.5
+          ephemeral-storage: 1000Mi
       tty: true
       volumeMounts:
         - name: docker-config
           mountPath: /kaniko/.docker
-    - name: postgresql
-      image: public.ecr.aws/y8b5b7g6/postgres:13.2
-      env:
-        - name: POSTGRES_USER
-          value: "postgres"
-        - name: POSTGRES_PASSWORD
-          value: "postgres"
-        - name: POSTGRES_DB
-          value: "postgres"
-        - name: POSTGRES_INITDB_ARGS
-          value: '--auth-host=md5 --auth-local=md5'
-        - name: POSTGRES_HOST_AUTH_METHOD
-          value: 'md5'
-      ports:
-        - containerPort: 5432
-      resources:
-        requests:
-          memory: "250Mi"
-          cpu: "50m"
-          ephemeral-storage: "100Mi"
-        limits:
-          memory: "1000Mi"
-          cpu: "100m"
-          ephemeral-storage: "200Mi"
-      volumeMounts:
-        - name: postgresql-data
-          mountPath: /var/lib/postgresql/data
-          readOnly: false
   volumes:
     - name: docker-config
       projected:
