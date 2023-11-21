@@ -24,7 +24,7 @@ pipeline{
   }
   environment{
     ECR_FULL_NAME = "btq-${params.SERVICE}"
-    ECR_URI = "public.ecr.aws/a2q7i5i2/${env.ECR_FULL_NAME}"
+    ECR_URI = "474620256508.dkr.ecr.eu-west-1.amazonaws.com/${env.ECR_FULL_NAME}"
   }
 
   stages{

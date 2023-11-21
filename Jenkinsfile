@@ -5,6 +5,7 @@ pipeline {
 
   parameters {
     string(name: 'APP_NAME', defaultValue: 'BTQ', description: 'name of the app (integration build)')
+    string(name: 'COMPANY_NAME', defaultValue: '', description: 'name of the app (integration build)')
     string(name: 'BRANCH', defaultValue: 'public', description: 'Branch to clone')
     string(name: 'CHANGED_BRANCH', defaultValue: 'public', description: 'Branch to compare')
     string(name: 'BUILD_BRANCH', defaultValue: 'public', description: 'Branch to Build images that have the creational LAB_ID (send to public branch to build)')
