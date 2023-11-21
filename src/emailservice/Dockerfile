@@ -24,6 +24,7 @@ ENV ENABLE_PROFILER=1
 COPY --from=builder /usr/local/lib/python3.10/ /usr/local/lib/python3.10/
 WORKDIR /email_server
 COPY . .
+RUN echo ${SEALIGHTS_TOKEN}
 RUN sl-python config --appname emailservice --branchname ${BRANCH} --buildname ${BUILD_NAME} --workspacepath ./ --token ${SEALIGHTS_TOKEN} --exclude "*grpc*"
 RUN sl-python scan --scm none --token ${SEALIGHTS_TOKEN}
 
