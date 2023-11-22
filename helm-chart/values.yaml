@@ -11,7 +11,7 @@ SealightsEnvVars:
   sl_branch: ""
 
 images:
-  repository: 534369319675.dkr.ecr.us-west-2.amazonaws.com
+  repository: 474620256508.dkr.ecr.eu-west-1.amazonaws.com
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
