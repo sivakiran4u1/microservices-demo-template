@@ -43,6 +43,17 @@ pipeline {
           MapUrl.put('GO_AGENT_URL', "${params.GO_AGENT_URL}")
           MapUrl.put('GO_SLCI_AGENT_URL', "${params.GO_SLCI_AGENT_URL}")
           MapUrl.put('PYTHON_AGENT_URL', "${params.PYTHON_AGENT_URL}")
+          def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
+
+          env.LAB_ID = create_lab_id(
+            token: "${env.TOKEN}",
+            machine: "https://dev-integration.dev.sealights.co",
+            app: "${params.APP_NAME}",
+            branch: "${params.BUILD_BRANCH}",
+            test_env: "${IDENTIFIER}",
+            lab_alias: "${IDENTIFIER}",
+            cdOnly: true,
+          )
 
           build_btq(
             sl_report_branch: params.BRANCH,
