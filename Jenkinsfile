@@ -56,25 +56,24 @@ pipeline {
       }
     }
 
-    stage('Spin-Up BTQ') {
+    stage('update-btq') {
       steps {
         script {
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
 
           def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
-          SpinUpBoutiqeEnvironment(
-            IDENTIFIER : IDENTIFIER,
-            branch: params.BRANCH,
-            app_name: params.APP_NAME,
-            build_branch: params.BUILD_BRANCH,
-            java_agent_url: params.JAVA_AGENT_URL,
-            dotnet_agent_url: params.DOTNET_AGENT_URL,
-            sl_branch : params.BRANCH,
-            git_branch : params.BUILD_BRANCH
-          )
+          build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "34.241.207.17"),
+                                                string(name:'tag' , value:"${env.CURRENT_VERSION}"),
+                                                string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
+                                                string(name:'labid' , value:"${env.LAB_ID}"),
+                                                string(name:'branch' , value:"${params.BRANCH}"),
+                                                string(name:'token' , value:"${env.TOKEN}"),
+                                                string(name:'sl_branch' , value:"${params.BRANCH}")])
         }
       }
     }
+
+
 
     stage('Run Tests') {
       steps {
@@ -87,16 +86,6 @@ pipeline {
       }
     }
 
-    stage('Run Api-Tests Before Changes') {
-      steps {
-        script {
-          run_api_tests_before_changes(
-            branch: params.BRANCH,
-            app_name: params.APP_NAME
-          )
-        }
-      }
-    }
 
 
     stage('Changed - Clone Repository') {
@@ -112,13 +101,6 @@ pipeline {
     stage('Changed Build BTQ') {
       steps {
         script {
-          def MapUrl = new HashMap()
-          MapUrl.put('JAVA_AGENT_URL', "${params.JAVA_AGENT_URL}")
-          MapUrl.put('DOTNET_AGENT_URL', "${params.DOTNET_AGENT_URL}")
-          MapUrl.put('NODE_AGENT_URL', "${params.NODE_AGENT_URL}")
-          MapUrl.put('GO_AGENT_URL', "${params.GO_AGENT_URL}")
-          MapUrl.put('GO_SLCI_AGENT_URL', "${params.GO_SLCI_AGENT_URL}")
-          MapUrl.put('PYTHON_AGENT_URL', "${params.PYTHON_AGENT_URL}")
 
           build_btq(
             sl_token: params.SL_TOKEN,
@@ -134,21 +116,19 @@ pipeline {
 
 
 
-    stage('Changed Spin-Up BTQ') {
+    stage('update-btq') {
       steps {
         script {
-          def IDENTIFIER= "${params.CHANGED_BRANCH}-${env.CURRENT_VERSION}"
+          env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
 
-          SpinUpBoutiqeEnvironment(
-            IDENTIFIER : IDENTIFIER,
-            branch: params.CHANGED_BRANCH,
-            git_branch : params.CHANGED_BRANCH,
-            app_name: params.APP_NAME,
-            build_branch: params.BRANCH,
-            java_agent_url: params.JAVA_AGENT_URL,
-            dotnet_agent_url: params.DOTNET_AGENT_URL,
-            sl_branch : params.CHANGED_BRANCH
-          )
+          def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
+          build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "34.241.207.17"),
+                                                string(name:'tag' , value:"${env.CURRENT_VERSION}"),
+                                                string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
+                                                string(name:'labid' , value:"${env.LAB_ID}"),
+                                                string(name:'branch' , value:"${params.CHANGED_BRANCH}"),
+                                                string(name:'token' , value:"${env.TOKEN}"),
+                                                string(name:'sl_branch' , value:"${params.CHANGED_BRANCH}")])
         }
       }
     }
@@ -159,18 +139,6 @@ pipeline {
           run_tests(
             branch: params.BRANCH,
             test_type: params.TEST_TYPE
-          )
-        }
-      }
-    }
-
-
-    stage('Run API-Tests After Changes') {
-      steps {
-        script {
-          run_api_tests_after_changes(
-            branch: params.BRANCH,
-            app_name: params.APP_NAME
           )
         }
       }
