@@ -116,7 +116,7 @@ pipeline {
 
 
 
-    stage('update-btq') {
+    stage('update-btq changed') {
       steps {
         script {
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
