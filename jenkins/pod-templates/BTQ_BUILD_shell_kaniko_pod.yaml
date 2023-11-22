@@ -43,11 +43,11 @@ spec:
         - infinity
       resources:
         requests:
-          memory: 400Mi
+          memory: 500Mi
           cpu: 0.5
           ephemeral-storage: 1000Mi
         limits:
-          memory: 1300Mi
+          memory: 1400Mi
           cpu: 1.5
           ephemeral-storage: 2500Mi
       tty: true
