@@ -261,15 +261,6 @@ def getParamForService(service, mapurl) {
 
 def SpinUpBoutiqeEnvironment(Map params){
   env.MACHINE_DNS = "http://dev-${params.IDENTIFIER}.dev.sealights.co:8081"
-  env.LAB_ID_SPIN = create_lab_id(
-    token: "${env.TOKEN}",
-    machine: "https://dev-integration.dev.sealights.co",
-    app: "${params.app_name}",
-    branch: "${params.build_branch}",
-    test_env: "${params.IDENTIFIER}",
-    lab_alias: "${params.IDENTIFIER}",
-    cdOnly: true,
-  )
 
   build(job: 'SpinUpBoutiqeEnvironment', parameters: [string(name: 'ENV_TYPE', value: "DEV"),
                                                       string(name:'IDENTIFIER' , value:"${params.IDENTIFIER}")
