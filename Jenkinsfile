@@ -71,7 +71,6 @@ pipeline {
 
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
 
-          def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
           build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "34.241.207.17"),
                                                 string(name:'tag' , value:"${env.CURRENT_VERSION}"),
                                                 string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
