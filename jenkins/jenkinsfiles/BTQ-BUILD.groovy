@@ -15,7 +15,7 @@ pipeline{
     string(name: 'REGION', defaultValue: 'eu-west-1', description: 'latest tag')
     string(name: 'BRANCH', defaultValue: 'main', description: 'default branch')
     string(name: 'SL_REPORT_BRANCH', defaultValue: 'main', description: 'default branch')
-    string(name: 'SERVICE', defaultValue: '', description: 'SErvice name to build')
+    string(name: 'SERVICE', defaultValue: '', description: 'Service name to build')
     string(name: 'machine_dns', defaultValue: 'http://DEV-${env.IDENTIFIER}.dev.sealights.co', description: 'machine DNS')
     string(name: 'BUILD_NAME', defaultValue: 'none', description: 'build name')
     string(name: 'SL_TOKEN', defaultValue: '', description: 'build token')

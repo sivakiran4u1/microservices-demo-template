@@ -51,4 +51,7 @@ spec:
           cpu: 1.5
           ephemeral-storage: 2500Mi
       tty: true
+      volumeMounts:
+        - name: kaniko-secret
+          mountPath: /kaniko/.docker
       emptyDir: {}
