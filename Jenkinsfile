@@ -58,8 +58,6 @@ pipeline {
       steps {
         script {
           def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
-          sh "curl -L -o /usr/bin/jq.exe https://github.com/stedolan/jq/releases/latest/download/jq-win64.exe"
-
           env.LAB_ID = create_lab_id(
             token: "${env.TOKEN}",
             machine: "https://dev-integration.dev.sealights.co",

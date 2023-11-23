@@ -35,8 +35,6 @@ pipeline{
 
           stage("Create ECR repository") {
 
-            sh "pwd"
-            sh "ls"
             def repo_policy = readTrusted('jenkins/repo_policy/repo_policy.json')
             create_repo([
               region : params.REGION,
