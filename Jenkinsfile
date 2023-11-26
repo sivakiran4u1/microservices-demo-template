@@ -67,7 +67,7 @@ pipeline {
           //  lab_alias: "${IDENTIFIER}",
           //  cdOnly: true,
           //)
-          env.LAB_ID = integ_public_97ba_publicBTQ
+          env.LAB_ID = "integ_public_97ba_publicBTQ"
 
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
 
