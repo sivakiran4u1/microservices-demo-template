@@ -4,7 +4,6 @@ metadata:
   annotations:
     "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
 spec:
-  serviceAccount: jenkins-service-account
   containers:
     - name: jnlp
       image: jenkins/inbound-agent:4.11.2-4
