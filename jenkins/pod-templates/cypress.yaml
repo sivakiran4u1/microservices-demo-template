@@ -21,7 +21,7 @@ spec:
       securityContext:
         privileged: true
     - name: shell
-      image: 534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-python:latest
+      image: cypress/included
       command:
         - sleep
       args:
@@ -35,5 +35,3 @@ spec:
           memory: 1000Mi
           cpu: 1.5
           ephemeral-storage: 2000Mi
-  nodeSelector:
-    type: nightly

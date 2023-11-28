@@ -1,7 +1,7 @@
 pipeline {
   agent {
     kubernetes {
-      yaml readTrusted('jenkins/pod-templates/BTQ_BUILD_shell_kaniko_pod.yaml')
+      yaml readTrusted('jenkins/pod-templates/cypress.yaml')
       defaultContainer "shell"
     }
   }
