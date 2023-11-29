@@ -57,16 +57,16 @@ pipeline {
       steps {
         script {
           def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
-          //env.LAB_ID = create_lab_id(
-          //  token: "${env.TOKEN}",
-          //  machine: "https://dev-integration.dev.sealights.co",
-          //  app: "${params.APP_NAME}",
-          //  branch: "${params.BUILD_BRANCH}",
-          //  test_env: "${IDENTIFIER}",
-          //  lab_alias: "${IDENTIFIER}",
-          //  cdOnly: true,
-          //)
-          env.LAB_ID = "integ_public_97ba_publicBTQ"
+          env.LAB_ID = create_lab_id(
+          token: "${env.TOKEN}",
+          machine: "https://dev-integration.dev.sealights.co",
+          app: "${params.APP_NAME}",
+          branch: "${params.BUILD_BRANCH}",
+          test_env: "${IDENTIFIER}",
+          lab_alias: "${IDENTIFIER}",
+          cdOnly: true,
+          )
+          //env.LAB_ID = "integ_public_97ba_publicBTQ"
 
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
 
@@ -111,12 +111,17 @@ pipeline {
     stage('Changed Build BTQ') {
       steps {
         script {
-
+          def MapUrl = new HashMap()
+          MapUrl.put('JAVA_AGENT_URL', "${params.JAVA_AGENT_URL}")
+          MapUrl.put('DOTNET_AGENT_URL', "${params.DOTNET_AGENT_URL}")
+          MapUrl.put('NODE_AGENT_URL', "${params.NODE_AGENT_URL}")
+          MapUrl.put('GO_AGENT_URL', "${params.GO_AGENT_URL}")
+          MapUrl.put('GO_SLCI_AGENT_URL', "${params.GO_SLCI_AGENT_URL}")
+          MapUrl.put('PYTHON_AGENT_URL', "${params.PYTHON_AGENT_URL}")
           build_btq(
+            sl_report_branch: params.BRANCH,
             sl_token: params.SL_TOKEN,
-            sl_report_branch: params.CHANGED_BRANCH,
-            dev_integraion_sl_token: env.DEV_INTEGRATION_SL_TOKEN,
-            build_name: "1-0-${BUILD_NUMBER}-v2",
+            build_name: "1-0-${BUILD_NUMBER}-changed",
             branch: params.BRANCH,
             mapurl: MapUrl
           )
@@ -148,6 +153,9 @@ pipeline {
         script {
           run_tests(
             branch: params.BRANCH,
+            lab_id: env.LAB_ID,
+            token: params.SL_TOKEN,
+            machine_dns: "34.245.65.231:8081"
           )
         }
       }
