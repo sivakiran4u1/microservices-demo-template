@@ -57,16 +57,16 @@ pipeline {
       steps {
         script {
           def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
-          env.LAB_ID = create_lab_id(
-          token: "${env.TOKEN}",
-          machine: "https://dev-integration.dev.sealights.co",
-          app: "${params.APP_NAME}",
-          branch: "${params.BUILD_BRANCH}",
-          test_env: "${IDENTIFIER}",
-          lab_alias: "${IDENTIFIER}",
-          cdOnly: true,
-          )
-          //env.LAB_ID = "integ_public_97ba_publicBTQ"
+          // env.LAB_ID = create_lab_id(
+          // token: "${env.TOKEN}",
+          // machine: "https://dev-integration.dev.sealights.co",
+          // app: "${params.APP_NAME}",
+          // branch: "${params.BUILD_BRANCH}",
+          // test_env: "${IDENTIFIER}",
+          // lab_alias: "${IDENTIFIER}",
+          // cdOnly: true,
+          // )
+          env.LAB_ID = "integ_public_97ba_publicBTQ"
 
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
 
