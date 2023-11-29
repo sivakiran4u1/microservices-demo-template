@@ -41,6 +41,7 @@ pipeline {
       steps{
         script{
           sh """
+                sleep 15 #wait at least 10 seconds for the backend to update status that the previous test stage was closed, closing and starting a test stage withing 10 seconds can cause inaccurate test stage coverage
                 echo 'MS-Tests framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}"
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll testListener --workingDir .  --target dotnet   --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/MS-Tests/"
@@ -54,6 +55,7 @@ pipeline {
       steps{
         script{
           sh """
+                sleep 15
                 echo 'N-Unit framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}"
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll testListener --workingDir .  --target dotnet   --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/NUnit-Tests/"
@@ -68,16 +70,17 @@ pipeline {
         script{
           sh """
                     #!/bin/bash
+                    sleep 15
                     export machine_dns="${params.MACHINE_DNS}"
                     cd ./integration-tests/java-tests-gradle
-                    echo $SL_TOKEN>sltoken.txt
+                    echo ${params.SL_TOKEN}>sltoken.txt
                     echo '{
                         "executionType": "testsonly",
                         "tokenFile": "./sltoken.txt",
                         "createBuildSessionId": false,
                         "testStage": "Junit without testNG-gradle",
                         "runFunctionalTests": true,
-                        "labId": "${SL_LABID}",
+                        "labId": "${params.SL_LABID}",
                         "proxy": null,
                         "logEnabled": false,
                         "logDestination": "console",
@@ -89,8 +92,6 @@ pipeline {
                     echo "Adding Sealights to Tests Project gradle file..."
                     java -jar /sealights/sl-build-scanner.jar -gradle -configfile slgradletests.json -workspacepath .
                     gradle test
-
-
                     """
         }
       }
@@ -99,7 +100,7 @@ pipeline {
       steps{
         script{
           sh """
-                    echo "the env var is $machine_dns"
+                    sleep 15
                     export machine_dns="${params.MACHINE_DNS}"
                     echo 'robot framework starting ..... '
                     cd ./integration-tests/robot-tests
@@ -118,6 +119,7 @@ pipeline {
         script{
           sh """
                     #!/bin/bash
+                    sleep 15
                     export machine_dns="${params.MACHINE_DNS}"
                     echo 'Cucumber framework starting ..... '
                     cd ./integration-tests/cucumber-framework/
@@ -154,6 +156,7 @@ pipeline {
         script{
           sh """
                     #!/bin/bash
+                    sleep 15
                     echo 'Junit support testNG framework starting ..... '
                     pwd
                     ls
@@ -189,6 +192,7 @@ pipeline {
         script{
           sh """
                     #!/bin/bash
+                    sleep 15
                     echo 'Junit without testNG framework starting ..... '
                     pwd
                     ls
@@ -224,6 +228,7 @@ pipeline {
       steps{
         script{
           sh """
+                    sleep 15
                     echo 'Postman framework starting ..... '
                     export MACHINE_DNS="${params.MACHINE_DNS}"
                     cd ./integration-tests/postman-tests/
@@ -247,6 +252,7 @@ pipeline {
         script{
 
           sh """
+                sleep 15
                 echo 'Jest framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}"
                 cd ./integration-tests/nodejs-tests/Jest
@@ -269,6 +275,7 @@ pipeline {
       steps{
         script{
           sh """
+                    sleep 15
                     echo 'Mocha framework starting ..... '
                     export machine_dns="${params.MACHINE_DNS}"
                     cd ./integration-tests/nodejs-tests/mocha
@@ -288,6 +295,7 @@ pipeline {
       steps{
         script{
           sh """
+            sleep 15
             echo 'Soap-UI framework starting ..... '
             wget https://dl.eviware.com/soapuios/5.7.1/SoapUI-5.7.1-mac-bin.zip
             unzip SoapUI-5.7.1-mac-bin.zip
@@ -331,6 +339,7 @@ pipeline {
       steps{
         script{
           sh"""
+                sleep 15
                 echo 'Pytest tests starting ..... '
                 export machine_dns="${params.MACHINE_DNS}"
                 cd ./integration-tests/python-tests
