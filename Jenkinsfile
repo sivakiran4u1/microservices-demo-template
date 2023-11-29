@@ -238,12 +238,12 @@ def getParamForService(service, mapurl) {
 
 
 def run_tests(Map params){
-      sleep time: 150, unit: 'SECONDS'
+      sleep time: 60, unit: 'SECONDS'
       build(job: "All-In-One", parameters: [
         string(name: 'BRANCH', value: "${params.branch}"),
         string(name: 'SL_LABID', value: "${params.lab_id}"),
         string(name: 'SL_TOKEN', value: "${params.token}"),
-        string(name: 'MACHINE_DNS', value: "${params.machine_dns}")
+        string(name: 'MACHINE_DNS', value: "http://${params.machine_dns}")
       ])
 
 }

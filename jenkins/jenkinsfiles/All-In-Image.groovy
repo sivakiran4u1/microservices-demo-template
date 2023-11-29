@@ -14,7 +14,7 @@ pipeline {
     string(name: 'BRANCH', defaultValue: 'public', description: 'Branch to clone (ahmad-branch)')
     string(name: 'SL_TOKEN', defaultValue: '', description: 'SL_TOKEN')
     string(name: 'SL_LABID', defaultValue: '', description: 'Lab_id')
-    string(name: 'MACHINE_DNS', defaultValue: 'http://34.241.207.17:8081', description: 'machine dns')
+    string(name: 'MACHINE_DNS', defaultValue: '', description: 'machine dns')
 
   }
   environment {
