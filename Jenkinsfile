@@ -17,7 +17,6 @@ pipeline {
     string(name: 'GO_AGENT_URL', defaultValue: 'https://agents.sealights.co/slgoagent/latest/slgoagent-linux-amd64.tar.gz', description: 'use different go agent')
     string(name: 'GO_SLCI_AGENT_URL', defaultValue: 'https://agents.sealights.co/slcli/latest/slcli-linux-amd64.tar.gz', description: 'use different slci go agent')
     string(name: 'PYTHON_AGENT_URL', defaultValue: 'sealights-python-agent', description: 'use different python agent')
-    choice(name: 'TEST_TYPE', choices: ['All Tests IN One Image', 'Tests sequential', 'Tests parallel'], description: 'Choose test type')
   }
 
   stages {
@@ -89,7 +88,9 @@ pipeline {
         script {
           run_tests(
             branch: params.BRANCH,
-            test_type: params.TEST_TYPE
+            lab_id: env.LAB_ID,
+            token: params.SL_TOKEN,
+            machine_dns: "34.245.65.231:8081"
           )
         }
       }
@@ -147,7 +148,6 @@ pipeline {
         script {
           run_tests(
             branch: params.BRANCH,
-            test_type: params.TEST_TYPE
           )
         }
       }
@@ -238,61 +238,13 @@ def getParamForService(service, mapurl) {
 
 
 def run_tests(Map params){
-  if (params.test_type == 'Tests parallel') {
-    sleep time: 150, unit: 'SECONDS'
-    def parallelLabs = [:]
-    //List of all the jobs
-    def jobs_list = ["BTQ-java-tests(Junit without testNG)", "BTQ-java-tests(Junit without testNG)-gradle",
-                     "BTQ-python-tests(Pytest framework)", "BTQ-nodejs-tests(Mocha framework)", "BTQ-dotnet-tests(MS-test framework)",
-                     "BTQ-nodejs-tests(Jest framework)", "BTQ-python-tests(Robot framework)", "BTQ-dotnet-tests(NUnit-test framework)",
-                     "BTQ-java-tests(Junit support-testNG)", "BTQ-postman-tests", "BTQ-java-tests(Cucumber-framework-java)", "BTQ-java-tests-SoapUi-framework",
-                     "BTQ-nodejs-tests-Cypress-framework"]
-
-    jobs_list.each { job ->
-      parallelLabs["${job}"] = {
-        build(job: "${job}", parameters: [string(name: 'BRANCH', value: "${params.branch}"), string(name: 'SL_LABID', value: "${env.LAB_ID_SPIN}"), string(name: 'SL_TOKEN', value: "${env.TOKEN}"), string(name: 'MACHINE_DNS1', value: "${env.MACHINE_DNS}")])
-      }
-    }
-    parallel parallelLabs
-  } else {
-    if (params.test_type == 'Tests sequential') {
-      sleep time: 150, unit: 'SECONDS'
-      def jobs_list = [
-        "BTQ-java-tests(Junit without testNG)",
-        "BTQ-python-tests(Pytest framework)",
-        "BTQ-nodejs-tests(Mocha framework)",
-        "BTQ-dotnet-tests(MS-test framework)",
-        "BTQ-nodejs-tests(Jest framework)",
-        "BTQ-python-tests(Robot framework)",
-        "BTQ-dotnet-tests(NUnit-test framework)",
-        "BTQ-java-tests(Junit support-testNG)",
-        "BTQ-nodejs-tests-Cypress-framework",
-        "BTQ-java-tests-SoapUi-framework",
-        "BTQ-java-tests(Cucumber-framework-java)",
-        "BTQ-java-tests(Junit without testNG)-gradle",
-        "BTQ-postman-tests"
-      ]
-
-      jobs_list.each { job ->
-        build(job: "${job}", parameters: [
-          string(name: 'BRANCH', value: "${params.branch}"),
-          string(name: 'SL_LABID', value: "${env.LAB_ID_SPIN}"),
-          string(name: 'SL_TOKEN', value: "${env.TOKEN}"),
-          string(name: 'MACHINE_DNS1', value: "${env.MACHINE_DNS}")
-        ])
-        sleep time: 60, unit: 'SECONDS'
-      }
-    } else {
       sleep time: 150, unit: 'SECONDS'
       build(job: "All-In-One", parameters: [
         string(name: 'BRANCH', value: "${params.branch}"),
-        string(name: 'SL_LABID', value: "${env.LAB_ID_SPIN}"),
-        string(name: 'SL_TOKEN', value: "${env.TOKEN}"),
-        string(name: 'MACHINE_DNS', value: "${env.MACHINE_DNS}")
+        string(name: 'SL_LABID', value: "${params.lab_id}"),
+        string(name: 'SL_TOKEN', value: "${params.token}"),
+        string(name: 'MACHINE_DNS', value: "${params.machine_dns}")
       ])
-    }
-  }
-
 
 }
 
