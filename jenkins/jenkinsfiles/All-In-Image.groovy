@@ -11,7 +11,7 @@ pipeline {
   }
 
   parameters {
-    string(name: 'BRANCH', defaultValue: 'public', description: 'Branch to clone (ahmad-branch)')
+    string(name: 'BRANCH', defaultValue: 'public', description: 'Branch to clone')
     string(name: 'SL_TOKEN', defaultValue: '', description: 'SL_TOKEN')
     string(name: 'SL_LABID', defaultValue: '', description: 'Lab_id')
     string(name: 'MACHINE_DNS', defaultValue: '', description: 'machine dns')
@@ -20,6 +20,7 @@ pipeline {
   environment {
     MACHINE_DNS = "${params.MACHINE_DNS}"
     machine_dns = "${params.MACHINE_DNS}"
+    wait_time = "20"
   }
   stages{
     stage("Init test"){
@@ -41,7 +42,7 @@ pipeline {
       steps{
         script{
           sh """
-                sleep 15 #wait at least 10 seconds for the backend to update status that the previous test stage was closed, closing and starting a test stage withing 10 seconds can cause inaccurate test stage coverage
+                sleep ${env.wait_time} #wait at least 10 seconds for the backend to update status that the previous test stage was closed, closing and starting a test stage withing 10 seconds can cause inaccurate test stage coverage
                 echo 'MS-Tests framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}"
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll testListener --workingDir .  --target dotnet   --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/MS-Tests/"
@@ -55,7 +56,7 @@ pipeline {
       steps{
         script{
           sh """
-                sleep 15
+                sleep ${env.wait_time}
                 echo 'N-Unit framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}"
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll testListener --workingDir .  --target dotnet   --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/NUnit-Tests/"
@@ -70,7 +71,7 @@ pipeline {
         script{
           sh """
                     #!/bin/bash
-                    sleep 15
+                    sleep ${env.wait_time}
                     export machine_dns="${params.MACHINE_DNS}"
                     cd ./integration-tests/java-tests-gradle
                     echo ${params.SL_TOKEN}>sltoken.txt
@@ -100,7 +101,7 @@ pipeline {
       steps{
         script{
           sh """
-                    sleep 15
+                    sleep ${env.wait_time}
                     export machine_dns="${params.MACHINE_DNS}"
                     echo 'robot framework starting ..... '
                     cd ./integration-tests/robot-tests
@@ -119,7 +120,7 @@ pipeline {
         script{
           sh """
                     #!/bin/bash
-                    sleep 15
+                    sleep ${env.wait_time}
                     export machine_dns="${params.MACHINE_DNS}"
                     echo 'Cucumber framework starting ..... '
                     cd ./integration-tests/cucumber-framework/
@@ -156,7 +157,7 @@ pipeline {
         script{
           sh """
                     #!/bin/bash
-                    sleep 15
+                    sleep ${env.wait_time}
                     echo 'Junit support testNG framework starting ..... '
                     pwd
                     ls
@@ -192,7 +193,7 @@ pipeline {
         script{
           sh """
                     #!/bin/bash
-                    sleep 15
+                    sleep ${env.wait_time}
                     echo 'Junit without testNG framework starting ..... '
                     pwd
                     ls
@@ -228,7 +229,7 @@ pipeline {
       steps{
         script{
           sh """
-                    sleep 15
+                    sleep ${env.wait_time}
                     echo 'Postman framework starting ..... '
                     export MACHINE_DNS="${params.MACHINE_DNS}"
                     cd ./integration-tests/postman-tests/
@@ -252,7 +253,7 @@ pipeline {
         script{
 
           sh """
-                sleep 15
+                sleep ${env.wait_time}
                 echo 'Jest framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}"
                 cd ./integration-tests/nodejs-tests/Jest
@@ -275,7 +276,7 @@ pipeline {
       steps{
         script{
           sh """
-                    sleep 15
+                    sleep ${env.wait_time}
                     echo 'Mocha framework starting ..... '
                     export machine_dns="${params.MACHINE_DNS}"
                     cd ./integration-tests/nodejs-tests/mocha
@@ -295,7 +296,7 @@ pipeline {
       steps{
         script{
           sh """
-            sleep 15
+            sleep ${env.wait_time}
             echo 'Soap-UI framework starting ..... '
             wget https://dl.eviware.com/soapuios/5.7.1/SoapUI-5.7.1-mac-bin.zip
             unzip SoapUI-5.7.1-mac-bin.zip
@@ -339,7 +340,7 @@ pipeline {
       steps{
         script{
           sh"""
-                sleep 15
+                sleep ${env.wait_time}
                 echo 'Pytest tests starting ..... '
                 export machine_dns="${params.MACHINE_DNS}"
                 cd ./integration-tests/python-tests

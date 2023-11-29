@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const BASE_URL = process.env.machine_dns || 'http://10.2.10.163:8081';
+const BASE_URL = process.env.machine_dns;
 
 describe('Api Tests', () => {
   let session;
