@@ -45,7 +45,9 @@ pipeline {
                 sleep ${env.wait_time} #wait at least 10 seconds for the backend to update status that the previous test stage was closed, closing and starting a test stage withing 10 seconds can cause inaccurate test stage coverage
                 echo 'MS-Tests framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}"
+                dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll startExecution --testStage "MS-Tests" --labId ${params.SL_LABID}
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir .  --target dotnet   --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/MS-Tests/"
+                dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "MS-Tests" --labId ${params.SL_LABID}
                 """
         }
       }
@@ -59,7 +61,9 @@ pipeline {
                 sleep ${env.wait_time}
                 echo 'N-Unit framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}"
+                dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll startExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID}
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir .  --target dotnet   --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/NUnit-Tests/"
+                dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID}
                 """
         }
       }
