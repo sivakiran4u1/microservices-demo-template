@@ -1,6 +1,11 @@
 
 pipeline {
-  agent any
+  agent {
+    kubernetes {
+      yaml readTrusted('jenkins/pod-templates/CI_shell_pod.yaml')
+      defaultContainer "shell"
+    }
+  }
 
 
   parameters {
