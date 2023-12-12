@@ -219,7 +219,7 @@ def getParamForService(service, mapurl) {
 
 def run_tests(Map params){
       sleep time: 120, unit: 'SECONDS'
-      build(job: "All-In-One", parameters: [
+      build(job: "test_runner", parameters: [
         string(name: 'BRANCH', value: "${params.branch}"),
         string(name: 'SL_LABID', value: "${params.lab_id}"),
         string(name: 'SL_TOKEN', value: "${params.token}"),
@@ -280,12 +280,12 @@ def create_lab_id(Map params) {
     if (params.isPR){
       env.LAB_ID = (sh(returnStdout: true, script:"""
             #!/bin/sh -e +x
-            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids/pull-request" -H "Authorization: Bearer ${params.token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "targetBranch": "${params.target_branch}", "isHidden": true }' | jq -r '.data.labId'
+            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids/pull-request" -H "Authorization: Bearer ${params.token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "targetBranch": "${params.target_branch}", "isHidden": true }' | grep -o '"labId": *"[^"]*"' your_file.json | awk -F'"' '{print $4}'
            """)).trim()
     } else {
       env.LAB_ID = (sh(returnStdout: true, script:"""
             #!/bin/sh -e +x
-            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids" -H "Authorization: Bearer ${params.token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "labAlias": "${params.lab_alias}", "isHidden": true ${cdOnlyString}}' | jq -r '.data.labId'
+            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids" -H "Authorization: Bearer ${params.token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "labAlias": "${params.lab_alias}", "isHidden": true ${cdOnlyString}}' | grep -o '"labId": *"[^"]*"' your_file.json | awk -F'"' '{print $4}'
            """)).trim()
     }
     echo "LAB ID: ${env.LAB_ID}"

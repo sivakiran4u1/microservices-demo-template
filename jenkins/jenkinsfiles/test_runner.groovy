@@ -1,7 +1,7 @@
 pipeline {
   agent {
     kubernetes {
-      yaml readTrusted('jenkins/pod-templates/All_In_Image_shell_pod.yaml')
+      yaml readTrusted('jenkins/pod-templates/test_runner_pod.yaml')
       defaultContainer "shell"
     }
   }
