@@ -23,6 +23,16 @@ pipeline {
     stage('Clone Repository') {
       steps {
         script {
+          def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
+          env.LAB_ID = create_lab_id(
+          token: "${params.SL_TOKEN}",
+          machine: "https://dev-integration.dev.sealights.co",
+          app: "${params.APP_NAME}",
+          branch: "${params.BUILD_BRANCH}",
+          test_env: "${IDENTIFIER}",
+          lab_alias: "${IDENTIFIER}",
+          cdOnly: true,
+          )
           clone_repo(
             branch: params.BRANCH
           )
