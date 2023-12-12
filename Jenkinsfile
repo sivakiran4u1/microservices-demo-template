@@ -23,16 +23,6 @@ pipeline {
     stage('Clone Repository') {
       steps {
         script {
-          def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
-          env.LAB_ID = create_lab_id(
-          token: "${params.SL_TOKEN}",
-          machine: "https://dev-integration.dev.sealights.co",
-          app: "${params.APP_NAME}",
-          branch: "${params.BUILD_BRANCH}",
-          test_env: "${IDENTIFIER}",
-          lab_alias: "${IDENTIFIER}",
-          cdOnly: true,
-          )
           clone_repo(
             branch: params.BRANCH
           )
@@ -290,12 +280,12 @@ def create_lab_id(Map params) {
     if (params.isPR){
       env.LAB_ID = (sh(returnStdout: true, script:"""
             #!/bin/sh -e +x
-            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids/pull-request" -H "Authorization: Bearer ${params.token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "targetBranch": "${params.target_branch}", "isHidden": true }' | grep -o '"labId": *"[^"]*"' | awk -F'"' '{print ${1}}'
+            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids/pull-request" -H "Authorization: Bearer ${params.token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "targetBranch": "${params.target_branch}", "isHidden": true }' | jq -r '.data.labId'
            """)).trim()
     } else {
       env.LAB_ID = (sh(returnStdout: true, script:"""
             #!/bin/sh -e +x
-            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids" -H "Authorization: Bearer ${params.token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "labAlias": "${params.lab_alias}", "isHidden": true ${cdOnlyString}}' | grep -o '"labId": *"[^"]*"' | sed 's/"labId": *"\([^"]*\)"/\1/'
+            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids" -H "Authorization: Bearer ${params.token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "labAlias": "${params.lab_alias}", "isHidden": true ${cdOnlyString}}' | jq -r '.data.labId'
            """)).trim()
     }
     echo "LAB ID: ${env.LAB_ID}"
