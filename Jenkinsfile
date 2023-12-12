@@ -295,7 +295,7 @@ def create_lab_id(Map params) {
     } else {
       env.LAB_ID = (sh(returnStdout: true, script:"""
             #!/bin/sh -e +x
-            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids" -H "Authorization: Bearer ${params.token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "labAlias": "${params.lab_alias}", "isHidden": true ${cdOnlyString}}' | grep -o '"labId": *"[^"]*"' | awk -F'"' '{print $1}'
+            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids" -H "Authorization: Bearer ${params.token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "labAlias": "${params.lab_alias}", "isHidden": true ${cdOnlyString}}' | grep -o '"labId": *"[^"]*"' | sed 's/"labId": *"\([^"]*\)"/\1/'
            """)).trim()
     }
     echo "LAB ID: ${env.LAB_ID}"
