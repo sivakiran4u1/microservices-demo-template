@@ -161,34 +161,6 @@ pipeline {
       }
     }
   }
-
-  post {
-    success {
-      script {
-        success_btq(
-          IDENTIFIER : "${params.BRANCH}-${env.CURRENT_VERSION}"
-        )
-        success_btq(
-          IDENTIFIER : "${params.CHANGED_BRANCH}-${env.CURRENT_VERSION}"
-        )
-      }
-    }
-    failure {
-      script {
-        set_assume_role([
-          env       : "dev",
-          account_id: "159616352881",
-          role_name : "CD-TF-Role"
-        ])
-        failure_btq(
-          IDENTIFIER : "${params.BRANCH}-${env.CURRENT_VERSION}"
-        )
-        failure_btq(
-          IDENTIFIER : "${params.CHANGED_BRANCH}-${env.CURRENT_VERSION}"
-        )
-      }
-    }
-  }
 }
 
 def get_secret (SecretID, Region, Profile="") {
@@ -255,18 +227,6 @@ def run_tests(Map params){
       ])
 
 }
-
-def success_btq(Map params){
-  build(job: 'TearDownBoutiqeEnvironment', parameters: [string(name: 'ENV_TYPE', value: "DEV"), string(name: 'IDENTIFIER', value: "${params.IDENTIFIER}")])
-  slackSend channel: "#btq-ci", tokenCredentialId: "slack_sldevops", color: "good", message: "BTQ-CI build ${env.CURRENT_VERSION} for branch ${BRANCH_NAME} finished with status ${currentBuild.currentResult} (<${env.BUILD_URL}|Open> and TearDownBoutiqeEnvironment)"
-}
-
-def failure_btq(Map params){
-  def env_instance_id = sh(returnStdout: true, script: "aws ec2 --region eu-west-1 describe-instances --filters 'Name=tag:Name,Values=EUW-ALLINONE-DEV-${params.IDENTIFIER}' 'Name=instance-state-name,Values=running' | jq -r '.Reservations[].Instances[].InstanceId'")
-  sh "aws ec2 --region eu-west-1 stop-instances --instance-ids ${env_instance_id}"
-  slackSend channel: "#btq-ci", tokenCredentialId: "slack_sldevops", color: "danger", message: "BTQ-CI build ${env.CURRENT_VERSION} for branch ${BRANCH_NAME} finished with status ${currentBuild.currentResult} (<${env.BUILD_URL}|Open>) and TearDownBoutiqeEnvironment"
-}
-
 
 
 def run_api_tests_before_changes(Map params){
