@@ -5,9 +5,6 @@ spec:
     - name: jnlp
       image: jenkins/inbound-agent:4.11.2-4
       workingDir: /home/jenkins/agent
-      env:
-        - name: JENKINS_URL
-          value: "http://jenkins.jenkins.svc.cluster.local:8080/"
       resources:
         requests:
           cpu: 200m
