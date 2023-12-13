@@ -61,6 +61,7 @@ pipeline {
     stage('update-btq') {
       steps {
         script {
+          env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
           def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
           env.LAB_ID = create_lab_id(
           token: "${params.SL_TOKEN}",
@@ -73,7 +74,7 @@ pipeline {
           )
           //env.LAB_ID = "integ_public_97ba_publicBTQ"
 
-          env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
+          
           
 
           build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${params.machine_dns}"),
