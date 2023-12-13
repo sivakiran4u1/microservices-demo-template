@@ -10,7 +10,7 @@ pipeline {
 
   parameters {
     string(name: 'APP_NAME', defaultValue: 'public-BTQ', description: 'name of the app (integration build)')
-    string(name: 'COMPANY_NAME', defaultValue: '', description: 'name of the app (integration build)')
+    string(name: 'machine_dns', defaultValue: '', description: 'name of the app (integration build)')
     string(name: 'BRANCH', defaultValue: 'public', description: 'Branch to clone')
     string(name: 'CHANGED_BRANCH', defaultValue: 'public', description: 'Branch to compare')
     string(name: 'BUILD_BRANCH', defaultValue: 'public', description: 'Branch to Build images that have the creational LAB_ID (send to public branch to build)')
@@ -28,16 +28,6 @@ pipeline {
     stage('Clone Repository') {
       steps {
         script {
-          def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
-          env.LAB_ID = create_lab_id(
-          token: "${params.SL_TOKEN}",
-          machine: "https://dev-integration.dev.sealights.co",
-          app: "${params.APP_NAME}",
-          branch: "${params.BUILD_BRANCH}",
-          test_env: "${IDENTIFIER}",
-          lab_alias: "${IDENTIFIER}",
-          cdOnly: true,
-          )
           clone_repo(
             branch: params.BRANCH
           )
@@ -84,8 +74,9 @@ pipeline {
           //env.LAB_ID = "integ_public_97ba_publicBTQ"
 
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
+          
 
-          build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "http://${params.machine_dns}"),
+          build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${params.machine_dns}"),
                                                 string(name:'tag' , value:"${env.CURRENT_VERSION}"),
                                                 string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
@@ -105,7 +96,7 @@ pipeline {
             branch: params.BRANCH,
             lab_id: env.LAB_ID,
             token: params.SL_TOKEN,
-            machine_dns: "http://${params.machine_dns}"
+            machine_dns: "${params.machine_dns}:8081"
           )
         }
       }
@@ -152,7 +143,7 @@ pipeline {
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
 
           def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
-          build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "http://${params.machine_dns}"),
+          build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${params.machine_dns}"),
                                                 string(name:'tag' , value:"${env.CURRENT_VERSION}"),
                                                 string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
@@ -170,7 +161,7 @@ pipeline {
             branch: params.BRANCH,
             lab_id: env.LAB_ID,
             token: params.SL_TOKEN,
-            machine_dns: "http://${params.machine_dns}"
+            machine_dns: "${params.machine_dns}:8081"
           )
         }
       }
