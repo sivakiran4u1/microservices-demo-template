@@ -81,7 +81,7 @@ pipeline {
                                                 string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
                                                 string(name:'branch' , value:"${params.BRANCH}"),
-                                                string(name:'token' , value:"${env.TOKEN}"),
+                                                string(name:'token' , value:"${params.TOKEN}"),
                                                 string(name:'sl_branch' , value:"${params.BRANCH}")])
         }
       }
@@ -148,7 +148,7 @@ pipeline {
                                                 string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
                                                 string(name:'branch' , value:"${params.CHANGED_BRANCH}"),
-                                                string(name:'token' , value:"${env.TOKEN}"),
+                                                string(name:'token' , value:"${params.TOKEN}"),
                                                 string(name:'sl_branch' , value:"${params.CHANGED_BRANCH}")])
         }
       }
@@ -184,7 +184,7 @@ def build_btq(Map params){
 
   def parallelLabs = [:]
   //List of all the images name
-  env.TOKEN= "${params.sl_token}"
+  params.TOKEN= "${params.sl_token}"
 
   def services_list = ["adservice","cartservice","checkoutservice", "currencyservice","emailservice","frontend","paymentservice","productcatalogservice","recommendationservice","shippingservice"]
   //def special_services = ["cartservice"].
@@ -198,7 +198,7 @@ def build_btq(Map params){
                                            string(name:'SL_REPORT_BRANCH' , value:"${params.sl_report_branch}"),
                                            string(name:'BRANCH' , value:"${params.branch}"),
                                            string(name:'BUILD_NAME' , value:"${env.BUILD_NAME}"),
-                                           string(name:'SL_TOKEN' , value:"${env.TOKEN}"),
+                                           string(name:'SL_TOKEN' , value:"${params.TOKEN}"),
                                            string(name:'AGENT_URL' , value:AGENT_URL[0]),
                                            string(name:'AGENT_URL_SLCI' , value:AGENT_URL[1])])
     }
