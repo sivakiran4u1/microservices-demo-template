@@ -81,7 +81,7 @@ pipeline {
                                                 string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
                                                 string(name:'branch' , value:"${params.BRANCH}"),
-                                                string(name:'token' , value:"${params.TOKEN}"),
+                                                string(name:'token' , value:"${params.SL_TOKEN}"),
                                                 string(name:'sl_branch' , value:"${params.BRANCH}")])
         }
       }
@@ -148,7 +148,7 @@ pipeline {
                                                 string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
                                                 string(name:'branch' , value:"${params.CHANGED_BRANCH}"),
-                                                string(name:'token' , value:"${params.TOKEN}"),
+                                                string(name:'token' , value:"${params.SL_TOKEN}"),
                                                 string(name:'sl_branch' , value:"${params.CHANGED_BRANCH}")])
         }
       }
@@ -184,7 +184,7 @@ def build_btq(Map params){
 
   def parallelLabs = [:]
   //List of all the images name
-  params.TOKEN= "${params.sl_token}"
+  params.SL_TOKEN= "${params.sl_token}"
 
   def services_list = ["adservice","cartservice","checkoutservice", "currencyservice","emailservice","frontend","paymentservice","productcatalogservice","recommendationservice","shippingservice"]
   //def special_services = ["cartservice"].
@@ -198,7 +198,7 @@ def build_btq(Map params){
                                            string(name:'SL_REPORT_BRANCH' , value:"${params.sl_report_branch}"),
                                            string(name:'BRANCH' , value:"${params.branch}"),
                                            string(name:'BUILD_NAME' , value:"${env.BUILD_NAME}"),
-                                           string(name:'SL_TOKEN' , value:"${params.TOKEN}"),
+                                           string(name:'SL_TOKEN' , value:"${params.SL_TOKEN}"),
                                            string(name:'AGENT_URL' , value:AGENT_URL[0]),
                                            string(name:'AGENT_URL_SLCI' , value:AGENT_URL[1])])
     }
@@ -228,7 +228,7 @@ def run_tests(Map params){
       build(job: "test_runner", parameters: [
         string(name: 'BRANCH', value: "${params.branch}"),
         string(name: 'SL_LABID', value: "${params.lab_id}"),
-        string(name: 'SL_TOKEN', value: "${params.token}"),
+        string(name: 'SL_TOKEN', value: "${params.SL_token}"),
         string(name: 'MACHINE_DNS', value: "http://${params.machine_dns}")
       ])
 
@@ -286,12 +286,12 @@ def create_lab_id(Map params) {
     if (params.isPR){
       env.LAB_ID = (sh(returnStdout: true, script:"""
             #!/bin/sh -e +x
-            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids/pull-request" -H "Authorization: Bearer ${params.token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "targetBranch": "${params.target_branch}", "isHidden": true }' | jq -r '.data.labId'
+            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids/pull-request" -H "Authorization: Bearer ${params.SL_token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "targetBranch": "${params.target_branch}", "isHidden": true }' | jq -r '.data.labId'
            """)).trim()
     } else {
       env.LAB_ID = (sh(returnStdout: true, script:"""
             #!/bin/sh -e +x
-            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids" -H "Authorization: Bearer ${params.token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "labAlias": "${params.lab_alias}", "isHidden": true ${cdOnlyString}}' | jq -r '.data.labId'
+            curl -X POST "${params.machine}/sl-api/v1/agent-apis/lab-ids" -H "Authorization: Bearer ${params.SL_token}" -H "Content-Type: application/json" -d '{ "appName": "${params.app}", "branchName": "${params.branch}", "testEnv": "${params.test_env}", "labAlias": "${params.lab_alias}", "isHidden": true ${cdOnlyString}}' | jq -r '.data.labId'
            """)).trim()
     }
     echo "LAB ID: ${env.LAB_ID}"
