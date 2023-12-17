@@ -229,7 +229,7 @@ def run_tests(Map params){
       build(job: "test_runner", parameters: [
         string(name: 'BRANCH', value: "${params.branch}"),
         string(name: 'SL_LABID', value: "${params.lab_id}"),
-        string(name: 'SL_TOKEN', value: "${params.SL_token}"),
+        string(name: 'SL_TOKEN', value: "${params.token}"),
         string(name: 'MACHINE_DNS', value: "http://${params.machine_dns}")
       ])
 
