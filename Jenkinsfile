@@ -25,17 +25,6 @@ pipeline {
   }
 
   stages {
-    stage('Clone Repository') {
-      steps {
-        script {
-          clone_repo(
-            branch: params.BRANCH
-          )
-        }
-      }
-    }
-
-
     //Build parallel images
     stage('Build BTQ') {
       steps {
@@ -88,8 +77,6 @@ pipeline {
       }
     }
 
-
-
     stage('Run Tests') {
       steps {
         script {
@@ -103,14 +90,10 @@ pipeline {
       }
     }
 
-
-
-    stage('Changed - Clone Repository') {
+    stage('Changed - checkout') {
       steps {
         script {
-          clone_repo(
-            branch: params.CHANGED_BRANCH
-          )
+          sh "git checkout -b ${params.CHANGED_BRANCH}"
         }
       }
     }
