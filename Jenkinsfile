@@ -93,6 +93,7 @@ pipeline {
     stage('Changed - checkout') {
       steps {
         script {
+          sh "git config --global --add safe.directory /home/jenkins/agent/workspace/BTQ-CI_public"
           sh "git checkout -b ${params.CHANGED_BRANCH}"
         }
       }
