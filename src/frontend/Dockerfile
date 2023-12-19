@@ -20,6 +20,7 @@ ARG BUILD_NAME
 ARG BRANCH
 ARG SERVICE_NAME=frontendservice
 ENV OS_ARCH linux-amd64
+#Golang uses two agents, one for scanning and one for monitoring
 ARG AGENT_URL
 ARG AGENT_URL_SLCI
 
@@ -30,6 +31,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 
+#Downloading the agents 
 RUN wget -U "slgoagent" -q -O slgoagent.tar.gz \
    ${AGENT_URL} \
     && tar -xvf slgoagent.tar.gz \
@@ -39,8 +41,11 @@ RUN wget -U "slcli" -q -O slcli.tar.gz \
     && tar -xvf slcli.tar.gz \
     && rm slcli.tar.gz
 RUN echo ${SEALIGHTS_TOKEN} >> ./token.txt
+#Adding sealights to the code
 RUN ./slcli config init --lang go --token ./token.txt
+#Getting the build session id 
 RUN ./slcli config create-bsid --app ${SERVICE_NAME} --branch ${BRANCH} --build ${BUILD_NAME}
+#Scanning the code with sealights
 RUN ./slcli scan --bsid buildSessionId.txt --path-to-scanner ./slgoagent --workspacepath ./ --scm none --packages-excluded "github.com/GoogleCloudPlatform/microservices-demo/src/frontend/genproto"
 
 
@@ -62,4 +67,5 @@ COPY ./static ./static
 ENV GOTRACEBACK=single
 
 EXPOSE 8080
+#Running the code with sealights in it
 CMD export SEALIGHTS_TOKEN="${SL_TOKEN}" && export SEALIGHTS_LAB_ID="${SL_LAB_ID}" && echo "${SEALIGHTS_LAB_ID}" && /src/server

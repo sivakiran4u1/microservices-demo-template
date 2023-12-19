@@ -8,6 +8,7 @@ ARG BUILD_NAME
 ARG SERVICE_NAME=chechoutservice
 ARG AGENT_URL
 ARG AGENT_URL_SLCI
+#Golang uses two agents, one for scanning and one for monitoring
 ENV OS_ARCH linux-amd64
 
 
@@ -16,9 +17,9 @@ WORKDIR /src
 
 # restore dependencies
 COPY go.mod go.sum ./
-#ENV SEALIGHTS_LAB_ID=integ_main_GoogleMicroserviceDemo
 
 COPY . .
+#Downloading the agents 
 RUN wget -U "slgoagent" -q -O slgoagent.tar.gz \
    ${AGENT_URL} \
     && tar -xvf slgoagent.tar.gz \
@@ -28,8 +29,11 @@ RUN wget -U "slcli" -q -O slcli.tar.gz \
     && tar -xvf slcli.tar.gz \
     && rm slcli.tar.gz
 
+#Adding sealights to the code
 RUN ./slcli config init --lang go --token ${SEALIGHTS_TOKEN}
+#Making the build session id 
 RUN ./slcli config create-bsid --app ${SERVICE_NAME} --branch ${BRANCH} --build ${BUILD_NAME}
+#Scanning the code
 RUN ./slcli scan --bsid buildSessionId.txt --path-to-scanner ./slgoagent --workspacepath ./ --scm none --packages-excluded "github.com/GoogleCloudPlatform/microservices-demo/src/checkoutservice/genproto"
 
 RUN go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" -o /checkoutservice .
@@ -49,7 +53,6 @@ COPY --from=builder /checkoutservice /src/checkoutservice
 # Default behavior - a failure prints a stack trace for the current goroutine
 # See https://golang.org/pkg/runtime/
 ENV GOTRACEBACK=single
-ENV SEALIGHTS_LAB_ID="none"
 
 EXPOSE 5050
 CMD export SEALIGHTS_TOKEN="${SL_TOKEN}" && export SEALIGHTS_LAB_ID="${SL_LAB_ID}" && /src/checkoutservice

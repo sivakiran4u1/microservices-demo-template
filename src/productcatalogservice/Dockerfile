@@ -6,6 +6,7 @@ ARG BRANCH
 ARG BUILD_NAME=0.4.4
 ARG SERVICE_NAME=productcatalogservice
 ENV OS_ARCH linux-amd64
+#Golang uses two agents
 ARG AGENT_URL=https://agents.sealights.co/slgoagent/latest/slgoagent-linux-amd64.tar.gz
 ARG AGENT_URL_SLCI=https://agents.sealights.co/slcli/latest/slcli-linux-amd64.tar.gz
 WORKDIR /src
@@ -15,6 +16,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 
+#Download the agents
 RUN wget -U "slgoagent" -q -O slgoagent.tar.gz \
    ${AGENT_URL} \
     && tar -xvf slgoagent.tar.gz \
@@ -24,8 +26,11 @@ RUN wget -U "slcli" -q -O slcli.tar.gz \
     && tar -xvf slcli.tar.gz \
     && rm slcli.tar.gz
 
+#Add sealights to the source code
 RUN ./slcli config init --lang go --token ${SEALIGHTS_TOKEN}
+#Run config to get build session id
 RUN ./slcli config create-bsid --app ${SERVICE_NAME} --branch ${BRANCH} --build ${BUILD_NAME}
+#Scan the code
 RUN ./slcli scan --bsid buildSessionId.txt --path-to-scanner ./slgoagent --workspacepath ./ --scm none --packages-excluded github.com/GoogleCloudPlatform/microservices-demo/src/productcatalogservice/genproto
 
 
@@ -47,4 +52,5 @@ COPY products.json .
 ENV GOTRACEBACK=single
 
 EXPOSE 3550
+#Run code with sealights in it
 CMD export SEALIGHTS_TOKEN="${SL_TOKEN}" && export SEALIGHTS_LAB_ID="${SL_LAB_ID}" && /src/server

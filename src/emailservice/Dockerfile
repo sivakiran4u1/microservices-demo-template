@@ -14,6 +14,7 @@ RUN apt-get -qq update \
 # get packages
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+#Installing sealights (Not a url)
 RUN pip install ${AGENT_URL}
 
 FROM builder
@@ -23,11 +24,15 @@ ENV ENABLE_PROFILER=1
 
 COPY --from=builder /usr/local/lib/python3.10/ /usr/local/lib/python3.10/
 WORKDIR /email_server
+#Important to copy code here before running the scan, otherwise it won't scan the code
 COPY . .
+#run config to get build session id
 RUN sl-python config --appname emailservice --branchname ${BRANCH} --buildname ${BUILD_NAME} --workspacepath ./ --token ${SEALIGHTS_TOKEN} --exclude "*grpc*"
+#scan the code
 RUN sl-python scan --scm none --token ${SEALIGHTS_TOKEN}
 
 # Add the application
 ENV PORT "8080"
 EXPOSE 8080 
+#use sl-python to run the code
 CMD sl-python run python email_server.py --labid ${SL_LAB_ID} --token ${SL_TOKEN}

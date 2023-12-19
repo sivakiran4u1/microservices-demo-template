@@ -32,23 +32,22 @@ WORKDIR /usr/src/app
 #COPY package*.json ./
 COPY . .
 RUN npm install --only=production
+#Install the agent (Not a url)
 RUN npm i ${AGENT_URL}
+#Run config to get build session id
 RUN  ./node_modules/.bin/slnodejs config --token ${SEALIGHTS_TOKEN} --appname "paymentservice" --branch ${BRANCH} --build ${BUILD_NAME}
-
-
+#Scan the code
 RUN ./node_modules/.bin/slnodejs scan --token ${SEALIGHTS_TOKEN} --buildsessionidfile buildSessionId --workspacepath "." --scm none --es6Modules
 
 FROM base
 
 WORKDIR /usr/src/app
+#Copy the build session id file
 COPY --from=builder /usr/src/app/buildSessionId .
-
-#RUN ./node_modules/.bin/slnodejs run --tokenfile sltoken.txt --buildsessionidfile buildSessionId --labid integ_master_loadgenerator --workspacepath "." --useinitialcolor true --useslnode2 -- ./server.js
-
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 
 COPY . .
 ENV NODE_DEBUG=sl
 EXPOSE 50051
-
+#Run code with sealights
 CMD  ./node_modules/.bin/slnodejs run --token "${SL_TOKEN}" --buildsessionidfile buildSessionId --labid "${SL_LAB_ID}" --workspacepath . index.js

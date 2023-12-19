@@ -19,7 +19,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install --only=production
 
-
+#install agent (Not a url)
 RUN npm i ${AGENT_URL}
 
 FROM base
@@ -29,10 +29,11 @@ WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 
 COPY . .
-#run comfig
+#run config to get build session id
 RUN  ./node_modules/.bin/slnodejs config --token ${SEALIGHTS_TOKEN} --appname "currencyservice" --branch ${BRANCH} --build ${BUILD_NAME}
-#sl-scan
+#sl-scan, scanning the code
 RUN ./node_modules/.bin/slnodejs scan --token ${SEALIGHTS_TOKEN} --buildsessionidfile buildSessionId --workspacepath "." --scm none --es6Modules
 
 EXPOSE 7000
+#Running the code with sealights
 CMD  ./node_modules/.bin/slnodejs run --token "${SL_TOKEN}" --buildsessionidfile buildSessionId --labid "${SL_LAB_ID}" --workspacepath . server.js
