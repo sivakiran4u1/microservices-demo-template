@@ -61,9 +61,6 @@ pipeline {
           lab_alias: "${IDENTIFIER}",
           cdOnly: true,
           )
-          //env.LAB_ID = "integ_public_97ba_publicBTQ"
-
-          
           
 
           build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${params.machine_dns}"),
@@ -90,67 +87,6 @@ pipeline {
       }
     }
 
-    stage('Changed - checkout') {
-      steps {
-        script {
-          sh "git config --global --add safe.directory /home/jenkins/agent/workspace/BTQ-CI_public"
-          sh "git checkout -b ${params.CHANGED_BRANCH}"
-        }
-      }
-    }
-
-    stage('Changed Build BTQ') {
-      steps {
-        script {
-          def MapUrl = new HashMap()
-          MapUrl.put('JAVA_AGENT_URL', "${params.JAVA_AGENT_URL}")
-          MapUrl.put('DOTNET_AGENT_URL', "${params.DOTNET_AGENT_URL}")
-          MapUrl.put('NODE_AGENT_URL', "${params.NODE_AGENT_URL}")
-          MapUrl.put('GO_AGENT_URL', "${params.GO_AGENT_URL}")
-          MapUrl.put('GO_SLCI_AGENT_URL', "${params.GO_SLCI_AGENT_URL}")
-          MapUrl.put('PYTHON_AGENT_URL', "${params.PYTHON_AGENT_URL}")
-          build_btq(
-            sl_report_branch: params.BRANCH,
-            sl_token: params.SL_TOKEN,
-            build_name: "1-0-${BUILD_NUMBER}-changed",
-            branch: params.BRANCH,
-            mapurl: MapUrl
-          )
-        }
-      }
-    }
-
-
-
-    stage('update-btq changed') {
-      steps {
-        script {
-          env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
-
-          def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
-          build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${params.machine_dns}"),
-                                                string(name:'tag' , value:"${env.CURRENT_VERSION}"),
-                                                string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
-                                                string(name:'labid' , value:"${env.LAB_ID}"),
-                                                string(name:'branch' , value:"${params.CHANGED_BRANCH}"),
-                                                string(name:'token' , value:"${params.SL_TOKEN}"),
-                                                string(name:'sl_branch' , value:"${params.CHANGED_BRANCH}")])
-        }
-      }
-    }
-
-    stage('Changed Run Tests') {
-      steps {
-        script {
-          run_tests(
-            branch: params.BRANCH,
-            lab_id: env.LAB_ID,
-            token: params.SL_TOKEN,
-            machine_dns: "${params.machine_dns}:8081"
-          )
-        }
-      }
-    }
   }
 }
 
@@ -217,32 +153,6 @@ def run_tests(Map params){
         string(name: 'MACHINE_DNS', value: "http://${params.machine_dns}")
       ])
 
-}
-
-
-def run_api_tests_before_changes(Map params){
-  catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-    build(job: "StableApiTests", parameters: [
-      string(name: 'BRANCH', value: "${params.branch}"),
-      string(name: 'APP_NAME', value: "${params.app_name}")
-    ])
-  }
-}
-
-def run_api_tests_after_changes(Map params){
-  catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-    build(job: "ApiTests", parameters: [
-      string(name: 'BRANCH', value: "${params.branch}"),
-      string(name: 'APP_NAME', value: "${params.app_name}")
-    ])
-  }
-}
-
-
-
-def clone_repo(Map params){
-  // Clone the repository with the specified branch
-  git branch: params.branch, url: 'https://github.com/Sealights/microservices-demo-template.git'
 }
 
 def set_assume_role(Map params) {
