@@ -31,6 +31,6 @@ spec:
           cpu: 2
           ephemeral-storage: 2000Mi
         limits:
-          memory: 70000Mi
-          cpu: 6
+          memory: 7000Mi
+          cpu: 4
           ephemeral-storage: 10000Mi
