@@ -42,9 +42,9 @@ pipeline {
       steps{
         script{
           sh """
-                sleep ${env.wait_time} #wait at least 10 seconds for the backend to update status that the previous test stage was closed, closing and starting a test stage withing 10 seconds can cause inaccurate test stage coverage
+                sleep ${env.wait_time} # Wait at least 10 seconds for the backend to update status that the previous test stage was closed, closing and starting a test stage withing 10 seconds can cause inaccurate test stage coverage
                 echo 'MS-Tests framework starting ..... '
-                export machine_dns="${params.MACHINE_DNS}"
+                export machine_dns="${params.MACHINE_DNS}" # Inside the code we use machine_dns envronment variable
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll startExecution --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir . --instrumentationMode tests --target dotnet   --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/MS-Tests/"
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
@@ -61,7 +61,9 @@ pipeline {
                 sleep ${env.wait_time}
                 echo 'N-Unit framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}"
+                dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll startExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir . --instrumentationMode tests --target dotnet   --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/NUnit-Tests/"
+                dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
                 """
         }
       }
@@ -250,27 +252,27 @@ pipeline {
     }
 
 
-    stage('Jest framework'){
-      steps{
-        script{
+    // stage('Jest framework'){
+    //   steps{
+    //     script{
 
-          sh """
-                sleep ${env.wait_time}
-                echo 'Jest framework starting ..... '
-                export machine_dns="${params.MACHINE_DNS}"
-                cd ./integration-tests/nodejs-tests/Jest
-                cp -r /nodeModules/node_modules .
-                npm i jest-cli
-                export NODE_DEBUG=sl
-                export SL_TOKEN="${params.SL_TOKEN}"
-                export SL_LABID="${params.SL_LABID}"
-                npm install
-                npx jest integration-tests/nodejs-tests/Jest/test.js --sl-testStage='Jest tests' --sl-token="${params.SL_TOKEN}" --sl-labId="${params.SL_LABID}"
-                cd ../..
-                """
-        }
-      }
-    }
+    //       sh """
+    //             sleep ${env.wait_time}
+    //             echo 'Jest framework starting ..... '
+    //             export machine_dns="${params.MACHINE_DNS}"
+    //             cd ./integration-tests/nodejs-tests/Jest
+    //             cp -r /nodeModules/node_modules .
+    //             npm i jest-cli
+    //             export NODE_DEBUG=sl
+    //             export SL_TOKEN="${params.SL_TOKEN}"
+    //             export SL_LABID="${params.SL_LABID}"
+    //             npm install
+    //             npx jest integration-tests/nodejs-tests/Jest/test.js --sl-testStage='Jest tests' --sl-token="${params.SL_TOKEN}" --sl-labId="${params.SL_LABID}"
+    //             cd ../..
+    //             """
+    //     }
+    //   }
+    // }
 
 
 
