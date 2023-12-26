@@ -89,7 +89,79 @@ pipeline {
       }
     }
 
+//--------------------------------run changed branch to get modefied coverage
+    stage('Check changed condition'){
+      steps{
+        script {
+          if(params.MODIFIED_COVERAGE=='OFF'){// If modefied coverage parameter is set to off skip the rest
+            //currentBuild.result = 'SUCCESS'
+            return
+          }
+        }
+      }
+    }
+    stage('Changed - Clone Repository') {
+      steps {
+        script {
+          clone_repo(
+            branch: params.CHANGED_BRANCH
+          )
+        }
+      }
+    }
 
+    stage('Changed Build BTQ') {
+      steps {
+        script {
+          def MapUrl = new HashMap()
+          MapUrl.put('JAVA_AGENT_URL', "${params.JAVA_AGENT_URL}")
+          MapUrl.put('DOTNET_AGENT_URL', "${params.DOTNET_AGENT_URL}")
+          MapUrl.put('NODE_AGENT_URL', "${params.NODE_AGENT_URL}")
+          MapUrl.put('GO_AGENT_URL', "${params.GO_AGENT_URL}")
+          MapUrl.put('GO_SLCI_AGENT_URL', "${params.GO_SLCI_AGENT_URL}")
+          MapUrl.put('PYTHON_AGENT_URL', "${params.PYTHON_AGENT_URL}")
+          build_btq(
+            sl_report_branch: params.BRANCH,
+            sl_token: params.SL_TOKEN,
+            build_name: "1-0-${BUILD_NUMBER}-changed",
+            branch: params.BRANCH,
+            mapurl: MapUrl
+          )
+        }
+      }
+    }
+
+
+
+    stage('update-btq changed') {
+      steps {
+        script {
+          env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
+
+          def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
+          build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${params.machine_dns}"),
+                                                string(name:'tag' , value:"${env.CURRENT_VERSION}"),
+                                                string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
+                                                string(name:'labid' , value:"${env.LAB_ID}"),
+                                                string(name:'branch' , value:"${params.CHANGED_BRANCH}"),
+                                                string(name:'token' , value:"${params.SL_TOKEN}"),
+                                                string(name:'sl_branch' , value:"${params.CHANGED_BRANCH}")])
+        }
+      }
+    }
+
+    stage('Changed Run Tests') {
+      steps {
+        script {
+          run_tests(
+            branch: params.BRANCH,
+            lab_id: env.LAB_ID,
+            token: params.SL_TOKEN,
+            machine_dns: "${params.machine_dns}:8081"
+          )
+        }
+      }
+    }
 
   }
 }
