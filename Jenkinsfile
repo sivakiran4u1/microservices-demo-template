@@ -22,6 +22,8 @@ pipeline {
     string(name: 'GO_AGENT_URL', defaultValue: 'https://agents.sealights.co/slgoagent/latest/slgoagent-linux-amd64.tar.gz', description: 'use different go agent')
     string(name: 'GO_SLCI_AGENT_URL', defaultValue: 'https://agents.sealights.co/slcli/latest/slcli-linux-amd64.tar.gz', description: 'use different slci go agent')
     string(name: 'PYTHON_AGENT_URL', defaultValue: 'sealights-python-agent', description: 'use different python agent')
+    choice(name: 'MODIFIED_COVERAGE', choices: ['OFF', 'ON'], description: 'MODIFIED COVERAGE')
+
   }
 
   stages {
@@ -61,7 +63,7 @@ pipeline {
           lab_alias: "${IDENTIFIER}",
           cdOnly: true,
           )
-          
+
 
           build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${params.machine_dns}"),
                                                 string(name:'tag' , value:"${env.CURRENT_VERSION}"),
@@ -86,6 +88,8 @@ pipeline {
         }
       }
     }
+
+
 
   }
 }
