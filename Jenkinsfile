@@ -103,9 +103,8 @@ pipeline {
     stage('Changed - Clone Repository') {
       steps {
         script {
-          clone_repo(
-            branch: params.CHANGED_BRANCH
-          )
+          git branch: params.CHANGED_BRANCH
+          
         }
       }
     }
