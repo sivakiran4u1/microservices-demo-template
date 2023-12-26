@@ -103,7 +103,7 @@ pipeline {
     stage('Changed - Clone Repository') {
       steps {
         script {
-          sh """git checkout -b ${params.CHANGED_BRANCH}"""
+          checkout([$class: 'GitSCM', branches: [[name: "${params.CHANGED_BRANCH}"]]])
           
         }
       }
