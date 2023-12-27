@@ -46,6 +46,7 @@ pipeline {
                 echo 'MS-Tests framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}" # Inside the code we use machine_dns envronment variable
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll startExecution --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
+                sleep 30
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir . --instrumentationMode tests --target dotnet   --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/MS-Tests/"
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
                 """
@@ -62,7 +63,9 @@ pipeline {
                 echo 'N-Unit framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}"
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll startExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
+                sleep 30
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir . --instrumentationMode tests --target dotnet   --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/NUnit-Tests/"
+                sleep 30
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
                 """
         }
@@ -110,6 +113,7 @@ pipeline {
                     echo 'robot framework starting ..... '
                     cd ./integration-tests/robot-tests
                     sl-python start --labid ${SL_LABID} --token ${SL_TOKEN} --teststage "Robot Tests"
+                    sleep 30
                     robot -xunit api_tests.robot
                     sl-python uploadreports --reportfile "unit.xml" --labid ${SL_LABID} --token ${SL_TOKEN}
                     sl-python end --labid ${SL_LABID} --token ${SL_TOKEN}
