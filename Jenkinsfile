@@ -103,7 +103,7 @@ pipeline {
     stage('Changed - Clone Repository') {
       steps {
         script {
-          checkout([$class: 'GitSCM', branches: [[name: "${params.CHANGED_BRANCH}"]]])
+          git branch: params.CHANGED_BRANCH
           
         }
       }
@@ -289,7 +289,10 @@ def convert_to_map(mapAsString) {
   return map
 }
 
-
+def clone_repo(Map params){
+  // Clone the repository with the specified branch
+  git branch: params.branch, url: 'https://github.com/Sealights/microservices-demo.git'
+}
 
 
 
