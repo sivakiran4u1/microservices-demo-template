@@ -27,6 +27,14 @@ pipeline {
   }
 
   stages {
+    stage('Clone Repository') {
+      steps {
+        script {
+          git branch: params.CHANGED_BRANCH
+          
+        }
+      }
+    }
     //Build parallel images
     stage('Build BTQ') {
       steps {
