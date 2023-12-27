@@ -111,7 +111,7 @@ pipeline {
     stage('Changed - Clone Repository') {
       steps {
         script {
-          git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo.git'
+          git branch: params.CHANGED_BRANCH, url: 'https://github.com/Sealights/microservices-demo.git'
           
         }
       }
@@ -128,7 +128,7 @@ pipeline {
           MapUrl.put('GO_SLCI_AGENT_URL', "${params.GO_SLCI_AGENT_URL}")
           MapUrl.put('PYTHON_AGENT_URL', "${params.PYTHON_AGENT_URL}")
           build_btq(
-            sl_report_branch: params.BRANCH,
+            sl_report_branch: params.CHANGED_BRANCH,
             sl_token: params.SL_TOKEN,
             build_name: "1-0-${BUILD_NUMBER}-changed",
             branch: params.BRANCH,
@@ -148,11 +148,11 @@ pipeline {
           def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
           build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${params.machine_dns}"),
                                                 string(name:'tag' , value:"${env.CURRENT_VERSION}"),
-                                                string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
+                                                string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}-changed"),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
                                                 string(name:'branch' , value:"${params.CHANGED_BRANCH}"),
                                                 string(name:'token' , value:"${params.SL_TOKEN}"),
-                                                string(name:'sl_branch' , value:"${params.CHANGED_BRANCH}")])
+                                                string(name:'sl_branch' , value:"${params.BRANCH}")])
         }
       }
     }
