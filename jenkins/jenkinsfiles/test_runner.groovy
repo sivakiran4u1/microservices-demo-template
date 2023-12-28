@@ -116,6 +116,7 @@ pipeline {
                     sleep 30
                     robot -xunit api_tests.robot
                     sl-python uploadreports --reportfile "unit.xml" --labid ${SL_LABID} --token ${SL_TOKEN}
+                    sleep 30
                     sl-python end --labid ${SL_LABID} --token ${SL_TOKEN}
                     cd ../..
                     """
