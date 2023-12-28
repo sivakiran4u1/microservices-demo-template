@@ -12,7 +12,7 @@ pipeline {
     string(name: 'APP_NAME', defaultValue: 'public-BTQ', description: 'name of the app (integration build)')
     string(name: 'machine_dns', defaultValue: 'your_dns', description: 'name of the app (integration build)')
     string(name: 'BRANCH', defaultValue: 'public', description: 'Branch to clone')
-    string(name: 'CHANGED_BRANCH', defaultValue: 'public', description: 'Branch to compare')
+    string(name: 'CHANGED_BRANCH', defaultValue: 'changed-branch', description: 'Branch to compare')
     string(name: 'BUILD_BRANCH', defaultValue: 'public', description: 'Branch to Build images that have the creational LAB_ID (send to public branch to build)')
     string(name: 'SL_TOKEN', defaultValue: 'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL0RFVi1pbnRlZ3JhdGlvbi5hdXRoLnNlYWxpZ2h0cy5pby8iLCJqd3RpZCI6IkRFVi1pbnRlZ3JhdGlvbixuZWVkVG9SZW1vdmUsQVBJR1ctYzNiM2IyY2YtYjA1Yy00ZWM2LThjNjYtZTBmZTJiYzIwNzAzLDE2OTI4Nzc3MDM4ODUiLCJzdWJqZWN0IjoiU2VhTGlnaHRzQGFnZW50IiwiYXVkaWVuY2UiOlsiYWdlbnRzIl0sIngtc2wtcm9sZSI6ImFnZW50IiwieC1zbC1zZXJ2ZXIiOiJodHRwczovL2Rldi1pbnRlZ3JhdGlvbi5kZXYuc2VhbGlnaHRzLmNvL2FwaSIsInNsX2ltcGVyX3N1YmplY3QiOiIiLCJpYXQiOjE2OTI4Nzc3MDN9.dORXtjiTVw9vM3u2eO9l2r3f54NwEFPWVnhZnOWqV4_ZA-q2T86X861S6o4G7M371hMnoePRNoWgkjXp9isgEPEHoG_LQ_pvwc66vi5gBy8okjlypKGMTrz-N8bF1LeswguuSDDPIpm0Qq7KSjcm-GZmtO2IhJu4Q6f-tX0otMvvr6_nuwfVReExsT0Mxoyu0ZFs2HHwuIqhu12v1wNUuiTNIxQnGqckLw1qrroTG-qrDa8ydC111ML9C-u4qdS6G0iDsSdrQk9RETe0b1ow1vMXMFZeQ0vBrJDFjMnaCUhU6iid8xjkZG3T6XAI0k5SBRN8R6dtTO45mE638ohJi1_YBQL8hSkHL-8X_QkbRCH6IFqPcku0Wu2AcaRkBKOoiYAowFxnrQgYx5n_FVuTXNwW-s18Gnebd-bTBveCAHQH6CEbnpznXyMNXc15tOVdfp1n3RHLx9YE2lYI3dsTdwUlwNhto4J1Ym3ZOrLW_GZwLzZyIITfmNUOQVspwzsVOioeA48DZNpZhpZUAK5P19v0KY_iyJKxGajWnAUkXbyqc72d7eG5cUsIgv-r_p7fwnO4Rm1FVaZJ4Cpv7b4yf5YHGJ7BADI5Zw6YXuWQ3d9snZfvKOR50KVZGOykqwExYEwBACpN1WSEoIg8No7wTry_xNPmkTYOHbNoWuzyjTo', description: 'sl-token')
     string(name: 'BUILD_NAME', defaultValue: '', description: 'build name (should change on every build)')
@@ -39,6 +39,8 @@ pipeline {
     stage('Build BTQ') {
       steps {
         script {
+          env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
+
           def MapUrl = new HashMap()
           MapUrl.put('JAVA_AGENT_URL', "${params.JAVA_AGENT_URL}")
           MapUrl.put('DOTNET_AGENT_URL', "${params.DOTNET_AGENT_URL}")
@@ -51,6 +53,7 @@ pipeline {
             sl_token: params.SL_TOKEN,
             build_name: "1-0-${BUILD_NUMBER}",
             branch: params.BRANCH,
+            tag: env.CURRENT_VERSION
             mapurl: MapUrl
           )
         }
@@ -120,6 +123,7 @@ pipeline {
     stage('Changed Build BTQ') {
       steps {
         script {
+          env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
           def MapUrl = new HashMap()
           MapUrl.put('JAVA_AGENT_URL', "${params.JAVA_AGENT_URL}")
           MapUrl.put('DOTNET_AGENT_URL', "${params.DOTNET_AGENT_URL}")
@@ -128,10 +132,11 @@ pipeline {
           MapUrl.put('GO_SLCI_AGENT_URL', "${params.GO_SLCI_AGENT_URL}")
           MapUrl.put('PYTHON_AGENT_URL', "${params.PYTHON_AGENT_URL}")
           build_btq(
-            sl_report_branch: params.CHANGED_BRANCH,
+            sl_report_branch: params.BRANCH,
             sl_token: params.SL_TOKEN,
             build_name: "1-0-${BUILD_NUMBER}-changed",
-            branch: params.BRANCH,
+            branch: params.CHANGED_BRANCH,
+            tag: "${env.CURRENT_VERSION}-changed",
             mapurl: MapUrl
           )
         }
@@ -147,7 +152,7 @@ pipeline {
 
           def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
           build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${params.machine_dns}"),
-                                                string(name:'tag' , value:"${env.CURRENT_VERSION}"),
+                                                string(name:'tag' , value:"${env.CURRENT_VERSION}-changed"),
                                                 string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}-changed"),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
                                                 string(name:'branch' , value:"${params.CHANGED_BRANCH}"),
@@ -184,7 +189,7 @@ def get_secret (SecretID, Region, Profile="") {
 
 
 def build_btq(Map params){
-  env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
+  
 
   def parallelLabs = [:]
   //List of all the images name
@@ -198,7 +203,7 @@ def build_btq(Map params){
     parallelLabs["${service}"] = {
       def AGENT_URL = getParamForService(service , params.mapurl)
       build(job: 'BTQ-BUILD', parameters: [string(name: 'SERVICE', value: "${service}"),
-                                           string(name:'TAG' , value:"${env.CURRENT_VERSION}"),
+                                           string(name:'TAG' , value:"${params.tag}"),
                                            string(name:'SL_REPORT_BRANCH' , value:"${params.sl_report_branch}"),
                                            string(name:'BRANCH' , value:"${params.branch}"),
                                            string(name:'BUILD_NAME' , value:"${env.BUILD_NAME}"),
