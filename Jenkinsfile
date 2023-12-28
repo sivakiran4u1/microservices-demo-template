@@ -53,7 +53,7 @@ pipeline {
             sl_token: params.SL_TOKEN,
             build_name: "1-0-${BUILD_NUMBER}",
             branch: params.BRANCH,
-            tag: env.CURRENT_VERSION
+            tag: env.CURRENT_VERSION,
             mapurl: MapUrl
           )
         }
