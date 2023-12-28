@@ -30,7 +30,7 @@ pipeline {
     stage('Clone Repository') {
       steps {
         script {
-          git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo.git'
+          git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo-template.git'
           
         }
       }
@@ -114,7 +114,7 @@ pipeline {
     stage('Changed - Clone Repository') {
       steps {
         script {
-          git branch: params.CHANGED_BRANCH, url: 'https://github.com/Sealights/microservices-demo.git'
+          git branch: params.CHANGED_BRANCH, url: 'https://github.com/Sealights/microservices-demo-template.git'
           
         }
       }
