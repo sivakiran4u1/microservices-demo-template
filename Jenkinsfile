@@ -140,18 +140,18 @@ def run_tests(Map params){
         string(name: 'BRANCH', value: "${params.branch}"),
         string(name: 'SL_LABID', value: "${params.lab_id}"),
         string(name: 'SL_TOKEN', value: "${params.token}"),
-        string(name: 'MACHINE_DNS', value: "http://${params.machine_dns}")
-        booleanParam(name: 'Run_all_tests', value: params.Run_all_tests)
-        booleanParam(name: 'Cucumber', value: params.Cucumber)
-        booleanParam(name: 'Junit_with_testNG', value: params.Junit_with_testNG)
-        booleanParam(name: 'Junit_without_testNG', value: params.Junit_without_testNG)
-        booleanParam(name: 'Junit_with_testNG_gradle', value: params.Junit_with_testNG_gradle)
-        booleanParam(name: 'Mocha', value: params.Mocha)
-        booleanParam(name: 'MS', value: params.Mocha)
-        booleanParam(name: 'NUnit', value: params.NUnit)
-        booleanParam(name: 'Postman', value: params.Postman)
-        booleanParam(name: 'Pytest', value: params.Pytest)
-        booleanParam(name: 'Robot', value: params.Robot)
+        string(name: 'MACHINE_DNS', value: "http://${params.machine_dns}"),
+        booleanParam(name: 'Run_all_tests', value: params.Run_all_tests),
+        booleanParam(name: 'Cucumber', value: params.Cucumber),
+        booleanParam(name: 'Junit_with_testNG', value: params.Junit_with_testNG),
+        booleanParam(name: 'Junit_without_testNG', value: params.Junit_without_testNG),
+        booleanParam(name: 'Junit_with_testNG_gradle', value: params.Junit_with_testNG_gradle),
+        booleanParam(name: 'Mocha', value: params.Mocha),
+        booleanParam(name: 'MS', value: params.Mocha),
+        booleanParam(name: 'NUnit', value: params.NUnit),
+        booleanParam(name: 'Postman', value: params.Postman),
+        booleanParam(name: 'Pytest', value: params.Pytest),
+        booleanParam(name: 'Robot', value: params.Robot),
         booleanParam(name: 'Soapui', value: params.Soapui)
       ])
 

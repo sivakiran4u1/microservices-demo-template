@@ -22,7 +22,7 @@ pipeline {
     booleanParam(name: 'Junit_with_testNG_gradle', defaultValue: false, description: 'Run tests using Junit testing framework with testNG (gradle)')
     booleanParam(name: 'Mocha', defaultValue: false, description: 'Run tests using Mocha testing framework')
     booleanParam(name: 'MS', defaultValue: false, description: 'Run tests using MS testing framework')
-    booleanParam(name: 'NUnit', defaultValue: false, description: 'Run tests using NUnit testing framework')
+    booleanParam(name: 'NUnit', defaultValue: false, description: 'Run tests using NUnityour_dns testing framework')
     booleanParam(name: 'Postman', defaultValue: false, description: 'Run tests using postman testing framework')
     booleanParam(name: 'Pytest', defaultValue: false, description: 'Run tests using Pytest testing framework')
     booleanParam(name: 'Robot', defaultValue: false, description: 'Run tests using Robot testing framework')
