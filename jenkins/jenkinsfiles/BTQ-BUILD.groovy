@@ -18,8 +18,6 @@ pipeline{
     string(name: 'SERVICE', defaultValue: '', description: 'Service name to build')
     string(name: 'BUILD_NAME', defaultValue: 'none', description: 'build name')
     string(name: 'SL_TOKEN', defaultValue: '', description: 'build token')
-    string(name: 'AGENT_URL', defaultValue: '', description: 'agent version')
-    string(name: 'AGENT_URL_SLCI', defaultValue: '', description: 'agent slci version')
   }
   environment{
     ECR_FULL_NAME = "btq-${params.SERVICE}"
@@ -66,9 +64,7 @@ pipeline{
                     --destination ${D} \
                     --build-arg BRANCH=${BRANCH} \
                     --build-arg BUILD_NAME=${BUILD_NAME} \
-                    --build-arg SEALIGHTS_TOKEN=${SL_TOKEN} \
-                    --build-arg AGENT_URL=${AGENT_URL} \
-                    --build-arg AGENT_URL_SLCI=${AGENT_URL_SLCI}
+                    --build-arg SEALIGHTS_TOKEN=${SL_TOKEN}
                 """
               }
             }

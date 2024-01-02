@@ -4,7 +4,7 @@ FROM base as builder
 
 ARG SEALIGHTS_TOKEN
 ARG BUILD_NAME
-ARG AGENT_URL
+ENV SEALIGHTS_NODE_AGENT=slnodejs
 ARG BRANCH
 
 # Some packages (e.g. @google-cloud/profiler) require additional
@@ -20,7 +20,7 @@ COPY package*.json ./
 RUN npm install --only=production
 
 #install agent (Not a url)
-RUN npm i ${AGENT_URL}
+RUN npm i ${SEALIGHTS_NODE_AGENT}
 
 FROM base
 

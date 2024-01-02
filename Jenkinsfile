@@ -16,12 +16,8 @@ pipeline {
     string(name: 'BUILD_BRANCH', defaultValue: 'public', description: 'Branch to Build images that have the creational LAB_ID (send to public branch to build)')
     string(name: 'SL_TOKEN', defaultValue: 'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL0RFVi1pbnRlZ3JhdGlvbi5hdXRoLnNlYWxpZ2h0cy5pby8iLCJqd3RpZCI6IkRFVi1pbnRlZ3JhdGlvbixuZWVkVG9SZW1vdmUsQVBJR1ctYzNiM2IyY2YtYjA1Yy00ZWM2LThjNjYtZTBmZTJiYzIwNzAzLDE2OTI4Nzc3MDM4ODUiLCJzdWJqZWN0IjoiU2VhTGlnaHRzQGFnZW50IiwiYXVkaWVuY2UiOlsiYWdlbnRzIl0sIngtc2wtcm9sZSI6ImFnZW50IiwieC1zbC1zZXJ2ZXIiOiJodHRwczovL2Rldi1pbnRlZ3JhdGlvbi5kZXYuc2VhbGlnaHRzLmNvL2FwaSIsInNsX2ltcGVyX3N1YmplY3QiOiIiLCJpYXQiOjE2OTI4Nzc3MDN9.dORXtjiTVw9vM3u2eO9l2r3f54NwEFPWVnhZnOWqV4_ZA-q2T86X861S6o4G7M371hMnoePRNoWgkjXp9isgEPEHoG_LQ_pvwc66vi5gBy8okjlypKGMTrz-N8bF1LeswguuSDDPIpm0Qq7KSjcm-GZmtO2IhJu4Q6f-tX0otMvvr6_nuwfVReExsT0Mxoyu0ZFs2HHwuIqhu12v1wNUuiTNIxQnGqckLw1qrroTG-qrDa8ydC111ML9C-u4qdS6G0iDsSdrQk9RETe0b1ow1vMXMFZeQ0vBrJDFjMnaCUhU6iid8xjkZG3T6XAI0k5SBRN8R6dtTO45mE638ohJi1_YBQL8hSkHL-8X_QkbRCH6IFqPcku0Wu2AcaRkBKOoiYAowFxnrQgYx5n_FVuTXNwW-s18Gnebd-bTBveCAHQH6CEbnpznXyMNXc15tOVdfp1n3RHLx9YE2lYI3dsTdwUlwNhto4J1Ym3ZOrLW_GZwLzZyIITfmNUOQVspwzsVOioeA48DZNpZhpZUAK5P19v0KY_iyJKxGajWnAUkXbyqc72d7eG5cUsIgv-r_p7fwnO4Rm1FVaZJ4Cpv7b4yf5YHGJ7BADI5Zw6YXuWQ3d9snZfvKOR50KVZGOykqwExYEwBACpN1WSEoIg8No7wTry_xNPmkTYOHbNoWuzyjTo', description: 'sl-token')
     string(name: 'BUILD_NAME', defaultValue: '', description: 'build name (should change on every build)')
-    string(name: 'JAVA_AGENT_URL', defaultValue: 'https://storage.googleapis.com/cloud-profiler/java/latest/profiler_java_agent_alpine.tar.gz', description: 'use different java agent')
-    string(name: 'DOTNET_AGENT_URL', defaultValue: 'https://agents.sealights.co/dotnetcore/latest/sealights-dotnet-agent-alpine-self-contained.tar.gz', description: 'use different dotnet agent')
-    string(name: 'NODE_AGENT_URL', defaultValue: 'slnodejs', description: 'use different node agent')
-    string(name: 'GO_AGENT_URL', defaultValue: 'https://agents.sealights.co/slgoagent/latest/slgoagent-linux-amd64.tar.gz', description: 'use different go agent')
-    string(name: 'GO_SLCI_AGENT_URL', defaultValue: 'https://agents.sealights.co/slcli/latest/slcli-linux-amd64.tar.gz', description: 'use different slci go agent')
-    string(name: 'PYTHON_AGENT_URL', defaultValue: 'sealights-python-agent', description: 'use different python agent')
+    
+    booleanParam(name: 'MY_BOOLEAN', defaultValue: true, description: 'My boolean')
     choice(name: 'MODIFIED_COVERAGE', choices: ['OFF', 'ON'], description: 'MODIFIED COVERAGE')
 
   }
@@ -41,20 +37,12 @@ pipeline {
         script {
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
 
-          def MapUrl = new HashMap()
-          MapUrl.put('JAVA_AGENT_URL', "${params.JAVA_AGENT_URL}")
-          MapUrl.put('DOTNET_AGENT_URL', "${params.DOTNET_AGENT_URL}")
-          MapUrl.put('NODE_AGENT_URL', "${params.NODE_AGENT_URL}")
-          MapUrl.put('GO_AGENT_URL', "${params.GO_AGENT_URL}")
-          MapUrl.put('GO_SLCI_AGENT_URL', "${params.GO_SLCI_AGENT_URL}")
-          MapUrl.put('PYTHON_AGENT_URL', "${params.PYTHON_AGENT_URL}")
           build_btq(
             sl_report_branch: params.BRANCH,
             sl_token: params.SL_TOKEN,
             build_name: "1-0-${BUILD_NUMBER}",
             branch: params.BRANCH,
             tag: env.CURRENT_VERSION,
-            mapurl: MapUrl
           )
         }
       }
@@ -100,81 +88,6 @@ pipeline {
       }
     }
 
-//--------------------------------run changed branch to get modefied coverage
-    stage('Check changed condition'){
-      steps{
-        script {
-          if(params.MODIFIED_COVERAGE=='OFF'){// If modefied coverage parameter is set to off skip the rest
-            //currentBuild.result = 'SUCCESS'
-            return
-          }
-        }
-      }
-    }
-    stage('Changed - Clone Repository') {
-      steps {
-        script {
-          git branch: params.CHANGED_BRANCH, url: 'https://github.com/Sealights/microservices-demo-template.git'
-          
-        }
-      }
-    }
-
-    stage('Changed Build BTQ') {
-      steps {
-        script {
-          env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
-          def MapUrl = new HashMap()
-          MapUrl.put('JAVA_AGENT_URL', "${params.JAVA_AGENT_URL}")
-          MapUrl.put('DOTNET_AGENT_URL', "${params.DOTNET_AGENT_URL}")
-          MapUrl.put('NODE_AGENT_URL', "${params.NODE_AGENT_URL}")
-          MapUrl.put('GO_AGENT_URL', "${params.GO_AGENT_URL}")
-          MapUrl.put('GO_SLCI_AGENT_URL', "${params.GO_SLCI_AGENT_URL}")
-          MapUrl.put('PYTHON_AGENT_URL', "${params.PYTHON_AGENT_URL}")
-          build_btq(
-            sl_report_branch: params.BRANCH,
-            sl_token: params.SL_TOKEN,
-            build_name: "1-0-${BUILD_NUMBER}-changed",
-            branch: params.CHANGED_BRANCH,
-            tag: "${env.CURRENT_VERSION}-changed",
-            mapurl: MapUrl
-          )
-        }
-      }
-    }
-
-
-
-    stage('update-btq changed') {
-      steps {
-        script {
-          env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
-
-          def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
-          build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${params.machine_dns}"),
-                                                string(name:'tag' , value:"${env.CURRENT_VERSION}-changed"),
-                                                string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}-changed"),
-                                                string(name:'labid' , value:"${env.LAB_ID}"),
-                                                string(name:'branch' , value:"${params.CHANGED_BRANCH}"),
-                                                string(name:'token' , value:"${params.SL_TOKEN}"),
-                                                string(name:'sl_branch' , value:"${params.BRANCH}")])
-        }
-      }
-    }
-
-    stage('Changed Run Tests') {
-      steps {
-        script {
-          run_tests(
-            branch: params.BRANCH,
-            lab_id: env.LAB_ID,
-            token: params.SL_TOKEN,
-            machine_dns: "${params.machine_dns}:8081"
-          )
-        }
-      }
-    }
-
   }
 }
 
@@ -201,34 +114,15 @@ def build_btq(Map params){
 
   services_list.each { service ->
     parallelLabs["${service}"] = {
-      def AGENT_URL = getParamForService(service , params.mapurl)
       build(job: 'BTQ-BUILD', parameters: [string(name: 'SERVICE', value: "${service}"),
                                            string(name:'TAG' , value:"${params.tag}"),
                                            string(name:'SL_REPORT_BRANCH' , value:"${params.sl_report_branch}"),
                                            string(name:'BRANCH' , value:"${params.branch}"),
                                            string(name:'BUILD_NAME' , value:"${env.BUILD_NAME}"),
-                                           string(name:'SL_TOKEN' , value:"${params.SL_TOKEN}"),
-                                           string(name:'AGENT_URL' , value:AGENT_URL[0]),
-                                           string(name:'AGENT_URL_SLCI' , value:AGENT_URL[1])])
+                                           string(name:'SL_TOKEN' , value:"${params.SL_TOKEN}")])
     }
   }
   parallel parallelLabs
-}
-
-def getParamForService(service, mapurl) {
-
-  switch (service) {
-    case "adservice":
-      return [mapurl['JAVA_AGENT_URL'].toString(),""]
-    case "cartservice":
-      return [mapurl['DOTNET_AGENT_URL'].toString(),""]
-    case ["checkoutservice","frontend","productcatalogservice","shippingservice"]:
-      return [mapurl['GO_AGENT_URL'].toString(),mapurl['GO_SLCI_AGENT_URL'].toString()]
-    case ["emailservice","recommendationservice"]:
-      return [mapurl['PYTHON_AGENT_URL'].toString(),""]
-    case ["currencyservice","paymentservice"]:
-      return [mapurl['NODE_AGENT_URL'].toString(),""]
-  }
 }
 
 
@@ -301,11 +195,3 @@ def convert_to_map(mapAsString) {
 
   return map
 }
-
-def clone_repo(Map params){
-  // Clone the repository with the specified branch
-  git branch: params.branch, url: 'https://github.com/Sealights/microservices-demo.git'
-}
-
-
-

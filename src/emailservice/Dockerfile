@@ -4,7 +4,7 @@ FROM base as builder
 ARG SEALIGHTS_TOKEN
 ARG BRANCH
 ARG BUILD_NAME
-ARG AGENT_URL
+ENV SEALIGHTS_PYTHON=sealights-python-agent
 #Don't forget to add git
 RUN apt-get -qq update \
     && apt-get install -y --no-install-recommends \
@@ -15,7 +15,7 @@ RUN apt-get -qq update \
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 #Installing sealights (Not a url)
-RUN pip install ${AGENT_URL}
+RUN pip install ${SEALIGHTS_PYTHON}
 
 FROM builder
 # Enable unbuffered logging

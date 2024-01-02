@@ -6,8 +6,8 @@ SealightsEnvVars:
   token: ""
   lab_id: ""
   build_name: ""
-  java_agent_url: ""
-  dotnet_agent_url: ""
+  java_agent_url: "https://storage.googleapis.com/cloud-profiler/java/latest/profiler_java_agent_alpine.tar.gz"
+  dotnet_agent_url: "https://agents.sealights.co/dotnetcore/latest/sealights-dotnet-agent-alpine-self-contained.tar.gz"
   sl_branch: ""
 
 images:

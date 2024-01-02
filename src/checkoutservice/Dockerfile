@@ -6,8 +6,8 @@ ARG SEALIGHTS_TOKEN
 ARG BRANCH
 ARG BUILD_NAME
 ARG SERVICE_NAME=chechoutservice
-ARG AGENT_URL
-ARG AGENT_URL_SLCI
+ENV AGENT_URL='https://agents.sealights.co/slgoagent/latest/slgoagent-linux-amd64.tar.gz'
+ENV AGENT_URL_SLCI='https://agents.sealights.co/slcli/latest/slcli-linux-amd64.tar.gz'
 #Golang uses two agents, one for scanning and one for monitoring
 ENV OS_ARCH linux-amd64
 

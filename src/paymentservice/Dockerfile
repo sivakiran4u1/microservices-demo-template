@@ -19,7 +19,7 @@ FROM base as builder
 ARG SEALIGHTS_TOKEN
 ARG BRANCH
 ARG BUILD_NAME=0.4.3
-ARG AGENT_URL=slnodejs
+ENV SEALIGHTS_NODE_AGENT=slnodejs
 # Some packages (e.g. @google-cloud/profiler) require additional
 # deps for post-install scripts
 RUN apk add --update --no-cache \
@@ -33,7 +33,7 @@ WORKDIR /usr/src/app
 COPY . .
 RUN npm install --only=production
 #Install the agent (Not a url)
-RUN npm i ${AGENT_URL}
+RUN npm i ${SEALIGHTS_NODE_AGENT}
 #Run config to get build session id
 RUN  ./node_modules/.bin/slnodejs config --token ${SEALIGHTS_TOKEN} --appname "paymentservice" --branch ${BRANCH} --build ${BUILD_NAME}
 #Scan the code

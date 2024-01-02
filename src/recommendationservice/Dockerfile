@@ -4,7 +4,7 @@ FROM base as builder
 ARG SEALIGHTS_TOKEN
 ARG BRANCH
 ARG BUILD_NAME=0.4.3
-ARG AGENT_URL=sealights-python-agent
+ENV SEALIGHTS_PYTHON=sealights-python-agent
 # Install Git in the base stage
 RUN apt-get -qq update \
     && apt-get install -y --no-install-recommends \
@@ -15,7 +15,7 @@ RUN apt-get -qq update \
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 #Install agent (not a url)
-RUN pip install ${AGENT_URL}
+RUN pip install ${SEALIGHTS_PYTHON}
 
 FROM builder
 

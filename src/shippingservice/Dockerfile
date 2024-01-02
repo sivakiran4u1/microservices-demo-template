@@ -21,8 +21,8 @@ ARG BRANCH
 ARG SERVICE_NAME=shippingservice
 ENV OS_ARCH linux-amd64
 #Golang uses two agents
-ARG AGENT_URL=https://agents.sealights.co/slgoagent/latest/slgoagent-linux-amd64.tar.gz
-ARG AGENT_URL_SLCI=https://agents.sealights.co/slcli/latest/slcli-linux-amd64.tar.gz
+ENV AGENT_URL='https://agents.sealights.co/slgoagent/latest/slgoagent-linux-amd64.tar.gz'
+ENV AGENT_URL_SLCI='https://agents.sealights.co/slcli/latest/slcli-linux-amd64.tar.gz'
 
 WORKDIR /src
 
