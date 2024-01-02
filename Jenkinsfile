@@ -16,10 +16,18 @@ pipeline {
     string(name: 'BUILD_BRANCH', defaultValue: 'public', description: 'Branch to Build images that have the creational LAB_ID (send to public branch to build)')
     string(name: 'SL_TOKEN', defaultValue: 'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL0RFVi1pbnRlZ3JhdGlvbi5hdXRoLnNlYWxpZ2h0cy5pby8iLCJqd3RpZCI6IkRFVi1pbnRlZ3JhdGlvbixuZWVkVG9SZW1vdmUsQVBJR1ctYzNiM2IyY2YtYjA1Yy00ZWM2LThjNjYtZTBmZTJiYzIwNzAzLDE2OTI4Nzc3MDM4ODUiLCJzdWJqZWN0IjoiU2VhTGlnaHRzQGFnZW50IiwiYXVkaWVuY2UiOlsiYWdlbnRzIl0sIngtc2wtcm9sZSI6ImFnZW50IiwieC1zbC1zZXJ2ZXIiOiJodHRwczovL2Rldi1pbnRlZ3JhdGlvbi5kZXYuc2VhbGlnaHRzLmNvL2FwaSIsInNsX2ltcGVyX3N1YmplY3QiOiIiLCJpYXQiOjE2OTI4Nzc3MDN9.dORXtjiTVw9vM3u2eO9l2r3f54NwEFPWVnhZnOWqV4_ZA-q2T86X861S6o4G7M371hMnoePRNoWgkjXp9isgEPEHoG_LQ_pvwc66vi5gBy8okjlypKGMTrz-N8bF1LeswguuSDDPIpm0Qq7KSjcm-GZmtO2IhJu4Q6f-tX0otMvvr6_nuwfVReExsT0Mxoyu0ZFs2HHwuIqhu12v1wNUuiTNIxQnGqckLw1qrroTG-qrDa8ydC111ML9C-u4qdS6G0iDsSdrQk9RETe0b1ow1vMXMFZeQ0vBrJDFjMnaCUhU6iid8xjkZG3T6XAI0k5SBRN8R6dtTO45mE638ohJi1_YBQL8hSkHL-8X_QkbRCH6IFqPcku0Wu2AcaRkBKOoiYAowFxnrQgYx5n_FVuTXNwW-s18Gnebd-bTBveCAHQH6CEbnpznXyMNXc15tOVdfp1n3RHLx9YE2lYI3dsTdwUlwNhto4J1Ym3ZOrLW_GZwLzZyIITfmNUOQVspwzsVOioeA48DZNpZhpZUAK5P19v0KY_iyJKxGajWnAUkXbyqc72d7eG5cUsIgv-r_p7fwnO4Rm1FVaZJ4Cpv7b4yf5YHGJ7BADI5Zw6YXuWQ3d9snZfvKOR50KVZGOykqwExYEwBACpN1WSEoIg8No7wTry_xNPmkTYOHbNoWuzyjTo', description: 'sl-token')
     string(name: 'BUILD_NAME', defaultValue: '', description: 'build name (should change on every build)')
-    
-    booleanParam(name: 'MY_BOOLEAN', defaultValue: true, description: 'My boolean')
-    choice(name: 'MODIFIED_COVERAGE', choices: ['OFF', 'ON'], description: 'MODIFIED COVERAGE')
-
+    booleanParam(name: 'Run_all_tests', defaultValue: true, description: 'Checking this box will run all tests even if individual ones are not checked')
+    booleanParam(name: 'Cucumber', defaultValue: false, description: 'Run tests using Cucumber testing framework (java)')
+    booleanParam(name: 'Junit_with_testNG', defaultValue: false, description: 'Run tests using Junit testing framework with testNG (maven)')
+    booleanParam(name: 'Junit_without_testNG', defaultValue: false, description: 'Run tests using Junit testing framework without testNG (maven)')
+    booleanParam(name: 'Junit_with_testNG_gradle', defaultValue: false, description: 'Run tests using Junit testing framework with testNG (gradle)')
+    booleanParam(name: 'Mocha', defaultValue: false, description: 'Run tests using Mocha testing framework')
+    booleanParam(name: 'MS', defaultValue: false, description: 'Run tests using MS testing framework')
+    booleanParam(name: 'NUnit', defaultValue: false, description: 'Run tests using NUnit testing framework')
+    booleanParam(name: 'Postman', defaultValue: false, description: 'Run tests using postman testing framework')
+    booleanParam(name: 'Pytest', defaultValue: false, description: 'Run tests using Pytest testing framework')
+    booleanParam(name: 'Robot', defaultValue: false, description: 'Run tests using Robot testing framework')
+    booleanParam(name: 'Soapui', defaultValue: false, description: 'Run tests using Soapui testing framework')
   }
 
   stages {
@@ -133,6 +141,18 @@ def run_tests(Map params){
         string(name: 'SL_LABID', value: "${params.lab_id}"),
         string(name: 'SL_TOKEN', value: "${params.token}"),
         string(name: 'MACHINE_DNS', value: "http://${params.machine_dns}")
+        booleanParam(name: 'Run_all_tests', value: params.Run_all_tests)
+        booleanParam(name: 'Cucumber', value: params.Cucumber)
+        booleanParam(name: 'Junit_with_testNG', value: params.Junit_with_testNG)
+        booleanParam(name: 'Junit_without_testNG', value: params.Junit_without_testNG)
+        booleanParam(name: 'Junit_with_testNG_gradle', value: params.Junit_with_testNG_gradle)
+        booleanParam(name: 'Mocha', value: params.Mocha)
+        booleanParam(name: 'MS', value: params.Mocha)
+        booleanParam(name: 'NUnit', value: params.NUnit)
+        booleanParam(name: 'Postman', value: params.Postman)
+        booleanParam(name: 'Pytest', value: params.Pytest)
+        booleanParam(name: 'Robot', value: params.Robot)
+        booleanParam(name: 'Soapui', value: params.Soapui)
       ])
 
 }

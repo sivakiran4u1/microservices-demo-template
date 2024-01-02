@@ -15,7 +15,18 @@ pipeline {
     string(name: 'SL_TOKEN', defaultValue: '', description: 'SL_TOKEN')
     string(name: 'SL_LABID', defaultValue: '', description: 'Lab_id')
     string(name: 'MACHINE_DNS', defaultValue: '', description: 'machine dns')
-
+    booleanParam(name: 'Run_all_tests', defaultValue: true, description: 'Checking this box will run all tests even if individual ones are not checked')
+    booleanParam(name: 'Cucumber', defaultValue: false, description: 'Run tests using Cucumber testing framework (java)')
+    booleanParam(name: 'Junit_with_testNG', defaultValue: false, description: 'Run tests using Junit testing framework with testNG (maven)')
+    booleanParam(name: 'Junit_without_testNG', defaultValue: false, description: 'Run tests using Junit testing framework without testNG (maven)')
+    booleanParam(name: 'Junit_with_testNG_gradle', defaultValue: false, description: 'Run tests using Junit testing framework with testNG (gradle)')
+    booleanParam(name: 'Mocha', defaultValue: false, description: 'Run tests using Mocha testing framework')
+    booleanParam(name: 'MS', defaultValue: false, description: 'Run tests using MS testing framework')
+    booleanParam(name: 'NUnit', defaultValue: false, description: 'Run tests using NUnit testing framework')
+    booleanParam(name: 'Postman', defaultValue: false, description: 'Run tests using postman testing framework')
+    booleanParam(name: 'Pytest', defaultValue: false, description: 'Run tests using Pytest testing framework')
+    booleanParam(name: 'Robot', defaultValue: false, description: 'Run tests using Robot testing framework')
+    booleanParam(name: 'Soapui', defaultValue: false, description: 'Run tests using Soapui testing framework')
   }
   environment {
     MACHINE_DNS = "${params.MACHINE_DNS}"
