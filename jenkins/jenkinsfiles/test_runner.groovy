@@ -126,19 +126,21 @@ pipeline {
     stage('robot framework'){
       steps{
         script{
-          sh """
-                    sleep ${env.wait_time}
-                    export machine_dns="${params.MACHINE_DNS}"
-                    echo 'robot framework starting ..... '
-                    cd ./integration-tests/robot-tests
-                    sl-python start --labid ${SL_LABID} --token ${SL_TOKEN} --teststage "Robot Tests"
-                    sleep 30
-                    robot -xunit api_tests.robot
-                    sl-python uploadreports --reportfile "unit.xml" --labid ${SL_LABID} --token ${SL_TOKEN}
-                    sleep 30
-                    sl-python end --labid ${SL_LABID} --token ${SL_TOKEN}
-                    cd ../..
-                    """
+          if( params.Run_all_tests == true || params.Robot == true) {
+            sh """
+                      sleep ${env.wait_time}
+                      export machine_dns="${params.MACHINE_DNS}"
+                      echo 'robot framework starting ..... '
+                      cd ./integration-tests/robot-tests
+                      sl-python start --labid ${SL_LABID} --token ${SL_TOKEN} --teststage "Robot Tests"
+                      sleep 30
+                      robot -xunit api_tests.robot
+                      sl-python uploadreports --reportfile "unit.xml" --labid ${SL_LABID} --token ${SL_TOKEN}
+                      sleep 30
+                      sl-python end --labid ${SL_LABID} --token ${SL_TOKEN}
+                      cd ../..
+                      """
+          }
         }
       }
     }
@@ -146,34 +148,35 @@ pipeline {
     stage('Cucumber framework') {
       steps{
         script{
-          sh """
-                    #!/bin/bash
-                    sleep ${env.wait_time}
-                    export machine_dns="${params.MACHINE_DNS}"
-                    echo 'Cucumber framework starting ..... '
-                    cd ./integration-tests/cucumber-framework/
-                    echo ${params.SL_TOKEN}>sltoken.txt
-                    # shellcheck disable=SC2016
-                    echo  '{
-                            "executionType": "testsonly",
-                            "tokenFile": "./sltoken.txt",
-                            "createBuildSessionId": false,
-                            "testStage": "Cucmber framework java ",
-                            "runFunctionalTests": true,
-                            "labId": "${params.SL_LABID}",
-                            "proxy": null,
-                            "logEnabled": false,
-                            "logDestination": "console",
-                            "logLevel": "warn",
-                            "sealightsJvmParams": {}
-                            }' > slmaventests.json
-                    echo "Adding Sealights to Tests Project POM file..."
-                    java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
+          if( params.Run_all_tests == true || params.Cucumber == true) {
+            sh """
+                      #!/bin/bash
+                      sleep ${env.wait_time}
+                      export machine_dns="${params.MACHINE_DNS}"
+                      echo 'Cucumber framework starting ..... '
+                      cd ./integration-tests/cucumber-framework/
+                      echo ${params.SL_TOKEN}>sltoken.txt
+                      # shellcheck disable=SC2016
+                      echo  '{
+                              "executionType": "testsonly",
+                              "tokenFile": "./sltoken.txt",
+                              "createBuildSessionId": false,
+                              "testStage": "Cucmber framework java ",
+                              "runFunctionalTests": true,
+                              "labId": "${params.SL_LABID}",
+                              "proxy": null,
+                              "logEnabled": false,
+                              "logDestination": "console",
+                              "logLevel": "warn",
+                              "sealightsJvmParams": {}
+                              }' > slmaventests.json
+                      echo "Adding Sealights to Tests Project POM file..."
+                      java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
 
-                    unset MAVEN_CONFIG
-                    ./mvnw test
-                    """
-
+                      unset MAVEN_CONFIG
+                      ./mvnw test
+                      """
+          }
         }
       }
     }
@@ -183,34 +186,36 @@ pipeline {
     stage('Junit support testNG framework'){
       steps{
         script{
-          sh """
-                    #!/bin/bash
-                    sleep ${env.wait_time}
-                    echo 'Junit support testNG framework starting ..... '
-                    pwd
-                    ls
-                    cd ./integration-tests/support-testNG
-                    export SL_TOKEN="${params.SL_TOKEN}"
-                    echo $SL_TOKEN>sltoken.txt
-                    export machine_dns="${params.MACHINE_DNS}"
-                    # shellcheck disable=SC2016
-                    echo  '{
-                            "executionType": "testsonly",
-                            "tokenFile": "./sltoken.txt",
-                            "createBuildSessionId": false,
-                            "testStage": "Junit support testNG",
-                            "runFunctionalTests": true,
-                            "labId": "${params.SL_LABID}",
-                            "proxy": null,
-                            "logEnabled": false,
-                            "logDestination": "console",
-                            "logLevel": "warn",
-                            "sealightsJvmParams": {}
-                            }' > slmaventests.json
-                    echo "Adding Sealights to Tests Project POM file..."
-                    java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
-                    mvn clean package
-                    """
+          if( params.Run_all_tests == true || params.Junit_with_testNG == true) {
+            sh """
+                      #!/bin/bash
+                      sleep ${env.wait_time}
+                      echo 'Junit support testNG framework starting ..... '
+                      pwd
+                      ls
+                      cd ./integration-tests/support-testNG
+                      export SL_TOKEN="${params.SL_TOKEN}"
+                      echo $SL_TOKEN>sltoken.txt
+                      export machine_dns="${params.MACHINE_DNS}"
+                      # shellcheck disable=SC2016
+                      echo  '{
+                              "executionType": "testsonly",
+                              "tokenFile": "./sltoken.txt",
+                              "createBuildSessionId": false,
+                              "testStage": "Junit support testNG",
+                              "runFunctionalTests": true,
+                              "labId": "${params.SL_LABID}",
+                              "proxy": null,
+                              "logEnabled": false,
+                              "logDestination": "console",
+                              "logLevel": "warn",
+                              "sealightsJvmParams": {}
+                              }' > slmaventests.json
+                      echo "Adding Sealights to Tests Project POM file..."
+                      java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
+                      mvn clean package
+                      """
+          }
         }
       }
     }
@@ -219,35 +224,37 @@ pipeline {
     stage('Junit without testNG '){
       steps{
         script{
-          sh """
-                    #!/bin/bash
-                    sleep ${env.wait_time}
-                    echo 'Junit without testNG framework starting ..... '
-                    pwd
-                    ls
-                    cd integration-tests/java-tests
-                    export SL_TOKEN="${params.SL_TOKEN}"
-                    echo $SL_TOKEN>sltoken.txt
-                    export machine_dns="${params.MACHINE_DNS}"
-                    # shellcheck disable=SC2016
-                    echo  '{
-                            "executionType": "testsonly",
-                            "tokenFile": "./sltoken.txt",
-                            "createBuildSessionId": false,
-                            "testStage": "Junit without testNG",
-                            "runFunctionalTests": true,
-                            "labId": "${params.SL_LABID}",
-                            "proxy": null,
-                            "logEnabled": false,
-                            "logDestination": "console",
-                            "logLevel": "warn",
-                            "sealightsJvmParams": {}
-                            }' > slmaventests.json
-                    echo "Adding Sealights to Tests Project POM file..."
-                    java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
+          if( params.Run_all_tests == true || params.Junit_without_testNG == true) {
+            sh """
+                      #!/bin/bash
+                      sleep ${env.wait_time}
+                      echo 'Junit without testNG framework starting ..... '
+                      pwd
+                      ls
+                      cd integration-tests/java-tests
+                      export SL_TOKEN="${params.SL_TOKEN}"
+                      echo $SL_TOKEN>sltoken.txt
+                      export machine_dns="${params.MACHINE_DNS}"
+                      # shellcheck disable=SC2016
+                      echo  '{
+                              "executionType": "testsonly",
+                              "tokenFile": "./sltoken.txt",
+                              "createBuildSessionId": false,
+                              "testStage": "Junit without testNG",
+                              "runFunctionalTests": true,
+                              "labId": "${params.SL_LABID}",
+                              "proxy": null,
+                              "logEnabled": false,
+                              "logDestination": "console",
+                              "logLevel": "warn",
+                              "sealightsJvmParams": {}
+                              }' > slmaventests.json
+                      echo "Adding Sealights to Tests Project POM file..."
+                      java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
 
-                    mvn clean package
-                    """
+                      mvn clean package
+                      """
+          }
         }
       }
     }
@@ -256,7 +263,8 @@ pipeline {
     stage('Postman framework'){
       steps{
         script{
-          sh """
+          if( params.Run_all_tests == true || params.Postman == true) {
+            sh """
                     sleep ${env.wait_time}
                     echo 'Postman framework starting ..... '
                     export MACHINE_DNS="${params.MACHINE_DNS}"
@@ -271,6 +279,7 @@ pipeline {
                     ./node_modules/.bin/slnodejs end --labid ${params.SL_LABID} --token ${params.SL_TOKEN}
                     cd ../..
                     """
+          }
         }
       }
     }
@@ -303,17 +312,19 @@ pipeline {
     stage('Mocha framework'){
       steps{
         script{
-          sh """
-                    sleep ${env.wait_time}
-                    echo 'Mocha framework starting ..... '
-                    export machine_dns="${params.MACHINE_DNS}"
-                    cd ./integration-tests/nodejs-tests/mocha
-                    cp -r /nodeModules/node_modules .
-                    npm install
-                    npm install slnodejs
-                    ./node_modules/.bin/slnodejs mocha --token "${params.SL_TOKEN}" --labid "${params.SL_LABID}" --teststage 'Mocha tests'  --useslnode2 -- ./test/test.js --recursive --no-timeouts
-                    cd ../..
-                    """
+          if( params.Run_all_tests == true || params.Mocha == true) {
+            sh """
+                      sleep ${env.wait_time}
+                      echo 'Mocha framework starting ..... '
+                      export machine_dns="${params.MACHINE_DNS}"
+                      cd ./integration-tests/nodejs-tests/mocha
+                      cp -r /nodeModules/node_modules .
+                      npm install
+                      npm install slnodejs
+                      ./node_modules/.bin/slnodejs mocha --token "${params.SL_TOKEN}" --labid "${params.SL_LABID}" --teststage 'Mocha tests'  --useslnode2 -- ./test/test.js --recursive --no-timeouts
+                      cd ../..
+                      """
+          }
         }
       }
     }
@@ -323,40 +334,42 @@ pipeline {
     stage('Soap-UI framework'){
       steps{
         script{
-          sh """
-            sleep ${env.wait_time}
-            echo 'Soap-UI framework starting ..... '
-            wget https://dl.eviware.com/soapuios/5.7.1/SoapUI-5.7.1-mac-bin.zip
-            unzip SoapUI-5.7.1-mac-bin.zip
-            cp integration-tests/soapUI/test-soapui-project.xml SoapUI-5.7.1/bin
-            cd SoapUI-5.7.1/bin
-            echo 'Downloading Sealights Agents...'
-            wget -nv https://agents.sealights.co/sealights-java/sealights-java-latest.zip
-            unzip -o sealights-java-latest.zip
-            echo "Sealights agent version used is:" `cat sealights-java-version.txt`
-            export SL_TOKEN="${params.SL_TOKEN}"
-            echo ${params.SL_TOKEN}>sltoken.txt
-            echo  '{
-              "executionType": "testsonly",
-              "tokenFile": "./sltoken.txt",
-              "createBuildSessionId": false,
-              "testStage": "Soap-UI framework",
-              "runFunctionalTests": true,
-              "labId": "${params.SL_LABID}",
-              "proxy": null,
-              "logEnabled": false,
-              "logDestination": "console",
-              "logLevel": "warn",
-              "sealightsJvmParams": {}
-              }' > slmaventests.json
-            echo "Adding Sealights to Tests Project POM file..."
-            pwd
-            sed -i "s#machine_dns#${params.MACHINE_DNS}#" test-soapui-project.xml
-            sed "s#machine_dns#${params.MACHINE_DNS}#" test-soapui-project.xml
-            export SL_JAVA_OPTS="-javaagent:sl-test-listener.jar -Dsl.token=${params.SL_TOKEN} -Dsl.labId=${params.SL_LABID} -Dsl.testStage=Soapui-Tests -Dsl.log.enabled=true -Dsl.log.level=debug -Dsl.log.toConsole=true"
-            sed -i -r "s/(^\\S*java)(.*com.eviware.soapui.tools.SoapUITestCaseRunner)/\\1 \\\$SL_JAVA_OPTS \\2/g" testrunner.sh
-            sh -x ./testrunner.sh -s "TestSuite 1" "test-soapui-project.xml"
-            """
+          if( params.Run_all_tests == true || params.Soapui == true) {
+            sh """
+              sleep ${env.wait_time}
+              echo 'Soap-UI framework starting ..... '
+              wget https://dl.eviware.com/soapuios/5.7.1/SoapUI-5.7.1-mac-bin.zip
+              unzip SoapUI-5.7.1-mac-bin.zip
+              cp integration-tests/soapUI/test-soapui-project.xml SoapUI-5.7.1/bin
+              cd SoapUI-5.7.1/bin
+              echo 'Downloading Sealights Agents...'
+              wget -nv https://agents.sealights.co/sealights-java/sealights-java-latest.zip
+              unzip -o sealights-java-latest.zip
+              echo "Sealights agent version used is:" `cat sealights-java-version.txt`
+              export SL_TOKEN="${params.SL_TOKEN}"
+              echo ${params.SL_TOKEN}>sltoken.txt
+              echo  '{
+                "executionType": "testsonly",
+                "tokenFile": "./sltoken.txt",
+                "createBuildSessionId": false,
+                "testStage": "Soap-UI framework",
+                "runFunctionalTests": true,
+                "labId": "${params.SL_LABID}",
+                "proxy": null,
+                "logEnabled": false,
+                "logDestination": "console",
+                "logLevel": "warn",
+                "sealightsJvmParams": {}
+                }' > slmaventests.json
+              echo "Adding Sealights to Tests Project POM file..."
+              pwd
+              sed -i "s#machine_dns#${params.MACHINE_DNS}#" test-soapui-project.xml
+              sed "s#machine_dns#${params.MACHINE_DNS}#" test-soapui-project.xml
+              export SL_JAVA_OPTS="-javaagent:sl-test-listener.jar -Dsl.token=${params.SL_TOKEN} -Dsl.labId=${params.SL_LABID} -Dsl.testStage=Soapui-Tests -Dsl.log.enabled=true -Dsl.log.level=debug -Dsl.log.toConsole=true"
+              sed -i -r "s/(^\\S*java)(.*com.eviware.soapui.tools.SoapUITestCaseRunner)/\\1 \\\$SL_JAVA_OPTS \\2/g" testrunner.sh
+              sh -x ./testrunner.sh -s "TestSuite 1" "test-soapui-project.xml"
+              """
+          }
         }
       }
     }
@@ -367,16 +380,18 @@ pipeline {
     stage('Pytest framework'){
       steps{
         script{
-          sh"""
-                sleep ${env.wait_time}
-                echo 'Pytest tests starting ..... '
-                export machine_dns="${params.MACHINE_DNS}"
-                cd ./integration-tests/python-tests
-                pip install pytest
-                pip install requests
-                sl-python pytest --teststage "Pytest tests"  --labid ${params.SL_LABID} --token ${params.SL_TOKEN} python-tests.py
-                cd ../..
-                """
+          if( params.Run_all_tests == true || params.Pytest == true) {
+            sh"""
+                  sleep ${env.wait_time}
+                  echo 'Pytest tests starting ..... '
+                  export machine_dns="${params.MACHINE_DNS}"
+                  cd ./integration-tests/python-tests
+                  pip install pytest
+                  pip install requests
+                  sl-python pytest --teststage "Pytest tests"  --labid ${params.SL_LABID} --token ${params.SL_TOKEN} python-tests.py
+                  cd ../..
+                  """
+          }
         }
       }
     }
