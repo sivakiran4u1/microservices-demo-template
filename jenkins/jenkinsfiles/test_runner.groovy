@@ -17,6 +17,7 @@ pipeline {
     string(name: 'MACHINE_DNS', defaultValue: '', description: 'machine dns')
     booleanParam(name: 'Run_all_tests', defaultValue: true, description: 'Checking this box will run all tests even if individual ones are not checked')
     booleanParam(name: 'Cucumber', defaultValue: false, description: 'Run tests using Cucumber testing framework (java)')
+    booleanParam(name: 'Cypress', defaultValue: false, description: 'Run tests using Cypress testing framework')
     booleanParam(name: 'Junit_with_testNG', defaultValue: false, description: 'Run tests using Junit testing framework with testNG (maven)')
     booleanParam(name: 'Junit_without_testNG', defaultValue: false, description: 'Run tests using Junit testing framework without testNG (maven)')
     booleanParam(name: 'Junit_with_testNG_gradle', defaultValue: false, description: 'Run tests using Junit testing framework with testNG (gradle)')
@@ -44,15 +45,17 @@ pipeline {
     stage('Cypress framework starting'){
       steps{
         script{
-          build(job:"BTQ-nodejs-tests-Cypress-framework", parameters: [string(name: 'BRANCH', value: "${params.BRANCH}"),string(name: 'SL_LABID', value: "${params.SL_LABID}") , string(name:'SL_TOKEN' , value:"${params.SL_TOKEN}") ,string(name:'MACHINE_DNS1' , value:"${params.MACHINE_DNS}")])
-        }
+          if( params.Run_all_tests == true || params.Cypress == true) {
+            build(job:"BTQ-nodejs-tests-Cypress-framework", parameters: [string(name: 'BRANCH', value: "${params.BRANCH}"),string(name: 'SL_LABID', value: "${params.SL_LABID}") , string(name:'SL_TOKEN' , value:"${params.SL_TOKEN}") ,string(name:'MACHINE_DNS1' , value:"${params.MACHINE_DNS}")])
+          }
       }
     }
-
+    }
     stage('MS-Tests framework'){
       steps{
         script{
-          sh """
+          if( params.Run_all_tests == true || params.MS == true) {
+              sh """
                 sleep ${env.wait_time} # Wait at least 10 seconds for the backend to update status that the previous test stage was closed, closing and starting a test stage withing 10 seconds can cause inaccurate test stage coverage
                 echo 'MS-Tests framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}" # Inside the code we use machine_dns envronment variable
@@ -61,6 +64,7 @@ pipeline {
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir . --instrumentationMode tests --target dotnet   --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/MS-Tests/"
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
                 """
+          }
         }
       }
     }
@@ -69,49 +73,53 @@ pipeline {
     stage('N-Unit framework starting'){
       steps{
         script{
-          sh """
-                sleep ${env.wait_time}
-                echo 'N-Unit framework starting ..... '
-                export machine_dns="${params.MACHINE_DNS}"
-                dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll startExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
-                sleep 30
-                dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir . --instrumentationMode tests --target dotnet   --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/NUnit-Tests/"
-                sleep 30
-                dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
-                """
+          if( params.Run_all_tests == true || params.NUnit == true) {
+            sh """
+                  sleep ${env.wait_time}
+                  echo 'N-Unit framework starting ..... '
+                  export machine_dns="${params.MACHINE_DNS}"
+                  dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll startExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
+                  sleep 30
+                  dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir . --instrumentationMode tests --target dotnet   --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/NUnit-Tests/"
+                  sleep 30
+                  dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
+                  """
+          }
         }
       }
     }
 
 
-    stage('Gradle framework'){
+    stage('Gradle'){
       steps{
         script{
-          sh """
-                    #!/bin/bash
-                    sleep ${env.wait_time}
-                    export machine_dns="${params.MACHINE_DNS}"
-                    cd ./integration-tests/java-tests-gradle
-                    echo ${params.SL_TOKEN}>sltoken.txt
-                    echo '{
-                        "executionType": "testsonly",
-                        "tokenFile": "./sltoken.txt",
-                        "createBuildSessionId": false,
-                        "testStage": "Junit without testNG-gradle",
-                        "runFunctionalTests": true,
-                        "labId": "${params.SL_LABID}",
-                        "proxy": null,
-                        "logEnabled": false,
-                        "logDestination": "console",
-                        "logLevel": "warn",
-                        "sealightsJvmParams": {}
-                    }' > slgradletests.json
+          if( params.Run_all_tests == true || params.Junit_with_testNG_gradle == true) {
+            sh """
+                      #!/bin/bash
+                      sleep ${env.wait_time}
+                      export machine_dns="${params.MACHINE_DNS}"
+                      cd ./integration-tests/java-tests-gradle
+                      echo ${params.SL_TOKEN}>sltoken.txt
+                      echo '{
+                          "executionType": "testsonly",
+                          "tokenFile": "./sltoken.txt",
+                          "createBuildSessionId": false,
+                          "testStage": "Junit without testNG-gradle",
+                          "runFunctionalTests": true,
+                          "labId": "${params.SL_LABID}",
+                          "proxy": null,
+                          "logEnabled": false,
+                          "logDestination": "console",
+                          "logLevel": "warn",
+                          "sealightsJvmParams": {}
+                      }' > slgradletests.json
 
 
-                    echo "Adding Sealights to Tests Project gradle file..."
-                    java -jar /sealights/sl-build-scanner.jar -gradle -configfile slgradletests.json -workspacepath .
-                    gradle test
-                    """
+                      echo "Adding Sealights to Tests Project gradle file..."
+                      java -jar /sealights/sl-build-scanner.jar -gradle -configfile slgradletests.json -workspacepath .
+                      gradle test
+                      """
+          }
         }
       }
     }

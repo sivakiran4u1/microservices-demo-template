@@ -18,6 +18,7 @@ pipeline {
     string(name: 'BUILD_NAME', defaultValue: '', description: 'build name (should change on every build)')
     booleanParam(name: 'Run_all_tests', defaultValue: true, description: 'Checking this box will run all tests even if individual ones are not checked')
     booleanParam(name: 'Cucumber', defaultValue: false, description: 'Run tests using Cucumber testing framework (java)')
+    booleanParam(name: 'Cypress', defaultValue: false, description: 'Run tests using Cypress testing framework')
     booleanParam(name: 'Junit_with_testNG', defaultValue: false, description: 'Run tests using Junit testing framework with testNG (maven)')
     booleanParam(name: 'Junit_without_testNG', defaultValue: false, description: 'Run tests using Junit testing framework without testNG (maven)')
     booleanParam(name: 'Junit_with_testNG_gradle', defaultValue: false, description: 'Run tests using Junit testing framework with testNG (gradle)')
@@ -143,6 +144,7 @@ def run_tests(Map params){
         string(name: 'MACHINE_DNS', value: "http://${params.machine_dns}"),
         booleanParam(name: 'Run_all_tests', value: params.Run_all_tests),
         booleanParam(name: 'Cucumber', value: params.Cucumber),
+        booleanParam(name: 'Cypress', value: params.Cypress),
         booleanParam(name: 'Junit_with_testNG', value: params.Junit_with_testNG),
         booleanParam(name: 'Junit_without_testNG', value: params.Junit_without_testNG),
         booleanParam(name: 'Junit_with_testNG_gradle', value: params.Junit_with_testNG_gradle),
