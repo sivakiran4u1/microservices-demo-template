@@ -9,7 +9,7 @@ pipeline {
 
 
   parameters {
-    string(name: 'APP_NAME', defaultValue: 'public-BTQ', description: 'name of the app (integration build)')
+    string(name: 'APP_NAME', defaultValue: 'Boutique', description: 'name of the app (integration build)')
     string(name: 'machine_dns', defaultValue: 'your_dns', description: 'name of the app (integration build)')
     string(name: 'BRANCH', defaultValue: 'public', description: 'Branch to clone')
     string(name: 'CHANGED_BRANCH', defaultValue: 'changed-branch', description: 'Branch to compare')
