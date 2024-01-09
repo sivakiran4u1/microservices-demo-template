@@ -47,7 +47,7 @@ pipeline {
         script{
           //We're not downloading node agent since it will need to be downloaded in node modules
           sh """ 
-          mkdir /sealights
+          #mkdir /sealights
           cd /sealights
           #Java agent
           wget -nv https://agents.sealights.co/sealights-java/sealights-java-latest.zip && unzip -o sealights-java-latest.zip && rm sealights-java-latest.zip
@@ -58,6 +58,7 @@ pipeline {
           #Dotnet agent
           wget -nv -O sealights-dotnet-agent.tar.gz https://agents.sealights.co/dotnetcore/latest/sealights-dotnet-agent-linux-self-contained.tar.gz && \
           mkdir sl-dotnet-agent && tar -xzf ./sealights-dotnet-agent.tar.gz --directory ./sl-dotnet-agent
+          cd ~
           """
         }
       }
