@@ -53,7 +53,7 @@ pipeline {
           wget -nv https://agents.sealights.co/sealights-java/sealights-java-latest.zip && unzip -o sealights-java-latest.zip && rm sealights-java-latest.zip
           
           #Python agent
-          RUN pip install sealights-python-agent
+          pip install sealights-python-agent
           
           #Dotnet agent
           wget -nv -O sealights-dotnet-agent.tar.gz https://agents.sealights.co/dotnetcore/latest/sealights-dotnet-agent-linux-self-contained.tar.gz && \
