@@ -42,6 +42,26 @@ pipeline {
         }
       }
     }
+    stage("Downloading agents"){
+      steps{
+        script{
+          //We're not downloading node agent since it will need to be downloaded in node modules
+          sh """ 
+          mkdir /sealights
+          cd /sealights
+          #Java agent
+          wget -nv https://agents.sealights.co/sealights-java/sealights-java-latest.zip && unzip -o sealights-java-latest.zip && rm sealights-java-latest.zip
+          
+          #Python agent
+          RUN pip install sealights-python-agent
+          
+          #Dotnet agent
+          wget -nv -O sealights-dotnet-agent.tar.gz https://agents.sealights.co/dotnetcore/latest/sealights-dotnet-agent-linux-self-contained.tar.gz && \
+          mkdir sl-dotnet-agent && tar -xzf ./sealights-dotnet-agent.tar.gz --directory ./sl-dotnet-agent
+          """
+        }
+      }
+    }
     stage('Cypress framework starting'){
       steps{
         script{
@@ -126,6 +146,7 @@ pipeline {
           if( params.Run_all_tests == true || params.Robot == true) {
             sh """
                       sleep ${env.wait_time}
+                      pip install robotframework && pip install robotframework-requests
                       export machine_dns="${params.MACHINE_DNS}"
                       echo 'robot framework starting ..... '
                       cd ./integration-tests/robot-tests
@@ -261,13 +282,12 @@ pipeline {
           if( params.Run_all_tests == true || params.Postman == true) {
             sh """
                     sleep ${env.wait_time}
-                    echo 'Postman framework starting ..... '
                     export MACHINE_DNS="${params.MACHINE_DNS}"
                     cd ./integration-tests/postman-tests/
-                    cp -r /nodeModules/node_modules .
                     npm i slnodejs
                     npm install newman
                     npm install newman-reporter-xunit
+                    echo 'Postman framework starting ..... '
                     ./node_modules/.bin/slnodejs start --labid ${params.SL_LABID} --token ${params.SL_TOKEN} --teststage "postman tests"
                     npx newman run sealights-excersise.postman_collection.json --env-var machine_dns="${params.MACHINE_DNS}" -r xunit --reporter-xunit-export './result.xml' --suppress-exit-code
                     ./node_modules/.bin/slnodejs uploadReports --labid ${params.SL_LABID} --token ${params.SL_TOKEN} --reportFile './result.xml'
@@ -289,8 +309,7 @@ pipeline {
     //             echo 'Jest framework starting ..... '
     //             export machine_dns="${params.MACHINE_DNS}"
     //             cd ./integration-tests/nodejs-tests/Jest
-    //             cp -r /nodeModules/node_modules .
-    //             npm i jest-cli
+    //             npm install jest && npm install jest-cli && npm install sealights-jest-plugin
     //             export NODE_DEBUG=sl
     //             export SL_TOKEN="${params.SL_TOKEN}"
     //             export SL_LABID="${params.SL_LABID}"
@@ -310,12 +329,11 @@ pipeline {
           if( params.Run_all_tests == true || params.Mocha == true) {
             sh """
                       sleep ${env.wait_time}
-                      echo 'Mocha framework starting ..... '
                       export machine_dns="${params.MACHINE_DNS}"
                       cd ./integration-tests/nodejs-tests/mocha
-                      cp -r /nodeModules/node_modules .
                       npm install
                       npm install slnodejs
+                      echo 'Mocha framework starting ..... '
                       ./node_modules/.bin/slnodejs mocha --token "${params.SL_TOKEN}" --labid "${params.SL_LABID}" --teststage 'Mocha tests'  --useslnode2 -- ./test/test.js --recursive --no-timeouts
                       cd ../..
                       """
@@ -378,6 +396,7 @@ pipeline {
           if( params.Run_all_tests == true || params.Pytest == true) {
             sh"""
                   sleep ${env.wait_time}
+                  pip install pytest && pip install requests
                   echo 'Pytest tests starting ..... '
                   export machine_dns="${params.MACHINE_DNS}"
                   cd ./integration-tests/python-tests
