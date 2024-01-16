@@ -7,15 +7,16 @@ pipeline {
     }
   }
 
+  environment {
+    machine_dns = ''
+  }
+
 
   parameters {
     string(name: 'APP_NAME', defaultValue: 'Boutique', description: 'name of the app (integration build)')
-    string(name: 'machine_dns', defaultValue: 'your_dns', description: 'name of the app (integration build)')
     string(name: 'BRANCH', defaultValue: 'public', description: 'Branch to clone')
-    string(name: 'CHANGED_BRANCH', defaultValue: 'changed-branch', description: 'Branch to compare')
-    string(name: 'BUILD_BRANCH', defaultValue: 'public', description: 'Branch to Build images that have the creational LAB_ID (send to public branch to build)')
     string(name: 'SL_TOKEN', defaultValue: 'your_token', description: 'sl-token')
-    string(name: 'BUILD_NAME', defaultValue: '', description: 'build name (should change on every build)')
+    string(name: 'BUILD_NAME', defaultValue: '', description: 'build name (If not provided, default will be branchname-1-0-run ex: main-1-0-7)')
     booleanParam(name: 'Run_all_tests', defaultValue: true, description: 'Checking this box will run all tests even if individual ones are not checked')
     booleanParam(name: 'Cucumber', defaultValue: false, description: 'Run tests using Cucumber testing framework (java)')
     booleanParam(name: 'Cypress', defaultValue: false, description: 'Run tests using Cypress testing framework')
@@ -49,7 +50,7 @@ pipeline {
           build_btq(
             sl_report_branch: params.BRANCH,
             sl_token: params.SL_TOKEN,
-            build_name: "1-0-${BUILD_NUMBER}",
+            build_name: "${params.build_name}" == "" ? "${params.branch}-${env.CURRENT_VERSION}" : "${params.build_name}",
             branch: params.BRANCH,
             tag: env.CURRENT_VERSION,
           )
@@ -66,14 +67,14 @@ pipeline {
           token: "${params.SL_TOKEN}",
           machine: "https://dev-integration.dev.sealights.co",
           app: "${params.APP_NAME}",
-          branch: "${params.BUILD_BRANCH}",
+          branch: "${params.BRANCH}",
           test_env: "${IDENTIFIER}",
           lab_alias: "${IDENTIFIER}",
           cdOnly: true,
           )
 
 
-          build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${params.machine_dns}"),
+          build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${env.machine_dns}"),
                                                 string(name:'tag' , value:"${env.CURRENT_VERSION}"),
                                                 string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
@@ -91,7 +92,7 @@ pipeline {
             branch: params.BRANCH,
             lab_id: env.LAB_ID,
             token: params.SL_TOKEN,
-            machine_dns: "${params.machine_dns}:8081",
+            machine_dns: "${env.machine_dns}:8081",
             Run_all_tests: params.Run_all_tests,
             Cucumber: params.Cucumber,
             Cypress: params.Cypress,
@@ -132,7 +133,7 @@ def build_btq(Map params){
 
   def services_list = ["adservice","cartservice","checkoutservice", "currencyservice","emailservice","frontend","paymentservice","productcatalogservice","recommendationservice","shippingservice"]
   //def special_services = ["cartservice"].
-  env.BUILD_NAME= "${params.build_name}" == "" ? "${params.branch}-${env.CURRENT_VERSION}" : "${params.build_name}"
+  env.BUILD_NAME= "${params.build_name}"
 
   services_list.each { service ->
     parallelLabs["${service}"] = {
