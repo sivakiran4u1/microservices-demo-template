@@ -8,7 +8,7 @@ pipeline {
   }
 
   environment {
-    machine_dns = ''
+    machine_dns = '54.246.240.122'
   }
 
 
