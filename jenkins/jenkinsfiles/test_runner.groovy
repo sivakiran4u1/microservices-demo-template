@@ -32,7 +32,7 @@ pipeline {
   environment {
     MACHINE_DNS = "${params.MACHINE_DNS}"
     machine_dns = "${params.MACHINE_DNS}"
-    wait_time = "20"
+    wait_time = "30"
   }
   stages{
     stage("Init test"){
@@ -77,12 +77,12 @@ pipeline {
         script{
           if( params.Run_all_tests == true || params.MS == true) {
               sh """
-                sleep ${env.wait_time} # Wait at least 10 seconds for the backend to update status that the previous test stage was closed, closing and starting a test stage withing 10 seconds can cause inaccurate test stage coverage
                 echo 'MS-Tests framework starting ..... '
                 export machine_dns="${params.MACHINE_DNS}" # Inside the code we use machine_dns envronment variable
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll startExecution --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir . --instrumentationMode tests --target dotnet   --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/MS-Tests/"
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
+                sleep ${env.wait_time} # Wait at least 10 seconds for the backend to update status that the previous test stage was closed, closing and starting a test stage withing 10 seconds can cause inaccurate test stage coverage
                 """
           }
         }
@@ -95,12 +95,12 @@ pipeline {
         script{
           if( params.Run_all_tests == true || params.NUnit == true) {
             sh """
-                  sleep ${env.wait_time}
                   echo 'N-Unit framework starting ..... '
                   export machine_dns="${params.MACHINE_DNS}"
                   dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll startExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
                   dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir . --instrumentationMode tests --target dotnet   --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/NUnit-Tests/"
                   dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
+                  sleep ${env.wait_time}
                   """
           }
         }
@@ -114,7 +114,6 @@ pipeline {
           if( params.Run_all_tests == true || params.Junit_with_testNG_gradle == true) {
             sh """
                       #!/bin/bash
-                      sleep ${env.wait_time}
                       export machine_dns="${params.MACHINE_DNS}"
                       cd ./integration-tests/java-tests-gradle
                       echo ${params.SL_TOKEN}>sltoken.txt
@@ -136,6 +135,7 @@ pipeline {
                       echo "Adding Sealights to Tests Project gradle file..."
                       java -jar /sealights/sl-build-scanner.jar -gradle -configfile slgradletests.json -workspacepath .
                       gradle test
+                      sleep ${env.wait_time}
                       """
           }
         }
@@ -146,7 +146,6 @@ pipeline {
         script{
           if( params.Run_all_tests == true || params.Robot == true) {
             sh """
-                      sleep ${env.wait_time}
                       pip install robotframework && pip install robotframework-requests
                       export machine_dns="${params.MACHINE_DNS}"
                       echo 'robot framework starting ..... '
@@ -156,6 +155,7 @@ pipeline {
                       sl-python uploadreports --reportfile "unit.xml" --labid ${SL_LABID} --token ${SL_TOKEN}
                       sl-python end --labid ${SL_LABID} --token ${SL_TOKEN}
                       cd ../..
+                      sleep ${env.wait_time}
                       """
           }
         }
@@ -168,7 +168,6 @@ pipeline {
           if( params.Run_all_tests == true || params.Cucumber == true) {
             sh """
                       #!/bin/bash
-                      sleep ${env.wait_time}
                       export machine_dns="${params.MACHINE_DNS}"
                       echo 'Cucumber framework starting ..... '
                       cd ./integration-tests/cucumber-framework/
@@ -192,6 +191,7 @@ pipeline {
 
                       unset MAVEN_CONFIG
                       ./mvnw test
+                      sleep ${env.wait_time}
                       """
           }
         }
@@ -206,7 +206,6 @@ pipeline {
           if( params.Run_all_tests == true || params.Junit_with_testNG == true) {
             sh """
                       #!/bin/bash
-                      sleep ${env.wait_time}
                       echo 'Junit support testNG framework starting ..... '
                       pwd
                       ls
@@ -231,6 +230,7 @@ pipeline {
                       echo "Adding Sealights to Tests Project POM file..."
                       java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
                       mvn clean package
+                      sleep ${env.wait_time}
                       """
           }
         }
@@ -244,7 +244,6 @@ pipeline {
           if( params.Run_all_tests == true || params.Junit_without_testNG == true) {
             sh """
                       #!/bin/bash
-                      sleep ${env.wait_time}
                       echo 'Junit without testNG framework starting ..... '
                       pwd
                       ls
@@ -270,6 +269,7 @@ pipeline {
                       java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
 
                       mvn clean package
+                      sleep ${env.wait_time}
                       """
           }
         }
@@ -282,7 +282,6 @@ pipeline {
         script{
           if( params.Run_all_tests == true || params.Postman == true) {
             sh """
-                    sleep ${env.wait_time}
                     export MACHINE_DNS="${params.MACHINE_DNS}"
                     cd ./integration-tests/postman-tests/
                     npm i slnodejs
@@ -294,6 +293,7 @@ pipeline {
                     ./node_modules/.bin/slnodejs uploadReports --labid ${params.SL_LABID} --token ${params.SL_TOKEN} --reportFile './result.xml'
                     ./node_modules/.bin/slnodejs end --labid ${params.SL_LABID} --token ${params.SL_TOKEN}
                     cd ../..
+                    sleep ${env.wait_time}
                     """
           }
         }
@@ -304,9 +304,8 @@ pipeline {
     // stage('Jest framework'){
     //   steps{
     //     script{
-
+    //
     //       sh """
-    //             sleep ${env.wait_time}
     //             echo 'Jest framework starting ..... '
     //             export machine_dns="${params.MACHINE_DNS}"
     //             cd ./integration-tests/nodejs-tests/Jest
@@ -317,6 +316,7 @@ pipeline {
     //             npm install
     //             npx jest integration-tests/nodejs-tests/Jest/test.js --sl-testStage='Jest tests' --sl-token="${params.SL_TOKEN}" --sl-labId="${params.SL_LABID}"
     //             cd ../..
+    //             sleep ${env.wait_time}
     //             """
     //     }
     //   }
@@ -329,7 +329,6 @@ pipeline {
         script{
           if( params.Run_all_tests == true || params.Mocha == true) {
             sh """
-                      sleep ${env.wait_time}
                       export machine_dns="${params.MACHINE_DNS}"
                       cd ./integration-tests/nodejs-tests/mocha
                       npm install
@@ -337,6 +336,7 @@ pipeline {
                       echo 'Mocha framework starting ..... '
                       ./node_modules/.bin/slnodejs mocha --token "${params.SL_TOKEN}" --labid "${params.SL_LABID}" --teststage 'Mocha tests'  --useslnode2 -- ./test/test.js --recursive --no-timeouts
                       cd ../..
+                      sleep ${env.wait_time}
                       """
           }
         }
@@ -350,7 +350,6 @@ pipeline {
         script{
           if( params.Run_all_tests == true || params.Soapui == true) {
             sh """
-              sleep ${env.wait_time}
               echo 'Soap-UI framework starting ..... '
               wget https://dl.eviware.com/soapuios/5.7.1/SoapUI-5.7.1-mac-bin.zip
               unzip SoapUI-5.7.1-mac-bin.zip
@@ -382,6 +381,7 @@ pipeline {
               export SL_JAVA_OPTS="-javaagent:sl-test-listener.jar -Dsl.token=${params.SL_TOKEN} -Dsl.labId=${params.SL_LABID} -Dsl.testStage=Soapui-Tests -Dsl.log.enabled=true -Dsl.log.level=debug -Dsl.log.toConsole=true"
               sed -i -r "s/(^\\S*java)(.*com.eviware.soapui.tools.SoapUITestCaseRunner)/\\1 \\\$SL_JAVA_OPTS \\2/g" testrunner.sh
               sh -x ./testrunner.sh -s "TestSuite 1" "test-soapui-project.xml"
+              sleep ${env.wait_time}
               """
           }
         }
@@ -396,7 +396,6 @@ pipeline {
         script{
           if( params.Run_all_tests == true || params.Pytest == true) {
             sh"""
-                  sleep ${env.wait_time}
                   pip install pytest && pip install requests
                   echo 'Pytest tests starting ..... '
                   export machine_dns="${params.MACHINE_DNS}"
@@ -405,6 +404,7 @@ pipeline {
                   pip install requests
                   sl-python pytest --teststage "Pytest tests"  --labid ${params.SL_LABID} --token ${params.SL_TOKEN} python-tests.py
                   cd ../..
+                  sleep ${env.wait_time}
                   """
           }
         }
