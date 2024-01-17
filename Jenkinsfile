@@ -50,7 +50,7 @@ pipeline {
           build_btq(
             sl_report_branch: params.BRANCH,
             sl_token: params.SL_TOKEN,
-            build_name: "${params.BUILD_NAME}" == "" ? "${params.branch}-${env.CURRENT_VERSION}" : "${params.BUILD_NAME}",
+            build_name: "${params.BUILD_NAME}" == "" ? "${params.BRANCH}-${env.CURRENT_VERSION}" : "${params.BUILD_NAME}",
             branch: params.BRANCH,
             tag: env.CURRENT_VERSION,
           )
