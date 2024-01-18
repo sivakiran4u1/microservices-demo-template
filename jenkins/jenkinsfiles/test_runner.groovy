@@ -5,6 +5,7 @@ pipeline {
       defaultContainer "shell"
     }
   }
+
   options {
     buildDiscarder logRotator(numToKeepStr: '30')
     timestamps()
@@ -14,7 +15,6 @@ pipeline {
     string(name: 'BRANCH', defaultValue: 'public', description: 'Branch to clone')
     string(name: 'SL_TOKEN', defaultValue: '', description: 'SL_TOKEN')
     string(name: 'SL_LABID', defaultValue: '', description: 'Lab_id')
-    string(name: 'MACHINE_DNS', defaultValue: '', description: 'machine dns')
     booleanParam(name: 'Run_all_tests', defaultValue: true, description: 'Checking this box will run all tests even if individual ones are not checked')
     booleanParam(name: 'Cucumber', defaultValue: false, description: 'Run tests using Cucumber testing framework (java)')
     booleanParam(name: 'Cypress', defaultValue: false, description: 'Run tests using Cypress testing framework')
@@ -30,8 +30,8 @@ pipeline {
     booleanParam(name: 'Soapui', defaultValue: false, description: 'Run tests using Soapui testing framework')
   }
   environment {
-    MACHINE_DNS = "${params.MACHINE_DNS}"
-    machine_dns = "${params.MACHINE_DNS}"
+    MACHINE_DNS = '54.246.240.122'
+    machine_dns = '54.246.240.122'
     wait_time = "30"
   }
   stages{
@@ -67,7 +67,7 @@ pipeline {
       steps{
         script{
           if( params.Run_all_tests == true || params.Cypress == true) {
-            build(job:"BTQ-nodejs-tests-Cypress-framework", parameters: [string(name: 'BRANCH', value: "${params.BRANCH}"),string(name: 'SL_LABID', value: "${params.SL_LABID}") , string(name:'SL_TOKEN' , value:"${params.SL_TOKEN}") ,string(name:'MACHINE_DNS1' , value:"${params.MACHINE_DNS}")])
+            build(job:"BTQ-nodejs-tests-Cypress-framework", parameters: [string(name: 'BRANCH', value: "${params.BRANCH}"),string(name: 'SL_LABID', value: "${params.SL_LABID}") , string(name:'SL_TOKEN' , value:"${params.SL_TOKEN}") ,string(name:'MACHINE_DNS1' , value:"${env.MACHINE_DNS}")])
           }
       }
     }
@@ -78,7 +78,7 @@ pipeline {
           if( params.Run_all_tests == true || params.MS == true) {
               sh """
                 echo 'MS-Tests framework starting ..... '
-                export machine_dns="${params.MACHINE_DNS}" # Inside the code we use machine_dns envronment variable
+                export machine_dns="${env.MACHINE_DNS}" # Inside the code we use machine_dns envronment variable
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll startExecution --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir . --instrumentationMode tests --target dotnet   --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/MS-Tests/"
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
@@ -96,7 +96,7 @@ pipeline {
           if( params.Run_all_tests == true || params.NUnit == true) {
             sh """
                   echo 'N-Unit framework starting ..... '
-                  export machine_dns="${params.MACHINE_DNS}"
+                  export machine_dns="${env.MACHINE_DNS}"
                   dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll startExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
                   dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll run --workingDir . --instrumentationMode tests --target dotnet   --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN} --targetArgs "test ./integration-tests/dotnet-tests/NUnit-Tests/"
                   dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "NUnit-Tests" --labId ${params.SL_LABID} --token ${params.SL_TOKEN}
@@ -114,7 +114,7 @@ pipeline {
           if( params.Run_all_tests == true || params.Junit_with_testNG_gradle == true) {
             sh """
                       #!/bin/bash
-                      export machine_dns="${params.MACHINE_DNS}"
+                      export machine_dns="${env.MACHINE_DNS}"
                       cd ./integration-tests/java-tests-gradle
                       echo ${params.SL_TOKEN}>sltoken.txt
                       echo '{
@@ -147,7 +147,7 @@ pipeline {
           if( params.Run_all_tests == true || params.Robot == true) {
             sh """
                       pip install robotframework && pip install robotframework-requests
-                      export machine_dns="${params.MACHINE_DNS}"
+                      export machine_dns="${env.MACHINE_DNS}"
                       echo 'robot framework starting ..... '
                       cd ./integration-tests/robot-tests
                       sl-python start --labid ${SL_LABID} --token ${SL_TOKEN} --teststage "Robot Tests"
@@ -168,7 +168,7 @@ pipeline {
           if( params.Run_all_tests == true || params.Cucumber == true) {
             sh """
                       #!/bin/bash
-                      export machine_dns="${params.MACHINE_DNS}"
+                      export machine_dns="${env.MACHINE_DNS}"
                       echo 'Cucumber framework starting ..... '
                       cd ./integration-tests/cucumber-framework/
                       echo ${params.SL_TOKEN}>sltoken.txt
@@ -212,7 +212,7 @@ pipeline {
                       cd ./integration-tests/support-testNG
                       export SL_TOKEN="${params.SL_TOKEN}"
                       echo $SL_TOKEN>sltoken.txt
-                      export machine_dns="${params.MACHINE_DNS}"
+                      export machine_dns="${env.MACHINE_DNS}"
                       # shellcheck disable=SC2016
                       echo  '{
                               "executionType": "testsonly",
@@ -250,7 +250,7 @@ pipeline {
                       cd integration-tests/java-tests
                       export SL_TOKEN="${params.SL_TOKEN}"
                       echo $SL_TOKEN>sltoken.txt
-                      export machine_dns="${params.MACHINE_DNS}"
+                      export machine_dns="${env.MACHINE_DNS}"
                       # shellcheck disable=SC2016
                       echo  '{
                               "executionType": "testsonly",
@@ -282,14 +282,14 @@ pipeline {
         script{
           if( params.Run_all_tests == true || params.Postman == true) {
             sh """
-                    export MACHINE_DNS="${params.MACHINE_DNS}"
+                    export MACHINE_DNS="${env.MACHINE_DNS}"
                     cd ./integration-tests/postman-tests/
                     npm i slnodejs
                     npm install newman
                     npm install newman-reporter-xunit
                     echo 'Postman framework starting ..... '
                     ./node_modules/.bin/slnodejs start --labid ${params.SL_LABID} --token ${params.SL_TOKEN} --teststage "postman tests"
-                    npx newman run sealights-excersise.postman_collection.json --env-var machine_dns="${params.MACHINE_DNS}" -r xunit --reporter-xunit-export './result.xml' --suppress-exit-code
+                    npx newman run sealights-excersise.postman_collection.json --env-var machine_dns="${env.MACHINE_DNS}" -r xunit --reporter-xunit-export './result.xml' --suppress-exit-code
                     ./node_modules/.bin/slnodejs uploadReports --labid ${params.SL_LABID} --token ${params.SL_TOKEN} --reportFile './result.xml'
                     ./node_modules/.bin/slnodejs end --labid ${params.SL_LABID} --token ${params.SL_TOKEN}
                     cd ../..
@@ -307,7 +307,7 @@ pipeline {
     //
     //       sh """
     //             echo 'Jest framework starting ..... '
-    //             export machine_dns="${params.MACHINE_DNS}"
+    //             export machine_dns="${env.MACHINE_DNS}"
     //             cd ./integration-tests/nodejs-tests/Jest
     //             npm install jest && npm install jest-cli && npm install sealights-jest-plugin
     //             export NODE_DEBUG=sl
@@ -329,7 +329,7 @@ pipeline {
         script{
           if( params.Run_all_tests == true || params.Mocha == true) {
             sh """
-                      export machine_dns="${params.MACHINE_DNS}"
+                      export machine_dns="${env.MACHINE_DNS}"
                       cd ./integration-tests/nodejs-tests/mocha
                       npm install
                       npm install slnodejs
@@ -376,8 +376,8 @@ pipeline {
                 }' > slmaventests.json
               echo "Adding Sealights to Tests Project POM file..."
               pwd
-              sed -i "s#machine_dns#${params.MACHINE_DNS}#" test-soapui-project.xml
-              sed "s#machine_dns#${params.MACHINE_DNS}#" test-soapui-project.xml
+              sed -i "s#machine_dns#${env.MACHINE_DNS}#" test-soapui-project.xml
+              sed "s#machine_dns#${env.MACHINE_DNS}#" test-soapui-project.xml
               export SL_JAVA_OPTS="-javaagent:sl-test-listener.jar -Dsl.token=${params.SL_TOKEN} -Dsl.labId=${params.SL_LABID} -Dsl.testStage=Soapui-Tests -Dsl.log.enabled=true -Dsl.log.level=debug -Dsl.log.toConsole=true"
               sed -i -r "s/(^\\S*java)(.*com.eviware.soapui.tools.SoapUITestCaseRunner)/\\1 \\\$SL_JAVA_OPTS \\2/g" testrunner.sh
               sh -x ./testrunner.sh -s "TestSuite 1" "test-soapui-project.xml"
@@ -398,7 +398,7 @@ pipeline {
             sh"""
                   pip install pytest && pip install requests
                   echo 'Pytest tests starting ..... '
-                  export machine_dns="${params.MACHINE_DNS}"
+                  export machine_dns="${env.MACHINE_DNS}"
                   cd ./integration-tests/python-tests
                   pip install pytest
                   pip install requests
