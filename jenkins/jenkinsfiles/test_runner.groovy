@@ -30,8 +30,8 @@ pipeline {
     booleanParam(name: 'Soapui', defaultValue: false, description: 'Run tests using Soapui testing framework')
   }
   environment {
-    MACHINE_DNS = '54.246.240.122'
-    machine_dns = '54.246.240.122'
+    MACHINE_DNS = 'http://54.246.240.122:8081'
+    machine_dns = 'http://54.246.240.122:8081'
     wait_time = "30"
   }
   stages{
