@@ -1,12 +1,9 @@
 properties([
         parameters([
-                string(name: 'IDENTIFIER', description:'Environment ip'),
                 string(name: 'tag', defaultValue: 'null', description: 'change btq version'),
                 string(name: 'buildname', defaultValue: 'null', description: 'change sealights buildname for cd agents (if you change anything then this parameter is mandatory)'),
                 string(name: 'labid', defaultValue: 'null', description: 'change sealights lab_id'),
-                string(name: 'branch', defaultValue: 'null', description: 'change branch to pull (effects tests and helm)'),
-                string(name: 'token', defaultValue: 'null', description: 'change sealights token'),
-                string(name: 'sl_branch', defaultValue: 'null', description: 'change sealights branch')
+                string(name: 'branch', defaultValue: 'null', description: 'change branch to pull (effects tests and helm)')
         ])
 ])
 
@@ -30,6 +27,10 @@ pipeline {
             """
         }
     }
+    environment {
+        SL_TOKEN = (sh(returnStdout: true, script:"aws secretsmanager get-secret-value --region eu-west-1 --secret-id 'btq/template_token' | jq -r '.SecretString' | jq -r '.template_token'" )).trim()
+        IDENTIFIER = '54.246.240.122'
+    }
      stages {
         stage("Preparing Spin up") {
             steps {
@@ -48,7 +49,7 @@ pipeline {
                                     aws secretsmanager get-secret-value --region eu-west-1 --secret-id 'jkns-key_pair' | jq -r '.SecretString' | jq -r '.jkns_key_pair' > key.pem
                                     chmod 0400 key.pem
 
-                                    ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@54.246.240.122 'bash /opt/sealights/install-btq.sh ${params.tag} ${params.buildname} ${params.labid} ${params.branch} ${params.token} ${params.sl_branch}'
+                                    ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@54.246.240.122 'bash /opt/sealights/install-btq.sh ${params.tag} ${params.buildname} ${params.labid} ${params.branch} ${env.SL_TOKEN} ${params.branch}'
                                 """
                             }
                 }

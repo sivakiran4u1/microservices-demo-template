@@ -48,7 +48,6 @@ pipeline {
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
 
           build_btq(
-            sl_report_branch: params.BRANCH,
             sl_token: env.SL_TOKEN,
             build_name: "${params.BUILD_NAME}" == "" ? "${params.BRANCH}-${env.CURRENT_VERSION}" : "${params.BUILD_NAME}",
             branch: params.BRANCH,
@@ -74,13 +73,11 @@ pipeline {
           )
 
 
-          build(job: 'update-btq', parameters: [string(name: 'IDENTIFIER', value: "${env.machine_dns}"),
-                                                string(name:'tag' , value:"${env.CURRENT_VERSION}"),
+          build(job: 'update-btq', parameters: [string(name:'tag' , value:"${env.CURRENT_VERSION}"),
                                                 string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
                                                 string(name:'branch' , value:"${params.BRANCH}"),
-                                                string(name:'token' , value:"${env.SL_TOKEN}"),
-                                                string(name:'sl_branch' , value:"${params.BRANCH}")])
+                                                string(name:'token' , value:"${env.SL_TOKEN}")])
         }
       }
     }
@@ -92,7 +89,6 @@ pipeline {
             branch: params.BRANCH,
             lab_id: env.LAB_ID,
             token: env.SL_TOKEN,
-            machine_dns: "${env.machine_dns}:8081",
             Run_all_tests: params.Run_all_tests,
             Cucumber: params.Cucumber,
             Cypress: params.Cypress,
@@ -114,15 +110,6 @@ pipeline {
   }
 }
 
-def get_secret (SecretID, Region, Profile="") {
-  if (Profile != "") {
-    Profile = "--profile ${Profile}"
-  }
-  String secret_key = "${SecretID.split('/')[-1]}" as String
-  def secret_value = (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id ${SecretID} --region ${Region} ${Profile}| jq -r '.SecretString' | jq -r '.${secret_key}'")).trim()
-  return secret_value
-}
-
 
 def build_btq(Map params){
   
@@ -139,10 +126,8 @@ def build_btq(Map params){
     parallelLabs["${service}"] = {
       build(job: 'BTQ-BUILD', parameters: [string(name: 'SERVICE', value: "${service}"),
                                            string(name:'TAG' , value:"${params.tag}"),
-                                           string(name:'SL_REPORT_BRANCH' , value:"${params.sl_report_branch}"),
                                            string(name:'BRANCH' , value:"${params.branch}"),
-                                           string(name:'BUILD_NAME' , value:"${env.BUILD_NAME}"),
-                                           string(name:'SL_TOKEN' , value:"${env.SL_TOKEN}")])
+                                           string(name:'BUILD_NAME' , value:"${env.BUILD_NAME}")])
     }
   }
   parallel parallelLabs
@@ -154,8 +139,6 @@ def run_tests(Map params){
       build(job: "test_runner", parameters: [
         string(name: 'BRANCH', value: "${params.branch}"),
         string(name: 'SL_LABID', value: "${params.lab_id}"),
-        string(name: 'SL_TOKEN', value: "${params.token}"),
-        string(name: 'MACHINE_DNS', value: "http://${params.machine_dns}"),
         booleanParam(name: 'Run_all_tests', value: params.Run_all_tests),
         booleanParam(name: 'Cucumber', value: params.Cucumber),
         booleanParam(name: 'Cypress', value: params.Cypress),

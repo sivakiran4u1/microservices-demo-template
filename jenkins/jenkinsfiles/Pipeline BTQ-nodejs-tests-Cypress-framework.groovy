@@ -8,11 +8,11 @@ pipeline {
     
     parameters {
         string(name: 'BRANCH', defaultValue: 'public', description: 'Branch to clone (ahmad-branch)')
-        string(name: 'SL_TOKEN', defaultValue: '', description: 'SL_TOKEN')
         string(name: 'SL_LABID', defaultValue: '', description: 'Lab_id')
-        string(name: 'MACHINE_DNS1', defaultValue: '', description: 'machine dns')
-        
-        
+    }
+    environment {
+        SL_TOKEN = (sh(returnStdout: true, script:"aws secretsmanager get-secret-value --region eu-west-1 --secret-id 'btq/template_token' | jq -r '.SecretString' | jq -r '.template_token'" )).trim()
+        MACHINE_DNS = 'http://54.246.240.122:8081'
     }
     options{
         buildDiscarder logRotator(numToKeepStr: '10')
@@ -41,9 +41,9 @@ pipeline {
                     export NODE_DEBUG=sl
                     export CYPRESS_SL_ENABLE_REMOTE_AGENT=true
                     export CYPRESS_SL_TEST_STAGE="Cypress-Test-Stage"
-                    export MACHINE_DNS="${params.MACHINE_DNS1}" 
+                    export MACHINE_DNS="${env.MACHINE_DNS}" 
                     export CYPRESS_SL_LAB_ID="${params.SL_LABID}"
-                    export CYPRESS_SL_TOKEN="${params.SL_TOKEN}"
+                    export CYPRESS_SL_TOKEN="${env.SL_TOKEN}"
                     npx cypress run --spec "cypress/integration/api.spec.js" 
                     """
                 }
