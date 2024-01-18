@@ -16,7 +16,6 @@ pipeline {
   parameters {
     string(name: 'APP_NAME', defaultValue: 'Boutique', description: 'name of the app (integration build)')
     string(name: 'BRANCH', defaultValue: 'public', description: 'Branch to clone')
-    string(name: 'SL_TOKEN', defaultValue: 'your_token', description: 'sl-token')
     string(name: 'BUILD_NAME', defaultValue: '', description: 'build name (If not provided, default will be branchname-1-0-run ex: main-1-0-7)')
     booleanParam(name: 'Run_all_tests', defaultValue: true, description: 'Checking this box will run all tests even if individual ones are not checked')
     booleanParam(name: 'Cucumber', defaultValue: false, description: 'Run tests using Cucumber testing framework (java)')
