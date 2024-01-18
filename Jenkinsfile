@@ -9,6 +9,7 @@ pipeline {
 
   environment {
     machine_dns = '54.246.240.122'
+    SL_TOKEN = sh(returnStdout: true, script:"aws secretsmanager get-secret-value --region eu-west-1 --secret-id 'btq/template_token' | jq -r '.SecretString' | jq -r 'template_token'" )
   }
 
 
@@ -49,7 +50,7 @@ pipeline {
 
           build_btq(
             sl_report_branch: params.BRANCH,
-            sl_token: params.SL_TOKEN,
+            sl_token: env.SL_TOKEN,
             build_name: "${params.BUILD_NAME}" == "" ? "${params.BRANCH}-${env.CURRENT_VERSION}" : "${params.BUILD_NAME}",
             branch: params.BRANCH,
             tag: env.CURRENT_VERSION,
@@ -64,7 +65,7 @@ pipeline {
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
           def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
           env.LAB_ID = create_lab_id(
-          token: "${params.SL_TOKEN}",
+          token: "${env.SL_TOKEN}",
           machine: "https://dev-integration.dev.sealights.co",
           app: "${params.APP_NAME}",
           branch: "${params.BRANCH}",
@@ -79,7 +80,7 @@ pipeline {
                                                 string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
                                                 string(name:'branch' , value:"${params.BRANCH}"),
-                                                string(name:'token' , value:"${params.SL_TOKEN}"),
+                                                string(name:'token' , value:"${env.SL_TOKEN}"),
                                                 string(name:'sl_branch' , value:"${params.BRANCH}")])
         }
       }
@@ -91,7 +92,7 @@ pipeline {
           run_tests(
             branch: params.BRANCH,
             lab_id: env.LAB_ID,
-            token: params.SL_TOKEN,
+            token: env.SL_TOKEN,
             machine_dns: "${env.machine_dns}:8081",
             Run_all_tests: params.Run_all_tests,
             Cucumber: params.Cucumber,
@@ -129,7 +130,7 @@ def build_btq(Map params){
 
   def parallelLabs = [:]
   //List of all the images name
-  params.SL_TOKEN= "${params.sl_token}"
+  env.SL_TOKEN= "${params.sl_token}"
 
   def services_list = ["adservice","cartservice","checkoutservice", "currencyservice","emailservice","frontend","paymentservice","productcatalogservice","recommendationservice","shippingservice"]
   //def special_services = ["cartservice"].
@@ -142,7 +143,7 @@ def build_btq(Map params){
                                            string(name:'SL_REPORT_BRANCH' , value:"${params.sl_report_branch}"),
                                            string(name:'BRANCH' , value:"${params.branch}"),
                                            string(name:'BUILD_NAME' , value:"${env.BUILD_NAME}"),
-                                           string(name:'SL_TOKEN' , value:"${params.SL_TOKEN}")])
+                                           string(name:'SL_TOKEN' , value:"${env.SL_TOKEN}")])
     }
   }
   parallel parallelLabs
