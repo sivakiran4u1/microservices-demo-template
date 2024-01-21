@@ -50,6 +50,7 @@ COPY products.json .
 # Default behavior - a failure prints a stack trace for the current goroutine.
 # See https://golang.org/pkg/runtime/
 ENV GOTRACEBACK=single
+ENV SEALIGHTS_LOG_LEVEL=info
 
 EXPOSE 3550
 #Run code with sealights in it

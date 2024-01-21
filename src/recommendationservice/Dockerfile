@@ -31,6 +31,8 @@ RUN sl-python config --appname recommendationservice --branchname ${BRANCH} --bu
 RUN sl-python scan --scm none --token ${SEALIGHTS_TOKEN}
 #COPY --from=builder /recommendationservice/buildSessionId.txt .
 #RUN export SL_BUILD_SESSION_ID=`cat buildSessionId.txt`
+ENV SL_DEBUG=true
+
 ENV PORT "8080"
 EXPOSE 8080
 #Run the python code with sl-python run command

@@ -33,6 +33,7 @@ COPY . .
 RUN  ./node_modules/.bin/slnodejs config --token ${SEALIGHTS_TOKEN} --appname "currencyservice" --branch ${BRANCH} --build ${BUILD_NAME}
 #sl-scan, scanning the code
 RUN ./node_modules/.bin/slnodejs scan --token ${SEALIGHTS_TOKEN} --buildsessionidfile buildSessionId --workspacepath "." --scm none --es6Modules
+ENV NODE_DEBUG=sl
 
 EXPOSE 7000
 #Running the code with sealights

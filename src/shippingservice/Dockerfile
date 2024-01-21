@@ -63,6 +63,7 @@ ENV APP_PORT=50051
 # Default behavior - a failure prints a stack trace for the current goroutine.
 # See https://golang.org/pkg/runtime/
 ENV GOTRACEBACK=single
+ENV SEALIGHTS_LOG_LEVEL=info
 
 EXPOSE 50051
 #Run code with sealights in it

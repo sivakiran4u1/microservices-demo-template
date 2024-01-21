@@ -30,6 +30,7 @@ COPY . .
 RUN sl-python config --appname emailservice --branchname ${BRANCH} --buildname ${BUILD_NAME} --workspacepath ./ --token ${SEALIGHTS_TOKEN} --exclude "*grpc*"
 #scan the code
 RUN sl-python scan --scm none --token ${SEALIGHTS_TOKEN}
+ENV SL_DEBUG=true
 
 # Add the application
 ENV PORT "8080"
