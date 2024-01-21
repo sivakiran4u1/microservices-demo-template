@@ -52,7 +52,7 @@ spec:
             drop:
               - ALL
           privileged: false
-          readOnlyRootFilesystem: true
+#          readOnlyRootFilesystem: true
         image: {{ .Values.images.repository }}/btq-{{ .Values.recommendationService.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
         ports:
         - containerPort: 8080
