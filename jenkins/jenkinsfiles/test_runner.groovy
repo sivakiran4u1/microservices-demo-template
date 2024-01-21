@@ -127,7 +127,7 @@ pipeline {
                           "proxy": null,
                           "logEnabled": false,
                           "logDestination": "console",
-                          "logLevel": "warn",
+                          "logLevel": "info",
                           "sealightsJvmParams": {}
                       }' > slgradletests.json
 
@@ -183,7 +183,7 @@ pipeline {
                               "proxy": null,
                               "logEnabled": false,
                               "logDestination": "console",
-                              "logLevel": "warn",
+                              "logLevel": "info",
                               "sealightsJvmParams": {}
                               }' > slmaventests.json
                       echo "Adding Sealights to Tests Project POM file..."
@@ -224,7 +224,7 @@ pipeline {
                               "proxy": null,
                               "logEnabled": false,
                               "logDestination": "console",
-                              "logLevel": "warn",
+                              "logLevel": "info",
                               "sealightsJvmParams": {}
                               }' > slmaventests.json
                       echo "Adding Sealights to Tests Project POM file..."
@@ -262,7 +262,7 @@ pipeline {
                               "proxy": null,
                               "logEnabled": false,
                               "logDestination": "console",
-                              "logLevel": "warn",
+                              "logLevel": "info",
                               "sealightsJvmParams": {}
                               }' > slmaventests.json
                       echo "Adding Sealights to Tests Project POM file..."
