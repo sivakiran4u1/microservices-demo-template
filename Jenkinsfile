@@ -33,14 +33,6 @@ pipeline {
   }
 
   stages {
-    stage('Clone Repository') {
-      steps {
-        script {
-          git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo-template.git'
-          
-        }
-      }
-    }
     //Build parallel images
     stage('Build BTQ') {
       steps {
