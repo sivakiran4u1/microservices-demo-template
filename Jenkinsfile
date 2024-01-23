@@ -52,6 +52,7 @@ pipeline {
     stage('update-btq') {
       steps {
         script {
+          def build_name = "${params.BUILD_NAME}" == "" ? "${params.BRANCH}-${env.CURRENT_VERSION}" : "${params.BUILD_NAME}"
           env.CURRENT_VERSION = "1-0-${BUILD_NUMBER}"
           def IDENTIFIER= "${params.BRANCH}-${env.CURRENT_VERSION}"
           env.LAB_ID = create_lab_id(
@@ -66,7 +67,7 @@ pipeline {
 
 
           build(job: 'update-btq', parameters: [string(name:'tag' , value:"${env.CURRENT_VERSION}"),
-                                                string(name:'buildname' , value:"${params.BRANCH}-${env.CURRENT_VERSION}"),
+                                                string(name:'buildname' , value:build_name),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
                                                 string(name:'branch' , value:"${params.BRANCH}"),
                                                 string(name:'token' , value:"${env.SL_TOKEN}")])
@@ -108,18 +109,16 @@ def build_btq(Map params){
 
   def parallelLabs = [:]
   //List of all the images name
-  env.SL_TOKEN= "${params.sl_token}"
 
   def services_list = ["adservice","cartservice","checkoutservice", "currencyservice","emailservice","frontend","paymentservice","productcatalogservice","recommendationservice","shippingservice"]
   //def special_services = ["cartservice"].
-  env.BUILD_NAME= "${params.build_name}"
 
   services_list.each { service ->
     parallelLabs["${service}"] = {
       build(job: 'BTQ-BUILD', parameters: [string(name: 'SERVICE', value: "${service}"),
                                            string(name:'TAG' , value:"${params.tag}"),
                                            string(name:'BRANCH' , value:"${params.branch}"),
-                                           string(name:'BUILD_NAME' , value:"${env.BUILD_NAME}")])
+                                           string(name:'BUILD_NAME' , value:"${params.build_name}")])
     }
   }
   parallel parallelLabs
