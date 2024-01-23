@@ -17,7 +17,7 @@ spec:
       securityContext:
         privileged: true
     - name: shell
-      image: cypress/included
+      image: public.ecr.aws/a2q7i5i2/cypress:latest
       command:
         - sleep
       args:

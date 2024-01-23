@@ -30,6 +30,7 @@ pipeline {
     environment {
         SL_TOKEN = (sh(returnStdout: true, script:"aws secretsmanager get-secret-value --region eu-west-1 --secret-id 'btq/template_token' | jq -r '.SecretString' | jq -r '.template_token'" )).trim()
         IDENTIFIER = '54.246.240.122'
+        tag = "template_${params.tag}"
     }
      stages {
         stage("Preparing Spin up") {

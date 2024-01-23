@@ -21,6 +21,7 @@ pipeline{
     ECR_FULL_NAME = "btq-${params.SERVICE}"
     ECR_URI = "474620256508.dkr.ecr.eu-west-1.amazonaws.com/${env.ECR_FULL_NAME}"
     SL_TOKEN = (sh(returnStdout: true, script:"aws secretsmanager get-secret-value --region eu-west-1 --secret-id 'btq/template_token' | jq -r '.SecretString' | jq -r '.template_token'" )).trim()
+    TAG = "template_${params.TAG}"
   }
 
   stages{
@@ -49,7 +50,7 @@ pipeline{
               script {
                 def CONTEXT = params.SERVICE == "cartservice" ? "./src/${params.SERVICE}/src" : "./src/${params.SERVICE}"
                 def DP = "${CONTEXT}/Dockerfile"
-                def D = "${env.ECR_URI}:${params.TAG}"
+                def D = "${env.ECR_URI}:${env.TAG}"
                 def BRANCH = params.BRANCH
                 def BUILD_NAME = params.BUILD_NAME
                 def SL_TOKEN = env.SL_TOKEN
