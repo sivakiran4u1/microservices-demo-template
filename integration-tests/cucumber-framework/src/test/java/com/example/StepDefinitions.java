@@ -132,7 +132,7 @@ public class StepDefinitions {
         HttpPost httpPost = new HttpPost(BASE_URL + "/cart/checkout");
         httpPost.setHeader("Content-type", "application/x-www-form-urlencoded");
 
-        httpPost.setEntity(new StringEntity("email=someone%40example.com&street_address=1600+Amphitheatre+Parkway&zip_code=94043&city=Mountain+View&state=CA&country=United+States&credit_card_number=4432-8015-6152-0454&credit_card_expiration_month=1&credit_card_expiration_year=2024&credit_card_cvv=672"));
+        httpPost.setEntity(new StringEntity("email=someone%40example.com&street_address=1600+Amphitheatre+Parkway&zip_code=94043&city=Mountain+View&state=CA&country=United+States&credit_card_number=4432-8015-6152-0454&credit_card_expiration_month=1&credit_card_expiration_year=2025&credit_card_cvv=672"));
         CloseableHttpResponse response = httpClient.execute(httpPost);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         response.getEntity().writeTo(baos);
