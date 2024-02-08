@@ -98,6 +98,7 @@ function _loadProto (path) {
  * Uses public data from European Central Bank
  */
 function _getCurrencyData (callback) {
+  logger.info(`Added change`);
   const data = require('./data/currency_conversion.json');
   callback(data);
 }
@@ -106,6 +107,7 @@ function _getCurrencyData (callback) {
  * Helper function that handles decimal/fractional carrying
  */
 function _carry (amount) {
+  logger.info(`Added change`);
   const fractionSize = Math.pow(10, 9);
   amount.nanos += (amount.units % 1) * fractionSize;
   amount.units = Math.floor(amount.units) + Math.floor(amount.nanos / fractionSize);
