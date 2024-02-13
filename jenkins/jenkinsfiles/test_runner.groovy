@@ -27,6 +27,7 @@ pipeline {
     booleanParam(name: 'Pytest', defaultValue: false, description: 'Run tests using Pytest testing framework')
     booleanParam(name: 'Robot', defaultValue: false, description: 'Run tests using Robot testing framework')
     booleanParam(name: 'Soapui', defaultValue: false, description: 'Run tests using Soapui testing framework')
+    booleanParam(name: 'long_test', defaultValue: false, description: 'Runs a long test for showing tia (not effected by run_all_tests flag)')
   }
   environment {
     MACHINE_DNS = 'http://54.246.240.122:8081'
@@ -387,10 +388,6 @@ pipeline {
         }
       }
     }
-
-
-
-
     stage('Pytest framework'){
       steps{
         script{
@@ -403,6 +400,25 @@ pipeline {
                   pip install pytest
                   pip install requests
                   sl-python pytest --teststage "Pytest tests"  --labid ${params.SL_LABID} --token ${env.SL_TOKEN} python-tests.py
+                  cd ../..
+                  sleep ${env.wait_time}
+                  """
+          }
+        }
+      }
+    }
+    stage('Pytest framework'){
+      steps{
+        script{
+          if( params.Run_all_tests == true || params.Pytest == true) {
+            sh"""
+                  pip install pytest && pip install requests
+                  echo 'Pytest tests starting ..... '
+                  export machine_dns="${env.MACHINE_DNS}"
+                  cd ./integration-tests/python-tests
+                  pip install pytest
+                  pip install requests
+                  sl-python pytest --teststage "long_test"  --labid ${params.SL_LABID} --token ${env.SL_TOKEN} long_test.py
                   cd ../..
                   sleep ${env.wait_time}
                   """

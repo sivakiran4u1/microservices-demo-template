@@ -30,6 +30,7 @@ pipeline {
     booleanParam(name: 'Pytest', defaultValue: false, description: 'Run tests using Pytest testing framework')
     booleanParam(name: 'Robot', defaultValue: false, description: 'Run tests using Robot testing framework')
     booleanParam(name: 'Soapui', defaultValue: false, description: 'Run tests using Soapui testing framework')
+    booleanParam(name: 'long_test', defaultValue: false, description: 'Runs a long test for showing tia (not effected by run_all_tests flag)')
   }
 
   stages {
@@ -94,7 +95,8 @@ pipeline {
             Postman: params.Postman,
             Pytest: params.Pytest,
             Robot: params.Robot,
-            Soapui: params.Soapui
+            Soapui: params.Soapui,
+            long_test: params.long_test
           )
         }
       }
@@ -142,7 +144,8 @@ def run_tests(Map params){
         booleanParam(name: 'Postman', value: params.Postman),
         booleanParam(name: 'Pytest', value: params.Pytest),
         booleanParam(name: 'Robot', value: params.Robot),
-        booleanParam(name: 'Soapui', value: params.Soapui)
+        booleanParam(name: 'Soapui', value: params.Soapui),
+        booleanParam(name: 'long_test', value: params.long_test)
       ])
 
 }
