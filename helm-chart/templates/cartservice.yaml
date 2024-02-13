@@ -31,13 +31,6 @@ spec:
       labels:
         app: {{ .Values.cartService.name }}
     spec:
-      initContainers:
-      - name: dotnet-cd-agent
-        image: ahmadsealights/dotnetinit:latest
-        command: ["/bin/sh", "-c", "cp -r /app/sealights /"]
-        volumeMounts:
-          - mountPath: /sealights
-            name: dotnet-cd-agent-file
       {{- if .Values.serviceAccounts.create }}
       serviceAccountName: {{ .Values.cartService.name }}
       {{- else }}
@@ -97,19 +90,6 @@ spec:
           periodSeconds: 10
           grpc:
             port: 7070
-        volumeMounts:
-          - mountPath: /sealights
-            name: dotnet-cd-agent-file
-        command: 
-          - /bin/sh
-          - -c 
-          - |
-            /sealights/agent/SL.DotNet cdAgent --appName cartservice --branchName ${SL_BRANCH} --buildName ${BUILD_NAME} \
-            --binDir /app  --includeNamespace *.services* --target /app/cartservice --token ${SL_TOKEN} --workingDir /app \
-            --identifyMethodsByFqn --labId ${SL_LAB_ID}
-      volumes:
-      - name: dotnet-cd-agent-file
-        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service

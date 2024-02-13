@@ -69,4 +69,4 @@ ENV SEALIGHTS_LOG_LEVEL=info
 
 EXPOSE 8080
 #Running the code with sealights in it
-CMD export SEALIGHTS_TOKEN="${SL_TOKEN}" && export SEALIGHTS_LAB_ID="${SL_LAB_ID}" && echo "${SEALIGHTS_LAB_ID}" && /src/server
+CMD /src/server
