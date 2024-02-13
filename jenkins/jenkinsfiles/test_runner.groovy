@@ -407,7 +407,7 @@ pipeline {
         }
       }
     }
-    stage('Pytest framework'){
+    stage('Long test'){
       steps{
         script{
           if( params.Run_all_tests == true || params.Pytest == true) {
