@@ -41,7 +41,7 @@ WORKDIR /sealights
 RUN wget -nv -O sealights-dotnet-agent-linux.tar.gz https://agents.sealights.co/dotnetcore/latest/sealights-dotnet-agent-linux-self-contained.tar.gz
 RUN mkdir sl-dotnet-agent && tar -xzf ./sealights-dotnet-agent-linux.tar.gz --directory ./sl-dotnet-agent
 RUN echo "[Sealights] .NetCore Agent version is: `cat ./sl-dotnet-agent/version.txt`"
-RUN dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll  config --appName "Cart" --branchName "main" --buildName "4" --includeNamespace "*.services*" --token ${SEALIGHTS_TOKEN} --identifyMethodsByFqn 
+RUN dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll  config --appName "cartservice" --branchName ${BRANCH} --buildName ${BUILD_NAME} --includeNamespace "*.services*" --token ${SEALIGHTS_TOKEN} --identifyMethodsByFqn 
 RUN dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll scan --buildSessionIdFile buildSessionId --workspacePath /app --ignoreGeneratedCode true --token ${SEALIGHTS_TOKEN}
 
 # https://mcr.microsoft.com/product/dotnet/runtime-deps.
