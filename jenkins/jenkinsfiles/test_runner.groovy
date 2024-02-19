@@ -410,7 +410,7 @@ pipeline {
     stage('Long test'){
       steps{
         script{
-          if( params.Run_all_tests == true || params.Pytest == true) {
+          if(params.long_test == true) {
             sh"""
                   pip install pytest && pip install requests
                   echo 'Pytest tests starting ..... '
