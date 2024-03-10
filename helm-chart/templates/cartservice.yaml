@@ -40,14 +40,12 @@ spec:
       securityContext:
         fsGroup: 1000
         runAsGroup: 1000
-        runAsNonRoot: false
+        runAsNonRoot: true
         runAsUser: 1000
         {{- if .Values.seccompProfile.enable }}
         seccompProfile:
           type: {{ .Values.seccompProfile.type }}
         {{- end }}
-      imagePullSecrets:
-        - name: regcred-mgmt
       containers:
       - name: server
         securityContext:
@@ -57,7 +55,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: false
-        image: {{ .Values.images.repository }}/btq-{{ .Values.cartService.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
+        image: ahmad12abed/cartservice1:1.1.1
         ports:
         - containerPort: 7070
         env:
@@ -65,14 +63,6 @@ spec:
           value: "{{ .Values.SealightsEnvVars.token }}"
         - name: SL_LAB_ID
           value: "{{ .Values.SealightsEnvVars.lab_id }}"
-        - name: BUILD_NAME
-          value: "{{ .Values.SealightsEnvVars.build_name }}"
-        - name: AGENT_URL
-          value: "{{ .Values.SealightsEnvVars.dotnet_agent_url }}"
-        - name: ASPNETCORE_URLS
-          value: "http://*:7070"
-        - name: SL_BRANCH
-          value: "{{ .Values.SealightsEnvVars.sl_branch }}"
         {{- if eq .Values.cartDatabase.type "spanner" }}
         - name: SPANNER_CONNECTION_STRING
         {{- else }}
@@ -128,7 +118,7 @@ spec:
           app: {{ .Values.checkoutService.name }}
     ports:
      - port: 7070
-       protocol: TCPservices
+       protocol: TCP
   egress:
   - {}
 {{- end }}
