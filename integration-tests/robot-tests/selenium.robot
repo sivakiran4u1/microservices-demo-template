@@ -27,7 +27,7 @@ Then the user gets homepage
     Should Be Equal As Integers    ${response.status_code}    200
 
 When the user visits website at ${path}
-    Open Browser    ${BASE_URL}${path}   Firefox
+    Open Browser    ${BASE_URL}${path}   Chrome
 
 Then the user should see ${something}
     Wait Until Element Is Visible    xpath://h3[contains(text(),'Hot Products')]
