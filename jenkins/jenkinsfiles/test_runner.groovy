@@ -151,10 +151,7 @@ pipeline {
                       export machine_dns="${env.MACHINE_DNS}"
                       echo 'robot framework starting ..... '
                       cd ./integration-tests/robot-tests
-                      sl-python start --labid ${SL_LABID} --token ${SL_TOKEN} --teststage "Robot Tests"
-                      robot -xunit api_tests.robot
-                      sl-python uploadreports --reportfile "unit.xml" --labid ${SL_LABID} --token ${SL_TOKEN}
-                      sl-python end --labid ${SL_LABID} --token ${SL_TOKEN}
+                      robot --listener "SLListener.py:${SL_TOKEN}::Robot Tests selenium:${SL_LAB_ID}" ./
                       cd ../..
                       sleep ${env.wait_time}
                       """
