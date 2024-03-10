@@ -151,7 +151,7 @@ pipeline {
                       export machine_dns="${env.MACHINE_DNS}"
                       echo 'robot framework starting ..... '
                       cd ./integration-tests/robot-tests
-                      robot --listener "SLListener.py:${SL_TOKEN}::Robot Tests:${SL_LAB_ID}" ./
+                      robot --listener "SLListener.py:${SL_TOKEN}::Robot Tests:${SL_LABID}" ./
                       cd ../..
                       sleep ${env.wait_time}
                       """
