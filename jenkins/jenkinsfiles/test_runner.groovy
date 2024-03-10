@@ -151,6 +151,7 @@ pipeline {
                       export machine_dns="${env.MACHINE_DNS}"
                       echo 'robot framework starting ..... '
                       cd ./integration-tests/robot-tests
+                      pip install -r requirements.txt
                       robot --listener "SLListener.py:${env.SL_TOKEN}::Robot Tests:${params.SL_LABID}" ./
                       cd ../..
                       sleep ${env.wait_time}
