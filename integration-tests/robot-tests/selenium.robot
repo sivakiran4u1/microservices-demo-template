@@ -19,6 +19,12 @@ Scenario: Product correct
     When the user visits website at /product/OLJCESPC7Z
     Then the user should see button Add To Cart
 *** Keywords ***
+Open Headless Chrome
+    [Documentation]    Opens Chrome in headless mode.
+    ${options}=    Evaluate    sys.modules['selenium.webdriver'].ChromeOptions()    sys, selenium.webdriver
+    Call Method    ${options}    add_argument    --headless
+    Create WebDriver    Chrome   options=${options}
+
 When the user opens the website
     Create Session    frontend    ${BASE_URL}
 
@@ -27,7 +33,8 @@ Then the user gets homepage
     Should Be Equal As Integers    ${response.status_code}    200
 
 When the user visits website at ${path}
-    Open Browser    ${BASE_URL}${path}   Chrome
+    Open Headless Chrome
+    Go to    ${BASE_URL}${path} 
 
 Then the user should see ${something}
     Wait Until Element Is Visible    xpath://h3[contains(text(),'Hot Products')]
