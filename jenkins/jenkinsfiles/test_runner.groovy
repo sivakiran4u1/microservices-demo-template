@@ -149,6 +149,7 @@ pipeline {
             sh """
                       pip install robotframework && pip install robotframework-requests
                       export machine_dns="${env.MACHINE_DNS}"
+                      export PYTHONPATH="."
                       echo 'robot framework starting ..... '
                       cd ./integration-tests/robot-tests
                       
