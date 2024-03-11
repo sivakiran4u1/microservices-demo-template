@@ -3,7 +3,7 @@ opentelemetry-sdk
 opentelemetry-exporter-otlp-proto-http
 opentelemetry-instrumentation-flask
 opentelemetry-instrumentation-requests
-
+PyJWT
 
 robotframework
 robotframework-requests
