@@ -169,9 +169,9 @@ pipeline {
                         libxdamage1 \
                         libxrandr2 \
                         xdg-utils \
-                        libgbm1
+                        libgbm1 > /dev/null
                         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-                      apt install -y ./google-chrome-stable_current_amd64.deb
+                      apt install -y ./google-chrome-stable_current_amd64.deb > /dev/null
                       pip install -r requirements.txt
                       robot --listener "SLListener.py:${env.SL_TOKEN}::Robot Tests:${params.SL_LABID}" ./
                       cd ../..

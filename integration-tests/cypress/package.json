@@ -1,17 +1,15 @@
 {
-  "name": "cypress-api-tests",
+  "name": "new-cypress",
   "version": "1.0.0",
-  "description": "Cypress API Tests",
-  "scripts": {
-    "cypress:open": "cypress open"
-  },
-  "devDependencies": {
-    "cypress": "^9.7.0"
-  },
+  "description": "",
   "main": "index.js",
-  "keywords": [],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
+    "cypress": "12.16.0",
+    "sealights-cypress-plugin": "^2.0.37"
   }
 }
