@@ -44,7 +44,7 @@ pipeline {
                     export MACHINE_DNS="${env.MACHINE_DNS}" 
                     export CYPRESS_SL_LAB_ID="${params.SL_LABID}"
                     export CYPRESS_SL_TOKEN="${env.SL_TOKEN}"
-                    npx cypress run --spec "cypress/integration/api.spec.js" 
+                    npx cypress run
                     """
                 }
             }
