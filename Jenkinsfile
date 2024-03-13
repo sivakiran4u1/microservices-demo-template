@@ -14,9 +14,37 @@ pipeline {
 
 
   parameters {
+    separator(name: "App parameters", sectionHeader: "Test to run",separatorStyle: "border-width: 5",
+    sectionHeaderStyle: """
+				background-color:  #198ce6;
+				text-align: center;
+				padding: 4px;
+				color: #000000;
+				font-size: 22px;
+				font-weight: normal;
+				text-transform: uppercase;
+				font-family: 'Orienta', sans-serif;
+				letter-spacing: 1px;
+				font-style: italic;
+			"""
+		)
     string(name: 'APP_NAME', defaultValue: 'Boutique', description: 'name of the app (integration build)')
     string(name: 'BRANCH', defaultValue: 'public', description: 'Branch to clone')
     string(name: 'BUILD_NAME', defaultValue: '', description: 'build name (If not provided, default will be branchname-1-0-run ex: main-1-0-7)')
+    separator(name: "Tests", sectionHeader: "Test to run",separatorStyle: "border-width: 5",
+    sectionHeaderStyle: """
+				background-color:  #198ce6;
+				text-align: center;
+				padding: 4px;
+				color: #000000;
+				font-size: 22px;
+				font-weight: normal;
+				text-transform: uppercase;
+				font-family: 'Orienta', sans-serif;
+				letter-spacing: 1px;
+				font-style: italic;
+			"""
+		)
     booleanParam(name: 'Run_all_tests', defaultValue: true, description: 'Checking this box will run all tests even if individual ones are not checked')
     booleanParam(name: 'Cucumber', defaultValue: false, description: 'Run tests using Cucumber testing framework (java)')
     booleanParam(name: 'Cypress', defaultValue: false, description: 'Run tests using Cypress testing framework')
