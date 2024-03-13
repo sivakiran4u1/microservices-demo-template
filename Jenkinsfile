@@ -14,9 +14,9 @@ pipeline {
 
 
   parameters {
-    separator(name: "App parameters", sectionHeader: "Test to run",separatorStyle: "border-width: 5",
+    separator(name: "App parameters", sectionHeader: "App parameters",separatorStyle: "border-width: 5",
     sectionHeaderStyle: """
-				background-color:  #198ce6;
+				background-color:  #cf0c0c;
 				text-align: center;
 				padding: 4px;
 				color: #000000;
