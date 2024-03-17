@@ -304,14 +304,9 @@ pipeline {
             sh """
                     export MACHINE_DNS="${env.MACHINE_DNS}"
                     cd ./integration-tests/postman-tests/
-                    npm i slnodejs
-                    npm install newman
-                    npm install newman-reporter-xunit
+                    npm install -g sealights-newman-wrapper newman-reporter-xunit newman-reporter-junit5
                     echo 'Postman framework starting ..... '
-                    ./node_modules/.bin/slnodejs start --labid ${params.SL_LABID} --token ${env.SL_TOKEN} --teststage "postman tests"
-                    npx newman run sealights-excersise.postman_collection.json --env-var machine_dns="${env.MACHINE_DNS}" -r xunit --reporter-xunit-export './result.xml' --suppress-exit-code
-                    ./node_modules/.bin/slnodejs uploadReports --labid ${params.SL_LABID} --token ${env.SL_TOKEN} --reportFile './result.xml'
-                    ./node_modules/.bin/slnodejs end --labid ${params.SL_LABID} --token ${env.SL_TOKEN}
+                    npx sealights-newman-wrapper --sl-token ${env.SL_TOKEN} --sl-labId ${params.SL_LABID} --sl-testStage "postman tests" sealights-excersise.postman_collection.json --env-var machine_dns=${env.MACHINE_DNS}
                     cd ../..
                     sleep ${env.wait_time}
                     """
@@ -337,7 +332,7 @@ pipeline {
     //             npx jest integration-tests/nodejs-tests/Jest/test.js --sl-testStage='Jest tests' --sl-token="${env.SL_TOKEN}" --sl-labId="${params.SL_LABID}"
     //             cd ../..
     //             sleep ${env.wait_time}
-    //             """
+    //         """
     //     }
     //   }
     // }
@@ -416,8 +411,6 @@ pipeline {
                   echo 'Pytest tests starting ..... '
                   export machine_dns="${env.MACHINE_DNS}"
                   cd ./integration-tests/python-tests
-                  pip install pytest
-                  pip install requests
                   sl-python pytest --teststage "Pytest tests"  --labid ${params.SL_LABID} --token ${env.SL_TOKEN} python-tests.py
                   cd ../..
                   sleep ${env.wait_time}
@@ -435,11 +428,8 @@ pipeline {
                   echo 'Pytest tests starting ..... '
                   export machine_dns="${env.MACHINE_DNS}"
                   cd ./integration-tests/python-tests
-                  pip install pytest
-                  pip install requests
                   sl-python pytest --teststage "long_test"  --labid ${params.SL_LABID} --token ${env.SL_TOKEN} long_test.py
                   cd ../..
-                  sleep ${env.wait_time}
                   """
           }
         }
