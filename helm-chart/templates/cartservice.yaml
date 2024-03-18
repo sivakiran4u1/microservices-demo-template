@@ -73,7 +73,7 @@ spec:
         - name: SL_LAB_ID
           value: "{{ .Values.SealightsEnvVars.lab_id }}"
         - name: BUILD_NAME
-          value: "{{ .Values.SealightsEnvVars.dotnet_agent_url }}"
+          value: "{{ .Values.SealightsEnvVars.build_name }}"
         - name: ASPNETCORE_URLS
           value: "http://*:7070"
         - name: SL_BRANCH

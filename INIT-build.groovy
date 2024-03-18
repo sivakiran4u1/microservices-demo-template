@@ -6,14 +6,14 @@ pipeline{
         base_image_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com/sl-jenkins-base-ci:latest",
         ecr_uri: "534369319675.dkr.ecr.us-west-2.amazonaws.com",
         shell_memory_request: "2000Mi",
-        shell_cpu_request: "1.0",
-        shell_memory_limit: "3000Mi",
-        shell_cpu_limit: "1.5",
-        kaniko_memory_request: "3500Mi",
+        shell_cpu_request: "0.5",
+        shell_memory_limit: "300Mi",
+        shell_cpu_limit: "1.0",
+        kaniko_memory_request: "500Mi",
         kaniko_cpu_request: "1.0",
-        kaniko_memory_limit: "4500Mi",
-        kaniko_cpu_limit: "2.5",
-        kaniko_storage_limit:"6500Mi",
+        kaniko_memory_limit: "500Mi",
+        kaniko_cpu_limit: "1.0",
+        kaniko_storage_limit:"700Mi",
         node_selector: "jenkins"
       ])
       defaultContainer 'shell'
@@ -30,7 +30,7 @@ pipeline{
   }
   environment{
     ECR_FULL_NAME = "btq-${params.LANG}"
-    ECR_URI = "ahmadSealights/${env.ECR_FULL_NAME}"
+    ECR_URI = "Sealights/${env.ECR_FULL_NAME}"
   }
   stages{
     stage('Init') {
@@ -39,7 +39,7 @@ pipeline{
           // Clone the repository with the specified branch.
           git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo.git'
           }
-          stage("Build Docker ${params.LANG} Image") {
+          stage("Build Docker Image") {
            container(name: 'kaniko'){
             script {
                 def CONTEXT = "./initContainers/${params.LANG}InitContainer"
