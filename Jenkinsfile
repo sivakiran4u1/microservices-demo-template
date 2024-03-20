@@ -93,7 +93,9 @@ pipeline {
           lab_alias: "${IDENTIFIER}",
           cdOnly: true,
           )
-
+          if(env.LAB_ID==""){
+            error "Error generating lab id"
+          }
 
           build(job: 'update-btq', parameters: [string(name:'tag' , value:"${env.CURRENT_VERSION}"),
                                                 string(name:'buildname' , value:build_name),
