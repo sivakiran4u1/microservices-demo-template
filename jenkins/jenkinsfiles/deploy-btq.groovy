@@ -37,10 +37,6 @@ pipeline {
             steps {
                 script {
                     cleanWs()
-                    if ("${IDENTIFIER}" == "") {
-                        error("IDENTIFIER must be inserted!")
-                        currentBuild.result = 'FAILURE'
-                    }
                     ENV_NAME = "${IDENTIFIER}"
                     currentBuild.displayName = "${ENV_NAME} btq update"
                     LOWER_ENV_NAME = "${ENV_NAME}".toLowerCase()

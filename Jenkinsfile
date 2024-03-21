@@ -78,7 +78,7 @@ pipeline {
       }
     }
 
-    stage('update-btq') {
+    stage('deploy-btq') {
       steps {
         script {
           def build_name = "${params.BUILD_NAME}" == "" ? "${params.BRANCH}-${env.CURRENT_VERSION}" : "${params.BUILD_NAME}"
@@ -97,7 +97,7 @@ pipeline {
             error "Error generating lab id"
           }
 
-          build(job: 'update-btq', parameters: [string(name:'tag' , value:"${env.CURRENT_VERSION}"),
+          build(job: 'deploy-btq', parameters: [string(name:'tag' , value:"${env.CURRENT_VERSION}"),
                                                 string(name:'buildname' , value:build_name),
                                                 string(name:'labid' , value:"${env.LAB_ID}"),
                                                 string(name:'branch' , value:"${params.BRANCH}"),
