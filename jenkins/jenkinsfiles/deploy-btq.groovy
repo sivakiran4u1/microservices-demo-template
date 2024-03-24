@@ -46,7 +46,7 @@ pipeline {
                                     aws secretsmanager get-secret-value --region eu-west-1 --secret-id 'jkns-key_pair' | jq -r '.SecretString' | jq -r '.jkns_key_pair' > key.pem
                                     chmod 0400 key.pem
 
-                                    ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@54.246.240.122 'bash /opt/sealights/install-btq.sh ${env.tag} ${params.buildname} ${params.labid} ${params.branch} ${env.SL_TOKEN} ${params.branch}'
+                                    ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@54.246.240.122 'bash /opt/sealights/install-btq.sh --tag=${env.tag} --buildname=${params.buildname} --labid=${params.labid} --branch=${params.branch} --token=${env.SL_TOKEN} --sl_branch=${params.branch}'
                                 """
                             }
                 }
