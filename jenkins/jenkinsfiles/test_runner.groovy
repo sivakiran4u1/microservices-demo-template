@@ -306,7 +306,10 @@ pipeline {
                     cd ./integration-tests/postman-tests/
                     npm install -g sealights-newman-wrapper newman-reporter-xunit newman-reporter-junit5
                     echo 'Postman framework starting ..... '
+                    ./node_modules/.bin/slnodejs start --labid ${params.SL_LABID} --token ${params.SL_TOKEN} --teststage "postman tests"
+                    sleep 10
                     npx sealights-newman-wrapper --sl-token ${env.SL_TOKEN} --sl-labId ${params.SL_LABID} --sl-testStage "postman tests" sealights-excersise.postman_collection.json --env-var machine_dns=${env.MACHINE_DNS}
+                    ./node_modules/.bin/slnodejs end --labid ${params.SL_LABID} --token ${params.SL_TOKEN}
                     cd ../..
                     sleep ${env.wait_time}
                     """
