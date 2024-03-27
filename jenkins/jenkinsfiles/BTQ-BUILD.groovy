@@ -30,7 +30,7 @@ pipeline{
         script {
           // Clone the repository with the specified branch.
           git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo-template.git'
-          def language=getServiceLanguage(params.SERVICE)
+          currentBuild.displayName = "${SERVICE}-${BUILD_NAME}"
           stage("Build Docker ${params.SERVICE} Image") {
             container(name: 'kaniko'){
               script {
@@ -58,20 +58,5 @@ pipeline{
         }
       }
     }
-  }
-}
-def getServiceLanguage(service) {
-
-  switch (service) {
-    case "adservice":
-      return "JAVA"
-    case "cartservice":
-      return "DOTNET"
-    case ["checkoutservice","frontend","productcatalogservice","shippingservice"]:
-      return "GO"
-    case ["emailservice","recommendationservice"]:
-      return "PYTHON"
-    case ["currencyservice","paymentservice"]:
-      return "NODE"
   }
 }
