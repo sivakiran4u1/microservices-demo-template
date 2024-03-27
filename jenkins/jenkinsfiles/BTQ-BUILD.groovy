@@ -30,21 +30,7 @@ pipeline{
         script {
           // Clone the repository with the specified branch.
           git branch: params.BRANCH, url: 'https://github.com/Sealights/microservices-demo-template.git'
-
-          stage("Create ECR repository") {
-
-            def repo_policy = readTrusted('jenkins/repo_policy/repo_policy.json')
-            create_repo([
-              region : params.REGION,
-              artifact_name: "${env.ECR_FULL_NAME}",
-              key_type: "KMS"
-            ] as Map)
-            set_repo_policy([
-              region : params.REGION,
-              artifact_name: "${env.ECR_FULL_NAME}",
-              repo_policy: repo_policy
-            ] as Map)
-          }
+          def language=getServiceLanguage(params.SERVICE)
           stage("Build Docker ${params.SERVICE} Image") {
             container(name: 'kaniko'){
               script {
@@ -52,7 +38,7 @@ pipeline{
                 def DP = "${CONTEXT}/Dockerfile"
                 def D = "${env.ECR_URI}:${env.TAG}"
                 def BRANCH = params.BRANCH
-                def BUILD_NAME = params.BUILD_NAME
+                def BUILD_NAME = "${params.BUILD_NAME}-${language}"
                 def SL_TOKEN = env.SL_TOKEN
                 def AGENT_URL = params.AGENT_URL
                 def AGENT_URL_SLCI = params.AGENT_URL_SLCI
@@ -74,25 +60,18 @@ pipeline{
     }
   }
 }
-def set_repo_policy(Map params) {
-  sh """
-        aws ecr set-repository-policy \
-        --region ${params.region} \
-        --repository-name ${params.artifact_name} \
-        --policy-text '${params.repo_policy}'
-    """
-}
+def getServiceLanguage(service) {
 
-def create_repo(Map params) {
-  sh """#!/bin/bash
-        output=\$(aws ecr describe-repositories --region ${params.region} --repository-names ${params.artifact_name} 2>&1)
-
-        if [ \$? -ne 0 ]; then
-        if echo \${output} | grep -q RepositoryNotFoundException; then
-            aws ecr create-repository --region ${params.region} --repository-name ${params.artifact_name} --encryption-configuration encryptionType="${params.key_type}"
-        else
-            >&2 echo \${output}
-        fi
-        fi
-    """
+  switch (service) {
+    case "adservice":
+      return "JAVA"
+    case "cartservice":
+      return "DOTNET"
+    case ["checkoutservice","frontend","productcatalogservice","shippingservice"]:
+      return "GO"
+    case ["emailservice","recommendationservice"]:
+      return "PYTHON"
+    case ["currencyservice","paymentservice"]:
+      return "NODE"
+  }
 }

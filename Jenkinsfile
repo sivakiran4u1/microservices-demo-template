@@ -109,25 +109,25 @@ pipeline {
     stage('Run Tests') {
       steps {
         script {
-          run_tests(
-            branch: params.BRANCH,
-            lab_id: env.LAB_ID,
-            token: env.SL_TOKEN,
-            Run_all_tests: params.Run_all_tests,
-            Cucumber: params.Cucumber,
-            Cypress: params.Cypress,
-            Junit_with_testNG: params.Junit_with_testNG,
-            Junit_without_testNG: params.Junit_without_testNG,
-            Junit_with_testNG_gradle: params.Junit_with_testNG_gradle,
-            Mocha: params.Mocha,
-            MS: params.Mocha,
-            NUnit: params.NUnit,
-            Postman: params.Postman,
-            Pytest: params.Pytest,
-            Robot: params.Robot,
-            Soapui: params.Soapui,
-            long_test: params.long_test
-          )
+          sleep time: 120, unit: 'SECONDS'
+          build(job: "test_runner", parameters: [
+            string(name: 'BRANCH', value: "${params.BRANCH}"),
+            string(name: 'SL_LABID', value: "${env.LAB_ID}"),
+            booleanParam(name: 'Run_all_tests', value: params.Run_all_tests),
+            booleanParam(name: 'Cucumber', value: params.Cucumber),
+            booleanParam(name: 'Cypress', value: params.Cypress),
+            booleanParam(name: 'Junit_with_testNG', value: params.Junit_with_testNG),
+            booleanParam(name: 'Junit_without_testNG', value: params.Junit_without_testNG),
+            booleanParam(name: 'Junit_with_testNG_gradle', value: params.Junit_with_testNG_gradle),
+            booleanParam(name: 'Mocha', value: params.Mocha),
+            booleanParam(name: 'MS', value: params.Mocha),
+            booleanParam(name: 'NUnit', value: params.NUnit),
+            booleanParam(name: 'Postman', value: params.Postman),
+            booleanParam(name: 'Pytest', value: params.Pytest),
+            booleanParam(name: 'Robot', value: params.Robot),
+            booleanParam(name: 'Soapui', value: params.Soapui),
+            booleanParam(name: 'long_test', value: params.long_test)
+          ])
         }
       }
     }
@@ -156,29 +156,6 @@ def build_btq(Map params){
   parallel parallelLabs
 }
 
-
-def run_tests(Map params){
-      sleep time: 120, unit: 'SECONDS'
-      build(job: "test_runner", parameters: [
-        string(name: 'BRANCH', value: "${params.branch}"),
-        string(name: 'SL_LABID', value: "${params.lab_id}"),
-        booleanParam(name: 'Run_all_tests', value: params.Run_all_tests),
-        booleanParam(name: 'Cucumber', value: params.Cucumber),
-        booleanParam(name: 'Cypress', value: params.Cypress),
-        booleanParam(name: 'Junit_with_testNG', value: params.Junit_with_testNG),
-        booleanParam(name: 'Junit_without_testNG', value: params.Junit_without_testNG),
-        booleanParam(name: 'Junit_with_testNG_gradle', value: params.Junit_with_testNG_gradle),
-        booleanParam(name: 'Mocha', value: params.Mocha),
-        booleanParam(name: 'MS', value: params.Mocha),
-        booleanParam(name: 'NUnit', value: params.NUnit),
-        booleanParam(name: 'Postman', value: params.Postman),
-        booleanParam(name: 'Pytest', value: params.Pytest),
-        booleanParam(name: 'Robot', value: params.Robot),
-        booleanParam(name: 'Soapui', value: params.Soapui),
-        booleanParam(name: 'long_test', value: params.long_test)
-      ])
-
-}
 
 def set_assume_role(Map params) {
   params.set_globaly = params.set_globaly == null ? true : params.set_globaly
