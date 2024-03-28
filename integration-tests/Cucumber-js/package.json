@@ -1,16 +1,19 @@
 {
-  "name": "cucumber-js-demo",
+  "name": "cucumber",
   "version": "1.0.0",
-  "description": "Cucumber.js Demo Project",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "cucumber-js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Your Name",
-  "license": "MIT",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@cucumber/cucumber": "^10.3.2",
+    "axios": "^1.6.8"
+  },
   "dependencies": {
-    "@cucumber/cucumber": "^7.0.0",
-    "axios": "^0.21.4",
-    "sealights-cucumber-plugin": "^2.0.16"
+    "sealights-cucumber-plugin": "^2.0.60"
   }
 }
