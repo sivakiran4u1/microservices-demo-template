@@ -38,7 +38,7 @@ pipeline{
                 def DP = "${CONTEXT}/Dockerfile"
                 def D = "${env.ECR_URI}:${env.TAG}"
                 def BRANCH = params.BRANCH
-                def BUILD_NAME = "${params.BUILD_NAME}-${language}"
+                def BUILD_NAME = "${params.BUILD_NAME}"
                 def SL_TOKEN = env.SL_TOKEN
                 def AGENT_URL = params.AGENT_URL
                 def AGENT_URL_SLCI = params.AGENT_URL_SLCI
