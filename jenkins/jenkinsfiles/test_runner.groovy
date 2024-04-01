@@ -27,6 +27,7 @@ pipeline {
     booleanParam(name: 'Mocha', defaultValue: false, description: 'Run tests using Mocha testing framework')
     booleanParam(name: 'Soapui', defaultValue: false, description: 'Run tests using Soapui testing framework')
     booleanParam(name: 'Pytest', defaultValue: false, description: 'Run tests using Pytest testing framework')
+    booleanParam(name: 'Karate', defaultValue: false, description: 'Run tests using Karate testing framework (maven)')
     booleanParam(name: 'long_test', defaultValue: false, description: 'Runs a long test for showing tia (not effected by run_all_tests flag)')
   }
   environment {
@@ -85,6 +86,22 @@ pipeline {
                 dotnet /sealights/sl-dotnet-agent/SL.DotNet.dll endExecution --testStage "MS-Tests" --labId ${params.SL_LABID} --token ${env.SL_TOKEN}
                 sleep ${env.wait_time} # Wait at least 10 seconds for the backend to update status that the previous test stage was closed, closing and starting a test stage withing 10 seconds can cause inaccurate test stage coverage
                 """
+          }
+        }
+      }
+    }
+
+    stage('Cucumberjs framework starting'){
+      steps{
+        script{
+          if( params.Run_all_tests == true || params.NUnit == true) {
+            sh """
+                  echo 'Cucumberjs framework starting ..... '
+                  npm install @cucumber/cucumber axios sealights-cucumber-plugin
+                  export machine_dns="${env.MACHINE_DNS}"
+                  node_modules/.bin/cucumber-js ./features --require sealights-cucumber-plugin sl-labid ${params.SL_LABID} --sl-token ${env.SL_TOKEN}  --sl-testStage "Cucumberjs-Tests"
+                  sleep ${env.wait_time}
+                  """
           }
         }
       }
@@ -422,6 +439,41 @@ pipeline {
         }
       }
     }
+
+    stage('Karate framework') {
+      steps{
+        script{
+          if( params.Run_all_tests == true || params.Karate == true) {
+            sh """
+                      #!/bin/bash
+                      echo 'Karate framework starting ..... '
+                      cd ./integration-tests/karate-tests/
+                      echo ${env.SL_TOKEN}>sltoken.txt
+                      echo  '{
+                              "executionType": "testsonly",
+                              "tokenFile": "./sltoken.txt",
+                              "createBuildSessionId": false,
+                              "testStage": "Karate framework java ",
+                              "runFunctionalTests": true,
+                              "labId": "${params.SL_LABID}",
+                              "proxy": null,
+                              "logEnabled": false,
+                              "logDestination": "console",
+                              "logLevel": "info",
+                              "sealightsJvmParams": {}
+                              }' > slmaventests.json
+                      echo "Adding Sealights to Tests Project POM file..."
+                      java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
+
+                      unset MAVEN_CONFIG
+                      mvn clean test -Dkarate.env=${env.MACHINE_DNS}
+                      sleep ${env.wait_time}
+                      """
+          }
+        }
+      }
+    }
+    
     stage('Long test'){
       steps{
         script{
