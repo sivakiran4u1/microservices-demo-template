@@ -96,20 +96,20 @@ pipeline {
       steps{
         script{
           if( params.Run_all_tests == true || params.Cucumberjs == true) {
-            SL_PACKAGE = sh(returnStdout: true, script:"node -p \"require.resolve('sealights-cucumber-plugin')\"")
             sh """
                   echo 'Cucumberjs framework starting ..... '
+                  cd integration-tests/Cucumber-js
                   echo ${env.SL_TOKEN}>sltoken.txt
                   npm install @cucumber/cucumber axios sealights-cucumber-plugin
+                  export SL_PACKAGE=\$(node -p "require.resolve('sealights-cucumber-plugin')")
                   export machine_dns="${env.MACHINE_DNS}"
-                  echo '
-                  {
+                  echo '{
                     "tokenfile": "sltoken.txt",
-                    "labid": ${params.SL_LABID},
+                    "labid": "${params.SL_LABID}",
                     "testStage": "Cucumber Tests"
-                    }' >sl.conf
+                    }' > sl.conf
                   ./node_modules/.bin/slnodejs start --tokenfile ./sltoken.txt --labid ${params.SL_LABID} --teststage "Cucumber Tests"
-                  node_modules/.bin/cucumber-js ./features --require ${SL_PACKAGE} --require 'features/**/*.@(js|cjs|mjs)'
+                  node_modules/.bin/cucumber-js ./features --require \$SL_PACKAGE --require 'features/**/*.@(js|cjs|mjs)'
                   ./node_modules/.bin/slnodejs end --tokenfile ./sltoken.txt --labid ${params.SL_LABID}
                   sleep ${env.wait_time}
                   """
@@ -367,8 +367,6 @@ pipeline {
     //     }
     //   }
     // }
-
-
 
     stage('Mocha framework'){
       steps{
