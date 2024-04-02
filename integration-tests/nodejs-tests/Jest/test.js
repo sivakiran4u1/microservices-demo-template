@@ -25,8 +25,7 @@ describe('Api Tests', () => {
   it('should return 200 for browsing products', async () => {
     const products = [
       '0PUK6V6EV0',
-      '1YMWWN1N4O',
-      // ... other product IDs
+      '1YMWWN1N4O'
     ];
 
     for (const product_id of products) {

@@ -1,7 +1,7 @@
 const { Given, When, Then } = require('@cucumber/cucumber');
 const axios = require('axios');
 const assert = require('assert').strict;
-const BASE_URL = process.env.machine_dns || "http://10.2.11.19:8081";
+const BASE_URL = process.env.machine_dns;
 
 const products = [
     "0PUK6V6EV0", "1YMWWN1N4O", "2ZYFJ3GM2N",

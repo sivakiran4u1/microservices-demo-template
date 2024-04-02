@@ -97,9 +97,19 @@ pipeline {
           if( params.Run_all_tests == true || params.NUnit == true) {
             sh """
                   echo 'Cucumberjs framework starting ..... '
+                  export SL_PACKAGE=\$(node -p "require.resolve('sealights-cucumber-plugin')")
+                  echo ${env.SL_TOKEN}>sltoken.txt
                   npm install @cucumber/cucumber axios sealights-cucumber-plugin
                   export machine_dns="${env.MACHINE_DNS}"
-                  node_modules/.bin/cucumber-js ./features --require sealights-cucumber-plugin sl-labid ${params.SL_LABID} --sl-token ${env.SL_TOKEN}  --sl-testStage "Cucumberjs-Tests"
+                  echo '
+                  {
+                    "tokenfile": "sltoken.txt",
+                    "labid": ${params.SL_LABID},
+                    "testStage": "Cucumber Tests"
+                    }' >sl.conf
+                  ./node_modules/.bin/slnodejs start --tokenfile ./sltoken.txt --labid ${params.SL_LABID} --teststage "Cucumber Tests"
+                  node_modules/.bin/cucumber-js ./features --require \$SL_PACKAGE --require 'features/**/*.@(js|cjs|mjs)'
+                  ./node_modules/.bin/slnodejs end --tokenfile ./sltoken.txt
                   sleep ${env.wait_time}
                   """
           }

@@ -1,8 +1,8 @@
 {
-  "name": "cucumber",
-  "version": "1.0.0",
+  "name": "cucumber-js_test",
+  "version": "10.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "features/step_definitions/cucumber-js.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
