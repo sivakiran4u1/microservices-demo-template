@@ -17,6 +17,7 @@ pipeline {
     booleanParam(name: 'Run_all_tests', defaultValue: true, description: 'Checking this box will run all tests even if individual ones are not checked')
     booleanParam(name: 'Cypress', defaultValue: false, description: 'Run tests using Cypress testing framework')
     booleanParam(name: 'MS', defaultValue: false, description: 'Run tests using MS testing framework')
+    booleanParam(name: 'Cucumberjs', defaultValue: false, description: 'Run tests using Cucumberjs testing framework (maven)')
     booleanParam(name: 'NUnit', defaultValue: false, description: 'Run tests using NUnityour_dns testing framework')
     booleanParam(name: 'Junit_with_testNG_gradle', defaultValue: false, description: 'Run tests using Junit testing framework with testNG (gradle)')
     booleanParam(name: 'Robot', defaultValue: false, description: 'Run tests using Robot testing framework')
@@ -94,7 +95,7 @@ pipeline {
     stage('Cucumberjs framework starting'){
       steps{
         script{
-          if( params.Run_all_tests == true || params.NUnit == true) {
+          if( params.Run_all_tests == true || params.Cucumberjs == true) {
             sh """
                   echo 'Cucumberjs framework starting ..... '
                   export SL_PACKAGE=\$(node -p "require.resolve('sealights-cucumber-plugin')")
