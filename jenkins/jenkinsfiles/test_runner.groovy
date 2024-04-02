@@ -96,7 +96,7 @@ pipeline {
       steps{
         script{
           if( params.Run_all_tests == true || params.Cucumberjs == true) {
-            SL_PACKAGE = sh(returnStdout: true, script:"""node -p "require.resolve('sealights-cucumber-plugin')""")
+            SL_PACKAGE = sh(returnStdout: true, script:"node -p \"require.resolve('sealights-cucumber-plugin')\"")
             sh """
                   echo 'Cucumberjs framework starting ..... '
                   echo ${env.SL_TOKEN}>sltoken.txt
