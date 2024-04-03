@@ -17,7 +17,7 @@ products = [
 
 load = 10  # number of users for load test
 
-BASE_URL = os.environ.get("machine_dns", "10.2.10.163:8081")  # internal or external test
+BASE_URL = os.environ.get("machine_dns")  # internal or external test
 
 def test_load():
     threads = []
@@ -111,7 +111,6 @@ def test_checkout(r=requests):
         }
         response = r.post(BASE_URL + "/cart/checkout", data=data)
         assert response.status_code == 200
-
 
 if __name__ == "__main__":
     pytest.main()
