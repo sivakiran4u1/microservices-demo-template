@@ -67,6 +67,7 @@ pipeline {
       }
     }
     stage('Cypress framework starting'){
+      // We put the cypress tests in its own container using cypres image as recommended by the cypress team when running the tests using docker container
       steps{
         script{
           if( params.Run_all_tests == true || params.Cypress == true) {

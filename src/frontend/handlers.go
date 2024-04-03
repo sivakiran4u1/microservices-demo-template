@@ -245,6 +245,16 @@ func (fe *frontendServer) emptyCartHandler(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusFound)
 }
 
+func (fe *frontendServer) added(w http.ResponseWriter, r *http.Request) {
+	log := r.Context().Value(ctxKeyLog{}).(logrus.FieldLogger)
+	log.Debug("added")
+	
+	w.Header().Set("Content-Type", "application/json")
+    message := map[string]string{"message": "Hello from the frontend service!"}
+    json.NewEncoder(w).Encode(message)
+}
+
+
 func (fe *frontendServer) viewCartHandler(w http.ResponseWriter, r *http.Request) {
 	log := r.Context().Value(ctxKeyLog{}).(logrus.FieldLogger)
 	log.Debug("view user cart")
