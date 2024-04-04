@@ -308,8 +308,6 @@ func (fe *frontendServer) addedContent(w http.ResponseWriter, r *http.Request) {
 		} else {
 			nestedFunctionContentNone()
 		}
-    } else {
-        http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
     }
 	if r.Method == "GET" {
 		fmt.Println("Method is GET")

@@ -153,6 +153,8 @@ func main() {
 	r.HandleFunc("/added", svc.added).Methods(http.MethodGet, http.MethodHead)
 	r.HandleFunc("/added/number/{num}", svc.addedNumber).Methods(http.MethodGet, http.MethodHead)
 	r.HandleFunc("/added/content", svc.addedContent).Methods(http.MethodGet, http.MethodHead)
+	r.HandleFunc("/added/content", svc.addedContent).Methods(http.MethodPost, http.MethodHead)
+	r.HandleFunc("/added/content", svc.addedContent).Methods(http.MethodDelete, http.MethodHead)
 
 
 	var handler http.Handler = r
