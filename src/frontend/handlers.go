@@ -293,7 +293,7 @@ type Data struct {
     Num  int    `json:"num"`
 }
 
-func addedContent(w http.ResponseWriter, r *http.Request) {
+func (fe *frontendServer) addedContent(w http.ResponseWriter, r *http.Request) {
     if r.Method == "POST" {
         var data Data
         err := json.NewDecoder(r.Body).Decode(&data)
