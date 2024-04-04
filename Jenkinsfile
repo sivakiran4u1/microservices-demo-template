@@ -60,6 +60,7 @@ pipeline {
     booleanParam(name: 'Soapui', defaultValue: false, description: 'Run tests using Soapui testing framework')
     booleanParam(name: 'Pytest', defaultValue: false, description: 'Run tests using Pytest testing framework')
     booleanParam(name: 'Karate', defaultValue: false, description: 'Run tests using Karate testing framework (maven)')
+    booleanParam(name: 'Added', defaultValue: false, description: 'Run tests for the added functions')
     booleanParam(name: 'long_test', defaultValue: false, description: 'Runs a long test for showing tia (not effected by run_all_tests flag)')
   }
 
@@ -130,6 +131,7 @@ pipeline {
             booleanParam(name: 'Robot', value: params.Robot),
             booleanParam(name: 'Soapui', value: params.Soapui),
             booleanParam(name: 'Karate', value: params.Karate),
+            booleanParam(name: 'Added', value: params.Added),
             booleanParam(name: 'long_test', value: params.long_test)
           ])
         }

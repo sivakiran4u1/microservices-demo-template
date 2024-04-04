@@ -29,6 +29,7 @@ pipeline {
     booleanParam(name: 'Soapui', defaultValue: false, description: 'Run tests using Soapui testing framework')
     booleanParam(name: 'Pytest', defaultValue: false, description: 'Run tests using Pytest testing framework')
     booleanParam(name: 'Karate', defaultValue: false, description: 'Run tests using Karate testing framework (maven)')
+    booleanParam(name: 'Added', defaultValue: false, description: 'Run tests for the added functions')
     booleanParam(name: 'long_test', defaultValue: false, description: 'Runs a long test for showing tia (not effected by run_all_tests flag)')
   }
   environment {
@@ -479,6 +480,24 @@ pipeline {
                       mvn clean test -Dkarate.env=${env.MACHINE_DNS}
                       sleep ${env.wait_time}
                       """
+          }
+        }
+      }
+    }
+
+    stage('Added tests'){
+      steps{
+        script{
+          if( params.Run_all_tests == true || params.Added == true) {
+            sh"""
+                  pip install pytest && pip install requests
+                  echo 'Pytest tests starting ..... '
+                  export machine_dns="${env.MACHINE_DNS}"
+                  cd ./integration-tests/python-tests
+                  sl-python pytest --teststage "Added tests"  --labid ${params.SL_LABID} --token ${env.SL_TOKEN} added_tests.py
+                  cd ../..
+                  sleep ${env.wait_time}
+                  """
           }
         }
       }
