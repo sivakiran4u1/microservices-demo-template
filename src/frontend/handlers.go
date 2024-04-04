@@ -301,9 +301,9 @@ func addedContent(w http.ResponseWriter, r *http.Request) {
             http.Error(w, err.Error(), http.StatusBadRequest)
             return
         }
-		if data.Num == "5" {
+		if data.Num == 5 {
 			
-		}else if data.Num == "4" {
+		}else if data.Num == 4 {
 			fmt.Println("Num is 4")
 		} else {
 			nestedFunctionContentNone()
