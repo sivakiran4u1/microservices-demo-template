@@ -262,12 +262,12 @@ func (fe *frontendServer) addedNumber(w http.ResponseWriter, r *http.Request) {
 	log := r.Context().Value(ctxKeyLog{}).(logrus.FieldLogger)
 	log.Debug("added number")
 	num := mux.Vars(r)["num"]
-	if num == 5 {
+	if num == "5" {
 		w.Header().Set("Content-Type", "application/json")
 		message := map[string]string{"message": "Number equals 5"}
 		json.NewEncoder(w).Encode(message)
 		nestedFunction()
-	} else if num == 4 {
+	} else if num == "4" {
 		w.Header().Set("Content-Type", "application/json")
 		message := map[string]string{"message": "Number equal 4"}
 		json.NewEncoder(w).Encode(message)
@@ -301,9 +301,9 @@ func addedContent(w http.ResponseWriter, r *http.Request) {
             http.Error(w, err.Error(), http.StatusBadRequest)
             return
         }
-		if data.Num == 5 {
+		if data.Num == "5" {
 			
-		}else if data.Num == 4{
+		}else if data.Num == "4" {
 			fmt.Println("Num is 4")
 		} else {
 			nestedFunctionContentNone()
