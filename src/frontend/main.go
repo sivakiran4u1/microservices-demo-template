@@ -151,6 +151,9 @@ func main() {
 	r.HandleFunc("/_healthz", func(w http.ResponseWriter, _ *http.Request) { fmt.Fprint(w, "ok") })
 // Add method
 	r.HandleFunc("/added", svc.added).Methods(http.MethodGet, http.MethodHead)
+	r.HandleFunc("/added/number/{num}", svc.addedNumber).Methods(http.MethodGet, http.MethodHead)
+	r.HandleFunc("/added/content", svc.addedContent).Methods(http.MethodGet, http.MethodHead)
+
 
 	var handler http.Handler = r
 	handler = &logHandler{log: log, next: handler}     // add logging

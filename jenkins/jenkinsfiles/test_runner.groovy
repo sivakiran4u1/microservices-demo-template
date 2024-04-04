@@ -463,7 +463,7 @@ pipeline {
                               "executionType": "testsonly",
                               "tokenFile": "./sltoken.txt",
                               "createBuildSessionId": false,
-                              "testStage": "Karate framework java ",
+                              "testStage": "Karate framework java",
                               "runFunctionalTests": true,
                               "labId": "${params.SL_LABID}",
                               "proxy": null,
