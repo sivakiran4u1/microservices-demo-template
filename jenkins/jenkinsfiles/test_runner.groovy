@@ -238,7 +238,7 @@ pipeline {
               java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
 
               unset MAVEN_CONFIG
-              ./mvnw test
+              ./mvnw -q test
               sleep ${env.wait_time}
               """
           }
@@ -277,7 +277,7 @@ pipeline {
                               }' > slmaventests.json
                       echo "Adding Sealights to Tests Project POM file..."
                       java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
-                      mvn clean package
+                      mvn -q clean package
                       sleep ${env.wait_time}
                       """
           }
@@ -316,7 +316,7 @@ pipeline {
                       echo "Adding Sealights to Tests Project POM file..."
                       java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
 
-                      mvn clean package
+                      mvn -q clean package
                       sleep ${env.wait_time}
                       """
           }
@@ -475,7 +475,7 @@ pipeline {
                       java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
 
                       unset MAVEN_CONFIG
-                      mvn clean test -Dkarate.env=${env.MACHINE_DNS}
+                      mvn -q clean test -Dkarate.env=${env.MACHINE_DNS}
                       sleep ${env.wait_time}
                       """
           }
