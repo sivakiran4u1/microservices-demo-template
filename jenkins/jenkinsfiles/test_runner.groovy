@@ -255,8 +255,6 @@ pipeline {
             sh """
                       #!/bin/bash
                       echo 'Junit support testNG framework starting ..... '
-                      pwd
-                      ls
                       cd ./integration-tests/support-testNG
                       export SL_TOKEN="${env.SL_TOKEN}"
                       echo $SL_TOKEN>sltoken.txt
@@ -293,8 +291,6 @@ pipeline {
             sh """
                       #!/bin/bash
                       echo 'Junit without testNG framework starting ..... '
-                      pwd
-                      ls
                       cd integration-tests/java-tests
                       export SL_TOKEN="${env.SL_TOKEN}"
                       echo $SL_TOKEN>sltoken.txt
@@ -354,7 +350,7 @@ pipeline {
     //       sh """
     //             echo 'Jest framework starting ..... '
     //             export machine_dns="${env.MACHINE_DNS}"
-    //             cd ./integration-tests/nodejs-tests/Jest
+    //             cd ./integration-tests/Jest
     //             npm install jest && npm install jest-cli && npm install sealights-jest-plugin
     //             export NODE_DEBUG=sl
     //             export SL_TOKEN="${env.SL_TOKEN}"
@@ -374,7 +370,7 @@ pipeline {
           if( params.Run_all_tests == true || params.Mocha == true) {
             sh """
                       export machine_dns="${env.MACHINE_DNS}"
-                      cd ./integration-tests/nodejs-tests/mocha
+                      cd ./integration-tests/mocha
                       npm install
                       npm install slnodejs
                       echo 'Mocha framework starting ..... '
