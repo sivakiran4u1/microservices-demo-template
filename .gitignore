@@ -21,3 +21,5 @@ release/wi-kubernetes-manifests.yaml
 *package-lock.json
 target
 sl.conf
+__pycache__
+.pytest_cache

@@ -257,7 +257,7 @@ func (fe *frontendServer) added(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(message)
 }
 
-// ceck api with value, nested, function in another file
+// check api with value, nested, function in another file
 func (fe *frontendServer) addedNumber(w http.ResponseWriter, r *http.Request) {
 	log := r.Context().Value(ctxKeyLog{}).(logrus.FieldLogger)
 	log.Debug("added number")
