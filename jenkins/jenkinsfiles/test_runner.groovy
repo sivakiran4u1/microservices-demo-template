@@ -470,7 +470,6 @@ pipeline {
                       echo "Adding Sealights to Tests Project POM file..."
                       java -jar /sealights/sl-build-scanner.jar -pom -configfile slmaventests.json -workspacepath .
 
-                      unset MAVEN_CONFIG
                       mvn -q clean test -Dkarate.env=${env.MACHINE_DNS}
                       sleep ${env.wait_time}
                       """
