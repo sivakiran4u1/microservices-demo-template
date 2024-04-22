@@ -85,6 +85,8 @@ public final class AdService {
 
     private static class AdServiceImpl extends hipstershop.AdServiceGrpc.AdServiceImplBase {
 
+    	 private static final boolean check = false;
+
         /**
          * Retrieves ads based on context provided in the request {@code AdRequest}.
          *
@@ -110,6 +112,10 @@ public final class AdService {
                     // Serve random ads.
                     allAds = service.getRandomAds();
                 }
+                if(check) {
+                	logger.log(Level.WARN, "Custom code executed {}");
+                }
+                
                 AdResponse reply = AdResponse.newBuilder().addAllAds(allAds).build();
                 responseObserver.onNext(reply);
                 responseObserver.onCompleted();
